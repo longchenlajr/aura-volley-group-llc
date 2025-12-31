@@ -1,26 +1,910 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Akira";
+  src: url("/fonts/akira/AkiraExpandedDemo.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-ExtraLight-trial.woff2")
+    format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Light-trial.woff2")
+    format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Regular-trial.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Medium-trial.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-DemiBold-trial.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Bold-trial.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EastmanGrotesque";
+  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Heavy-trial.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Adam";
+  src: url("/fonts/adam/Adam-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adam";
+  src: url("/fonts/adam/Adam-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adam";
+  src: url("/fonts/adam/Adam-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: 9 9 11; /* ink */
+  --panel: 14 14 18; /* stone */
+  --fg: 245 245 248; /* soft white */
+  --muted: 170 170 180; /* calm gray */
+  --line: 255 255 255; /* lines */
+  --violet: 160 120 255; /* aura */
+  --red: 255 70 70;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "EastmanGrotesque", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+
+  background: radial-gradient(
+      900px 500px at 20% 0%,
+      rgba(160, 120, 255, 0.07),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 500px at 80% 10%,
+      rgba(255, 255, 255, 0.03),
+      transparent 55%
+    ),
+    radial-gradient(
+      700px 450px at 50% 120%,
+      rgba(160, 120, 255, 0.04),
+      transparent 60%
+    ),
+    rgb(var(--bg));
+  color: rgb(var(--fg));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(160, 120, 255, 0.25);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Type system (editorial) */
+.kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.h1 {
+  font-size: clamp(2.8rem, 5.2vw, 4.8rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+.h2 {
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.9);
+}
+.body {
+  font-family: "EastmanGrotesque", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.58);
+}
+.muted {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Quiet rule */
+.hr-soft {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+/* Aura accents (subtle, premium) */
+.aura-ring {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(160, 120, 255, 0.06) inset,
+    0 20px 80px rgba(160, 120, 255, 0.06);
+}
+
+.aura-dot {
+  background: rgba(160, 120, 255, 0.65);
+  box-shadow: 0 0 18px rgba(160, 120, 255, 0.35);
+}
+.font-brand {
+  font-family: "EastmanGrotesque", system-ui, -apple-system, sans-serif;
+}
+
+.font-display {
+  font-family: "Akira", "EastmanGrotesque", sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-kicker {
+  font-family: "Adam", "EastmanGrotesque", sans-serif;
+  letter-spacing: 0.34em;
+}
+
+.landing {
+  height: 100vh;
+  overflow: hidden;
+  background: #f6f5f2;
+  color: #0b0b0e;
+}
+
+.landing .landing-muted {
+  color: rgba(0, 0, 0, 0.55);
+}
+.landing .landing-kicker {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.landing .landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.95rem 1.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  transition: 160ms ease;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.landing .landing-btn:hover {
+  border-color: rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.landing .landing-btn-primary {
+  border: 1px solid rgba(160, 120, 255, 0.35);
+  background: rgba(160, 120, 255, 0.12);
+}
+
+.landing .landing-btn-primary:hover {
+  background: rgba(160, 120, 255, 0.16);
+}
+
+.landing .landing-footer {
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Landing: no scroll, one-screen gate */
+html:has(.landing) {
+  overflow: hidden;
+}
+body:has(.landing) {
+  overflow: hidden;
+}
+/* Text inside */
+.option-kicker {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.option-title {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  margin-top: 0.35rem;
+  color: rgba(0, 0, 0, 0.92);
+}
+
+/* Subtle “selected” pulse (when user hovers/focuses) */
+@keyframes auraPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(160, 120, 255, 0);
+  }
+  45% {
+    box-shadow: 0 0 0 10px rgba(160, 120, 255, 0.14);
+  }
+  100% {
+    box-shadow: 0 0 0 22px rgba(160, 120, 255, 0);
+  }
+}
+
+.option:hover,
+.option:focus-visible {
+  animation: auraPulse 900ms ease-out 1;
+}
+
+/* Reduce motion support */
+@media (prefers-reduced-motion: reduce) {
+  .option,
+  .option::before {
+    transition: none;
+  }
+  .option:hover,
+  .option:focus-visible {
+    animation: none;
+  }
+}
+/* LANDING LAYOUT (pins footer to bottom) */
+.landing {
+  height: 100vh;
+  overflow: hidden;
+  background: #f6f5f2;
+  color: #0b0b0e;
+}
+
+.landing-grid {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* top / center / bottom */
+}
+
+.landing-top {
+  padding-top: 3.5rem;
+}
+
+.landing-center {
+  display: grid;
+  place-items: center;
+  padding: 1.25rem 0;
+}
+
+.landing-bottom {
+  padding-bottom: 2.25rem;
+}
+
+/* Landing text */
+.landing .landing-muted {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.landing .landing-kicker {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.landing .landing-footer {
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+/* Landing: no scroll, one-screen gate */
+html:has(.landing) {
+  overflow: hidden;
+}
+body:has(.landing) {
+  overflow: hidden;
+}
+
+/* LANDING: ensure links are not underlined */
+.landing a {
+  text-decoration: none;
+}
+
+/* LANDING ACTIONS — clean 3-column with sliding aura underline */
+.landing a {
+  text-decoration: none;
+}
+
+/* sliding aura stroke */
+.aura-underline {
+  position: absolute;
+  left: 0;
+  bottom: 0.15rem;
+  height: 2px;
+  width: var(--w, 120px);
+  transform: translateX(var(--x, 0px));
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    rgba(160, 120, 255, 0),
+    rgba(160, 120, 255, 0.55),
+    rgba(160, 120, 255, 0)
+  );
+  box-shadow: 0 0 18px rgba(160, 120, 255, 0.22);
+  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    width 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-underline {
+    transition: none;
+  }
+}
+/* LANDING ACTIONS — reveal subtitles on hover */
+.landing a {
+  text-decoration: none;
+}
+
+.landing-actions {
+  position: relative;
+  width: min(760px, 92vw);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(1.25rem, 4vw, 3.5rem);
+  justify-items: center;
+  align-items: start;
+  padding: 0.75rem 0 1.2rem;
+}
+
+/* baseline */
+.landing-actions::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.25rem;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.14),
+    transparent
+  );
+}
+
+/* the tappable/hoverable block */
+.landing-action {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  padding: 0.25rem 0.25rem 0.85rem;
+  text-align: center;
+  outline: none;
+}
+
+/* top label (always visible) */
+.landing-action .k {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+  transition: color 220ms ease, transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+}
+
+/* center option gets slightly more presence */
+.landing-action.center .k {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* subtitle (hidden by default, revealed on hover/focus) */
+.landing-action .t {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  font-size: 1.02rem;
+  color: rgba(0, 0, 0, 0.9);
+
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(2px);
+  transition: opacity 220ms ease,
+    transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    filter 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+  pointer-events: none; /* keep hover stable */
+}
+
+/* reveal */
+.landing-action:hover .t,
+.landing-action:focus-visible .t {
+  opacity: 1;
+  transform: translateY(0px);
+  filter: blur(0px);
+}
+
+.landing-action:hover .k,
+.landing-action:focus-visible .k {
+  color: rgba(0, 0, 0, 0.88);
+  transform: translateY(-1px);
+}
+
+/* focus ring for keyboard users */
+.landing-action:focus-visible {
+  box-shadow: 0 0 0 3px rgba(160, 120, 255, 0.18);
+  border-radius: 12px;
+}
+
+/* sliding aura underline (subtle) */
+.aura-underline {
+  position: absolute;
+  left: 0;
+  bottom: 0.18rem;
+  height: 2px;
+  width: var(--w, 120px);
+  transform: translateX(var(--x, 0px));
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    rgba(160, 120, 255, 0),
+    rgba(160, 120, 255, 0.55),
+    rgba(160, 120, 255, 0)
+  );
+  box-shadow: 0 0 18px rgba(160, 120, 255, 0.18);
+  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    width 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-underline,
+  .landing-action .k,
+  .landing-action .t {
+    transition: none;
+  }
+  .landing-action .t {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+/* LIGHT PAGES (team / player) */
+.light-page {
+  min-height: 100vh;
+  background: #f6f5f2;
+  color: #0b0b0e;
+}
+
+.light-muted {
+  color: rgba(0, 0, 0, 0.55);
+}
+.light-rule {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.14),
+    transparent
+  );
+}
+
+/* Editorial typography on light */
+.light-kicker {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.light-h1 {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.92);
+}
+
+.light-sub {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.58);
+}
+
+/* TEAM GRID CARDS — minimal */
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .roster-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .roster-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.roster-card {
+  display: grid;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.roster-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    border-color 220ms ease;
+}
+
+.roster-card:hover .roster-photo {
+  transform: translateY(-4px);
+  border-color: rgba(160, 120, 255, 0.28);
+}
+
+.roster-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 60% 20%,
+    rgba(160, 120, 255, 0.18),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 420ms ease;
+  pointer-events: none;
+}
+
+.roster-card:hover .roster-photo::after {
+  opacity: 1;
+}
+
+.roster-name {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: rgba(0, 0, 0, 0.92);
+}
+
+.roster-meta {
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* PLAYER PAGE */
+.player-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.25rem;
+}
+
+@media (min-width: 1024px) {
+  .player-shell {
+    grid-template-columns: 420px 1fr;
+    align-items: start;
+  }
+}
+
+.player-panel {
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.player-photo {
+  border-radius: 22px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.player-title {
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.92);
+}
+.roster-photo img,
+.player-photo img {
+  filter: saturate(0.92) contrast(1.02);
+}
+
+/* =========================
+   TEAM (NO VERTICAL SCROLL)
+   + HORIZONTAL RUNWAY
+   ========================= */
+
+/* Team page wrapper: locks the page to one screen height */
+.team-page {
+  height: 100dvh; /* modern viewport unit */
+  overflow: hidden; /* NO vertical scroll on the page */
+  background: #f6f5f2;
+  color: #0b0b0e;
+}
+
+/* Layout: header / runway / footer in one grid so height is accounted for */
+.team-layout {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* Container width tighter + consistent margins */
+.team-container {
+  width: min(1120px, 90vw);
+  margin: 0 auto;
+}
+
+/* Header + footer sizing (small enough to avoid pushing runway off-screen) */
+.team-header {
+  padding-top: 3.5rem;
+  padding-bottom: 1.25rem;
+}
+
+.team-footer {
+  padding-bottom: 1.75rem;
+  padding-top: 0.75rem;
+  text-align: center;
+}
+
+/* Middle area: runway sits vertically centered */
+.team-mid {
+  display: grid;
+  align-items: center;
+}
+/* =========================
+   RUNWAY (WINDOWED, NO SCROLL)
+   ========================= */
+
+.runway {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-items: center;
+}
+
+/* 5-up rail */
+.runway-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: end;
+  width: 100%;
+}
+
+/* Each visible card */
+.runway-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: end;
+  opacity: 0.62;
+  filter: saturate(0.92) contrast(1.02);
+  transform-origin: center bottom;
+  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    opacity 260ms ease, filter 260ms ease;
+}
+
+.runway-card.is-active {
+  opacity: 1;
+  filter: saturate(1) contrast(1.02);
+  transform: translateY(-14px);
+}
+
+.runway-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 22px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: box-shadow 260ms ease, border-color 260ms ease;
+}
+
+/* active aura edge */
+.runway-card.is-active .runway-photo {
+  border-color: rgba(160, 120, 255, 0.28);
+  box-shadow: 0 18px 70px rgba(160, 120, 255, 0.1);
+}
+
+/* make center card larger without affecting layout too hard */
+.runway-card.is-active .runway-photo {
+  transform: scale(1.06);
+  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
+    box-shadow 260ms ease, border-color 260ms ease;
+}
+
+/* Metadata only for active */
+.runway-meta {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 220ms ease,
+    transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+}
+
+.runway-card.is-active .runway-meta {
+  height: auto;
+  overflow: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.runway-role {
+  margin-top: 0.25rem;
+  font-family: "Adam", system-ui, sans-serif;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: rgba(0, 0, 0, 0.55);
+  text-align: center;
+}
+
+.runway-name {
+  margin-top: 0.35rem;
+  font-family: "EastmanGrotesque", system-ui, sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: rgba(0, 0, 0, 0.92);
+  text-align: center;
+}
+
+/* Edge arrow buttons (always visible) */
+.runway-edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.runway-edge-btn {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  transition: background 160ms ease, border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.runway-edge-btn.left {
+  left: -56px;
+}
+.runway-edge-btn.right {
+  right: -56px;
+}
+
+.runway-edge-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.18);
+  transform: translateY(-50%) scale(1.03);
+}
+
+.runway-edge-icon {
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.72);
+  line-height: 1;
+}
+
+/* smaller screens: still usable */
+@media (max-width: 900px) {
+  .runway-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .runway-rail {
+    grid-template-columns: 1fr;
+  }
+  .runway-edge-btn.left {
+    left: -10px;
+  }
+  .runway-edge-btn.right {
+    right: -10px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .runway-card,
+  .runway-photo,
+  .runway-meta {
+    transition: none;
+  }
 }

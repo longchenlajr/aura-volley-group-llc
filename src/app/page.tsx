@@ -1,65 +1,104 @@
 import Image from "next/image";
+import Container from "@/components/Container";
+import { drops } from "@/content/drops";
+import LandingActions from "@/components/LandingActions";
 
 export default function Home() {
+  const drop = drops[0];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="landing">
+      <section className="landing-grid">
+        {/* TOP (kicker) */}
+        {/* <div className="landing-top">
+          <Container>
+            <div className="flex justify-center">
+              <div className="landing-kicker">Aura Volley Group LLC</div>
+            </div>
+          </Container>
+        </div> */}
+
+        {/* CENTER (logo + headline + actions) */}
+        <div className="landing-center">
+          <Container>
+            <div className="flex flex-col items-center text-center">
+              {/* logo */}
+              <div className="mt-0 relative">
+                {" "}
+                {/* was mt-2 */}
+                <div
+                  className="absolute inset-0 -z-10"
+                  style={{
+                    filter: "blur(32px)",
+                    background:
+                      "radial-gradient(circle at 50% 50%, rgba(160,120,255,0.20), transparent 60%)",
+                    transform: "scale(1.35)",
+                  }}
+                />
+                <Image
+                  src="/img/logo1.png"
+                  alt="Aura Volley Group"
+                  width={1536 / 7}
+                  height={1024 / 7}
+                  priority
+                />
+              </div>
+
+              {/* headline */}
+              <h1
+                className="mt-6"
+                style={{
+                  fontFamily: '"EastmanGrotesque", system-ui, sans-serif',
+                  fontSize: "clamp(2.0rem, 4vw, 3.0rem)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Form before noise.
+              </h1>
+
+              <p
+                className="mt-5 landing-muted max-w-xl"
+                style={{
+                  fontFamily: '"EastmanGrotesque", system-ui, sans-serif',
+                  fontSize: "1.02rem",
+                  lineHeight: 1.7,
+                }}
+              >
+                Volleyball essentials, reduced to their core.
+              </p>
+
+              {/* actions */}
+              <div className="mt-8">
+                <LandingActions
+                  dropName={drop.name}
+                  dropHref={`/drops/${drop.slug}`}
+                />
+              </div>
+
+              {/* divider */}
+              <div className="mt-10 w-full max-w-3xl">
+                <div
+                  style={{
+                    height: 1,
+                    background:
+                      "linear-gradient(to right, transparent, rgba(0,0,0,0.14), transparent)",
+                  }}
+                />
+              </div>
+            </div>
+          </Container>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* BOTTOM (footer pinned) */}
+        <div className="landing-bottom">
+          <Container>
+            <div className="landing-footer">
+              © {new Date().getFullYear()} Aura Volley Group LLC
+            </div>
+          </Container>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }

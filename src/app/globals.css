@@ -1,14 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@font-face {
-  font-family: "Akira";
-  src: url("/fonts/akira/AkiraExpandedDemo.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* =========================
+   FONTS
+   ========================= */
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-ExtraLight-trial.woff2")
@@ -17,7 +11,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Light-trial.woff2")
@@ -26,7 +19,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Regular-trial.woff2")
@@ -35,7 +27,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Medium-trial.woff2")
@@ -44,7 +35,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-DemiBold-trial.woff2")
@@ -53,7 +43,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "EastmanGrotesque";
   src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Bold-trial.woff2")
@@ -64,21 +53,12 @@
 }
 
 @font-face {
-  font-family: "EastmanGrotesque";
-  src: url("/fonts/eastman-grotesque/Eastman-Grotesque-Heavy-trial.woff2")
-    format("woff2");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
   font-family: "Adam";
   src: url("/fonts/adam/Adam-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Adam";
   src: url("/fonts/adam/Adam-Medium.woff2") format("woff2");
@@ -86,7 +66,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Adam";
   src: url("/fonts/adam/Adam-Bold.woff2") format("woff2");
@@ -95,48 +74,69 @@
   font-display: swap;
 }
 
+/* =========================
+   DESIGN TOKENS (DARK)
+   ========================= */
 :root {
-  --bg: 9 9 11; /* ink */
-  --panel: 14 14 18; /* stone */
-  --fg: 245 245 248; /* soft white */
-  --muted: 170 170 180; /* calm gray */
-  --line: 255 255 255; /* lines */
-  --violet: 160 120 255; /* aura */
-  --red: 255 70 70;
+  --bg: #0a0a0c;
+  --bg-2: #111114;
+  --bg-3: #18181c;
+
+  --accent: 160 120 255;
+  --accent-solid: #a078ff;
+  --accent-soft: rgba(160, 120, 255, 0.1);
+  --accent-edge: rgba(160, 120, 255, 0.24);
+
+  --ink: rgba(255, 255, 255, 0.93);
+  --ink-2: rgba(255, 255, 255, 0.72);
+  --muted: rgba(255, 255, 255, 0.48);
+  --muted-2: rgba(255, 255, 255, 0.32);
+
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-strong: rgba(255, 255, 255, 0.06);
+
+  --shadow-soft: 0 16px 48px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 20px 64px rgba(0, 0, 0, 0.45);
+
+  --font-body: "EastmanGrotesque", system-ui, -apple-system, sans-serif;
+  --font-kicker: "Adam", system-ui, sans-serif;
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
+
+  --ease-out: cubic-bezier(0.2, 0.9, 0.15, 1);
+  --transition-fast: 160ms ease;
+  --transition-base: 260ms ease;
+  --transition-smooth: 520ms var(--ease-out);
 }
 
+/* =========================
+   BASE
+   ========================= */
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: "EastmanGrotesque", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
-
-  background: radial-gradient(
-      900px 500px at 20% 0%,
-      rgba(160, 120, 255, 0.07),
-      transparent 60%
-    ),
-    radial-gradient(
-      800px 500px at 80% 10%,
-      rgba(255, 255, 255, 0.03),
-      transparent 55%
-    ),
-    radial-gradient(
-      700px 450px at 50% 120%,
-      rgba(160, 120, 255, 0.04),
-      transparent 60%
-    ),
-    rgb(var(--bg));
-  color: rgb(var(--fg));
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(160, 120, 255, 0.25);
+  background: rgba(var(--accent), 0.22);
 }
 
 a {
@@ -144,525 +144,552 @@ a {
   text-decoration: none;
 }
 
-/* Type system (editorial) */
+/* =========================
+   KICKER (reusable label)
+   ========================= */
 .kicker {
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-.h1 {
-  font-size: clamp(2.8rem, 5.2vw, 4.8rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.92);
-}
-.h2 {
-  font-size: clamp(1.7rem, 3vw, 2.2rem);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.9);
-}
-.body {
-  font-family: "EastmanGrotesque", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
-
-  font-size: 1.02rem;
-  line-height: 1.75;
-  color: rgba(255, 255, 255, 0.58);
-}
-.muted {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-/* Quiet rule */
-.hr-soft {
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-}
-
-/* Aura accents (subtle, premium) */
-.aura-ring {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(160, 120, 255, 0.06) inset,
-    0 20px 80px rgba(160, 120, 255, 0.06);
-}
-
-.aura-dot {
-  background: rgba(160, 120, 255, 0.65);
-  box-shadow: 0 0 18px rgba(160, 120, 255, 0.35);
-}
-.font-brand {
-  font-family: "EastmanGrotesque", system-ui, -apple-system, sans-serif;
-}
-
-.font-display {
-  font-family: "Akira", "EastmanGrotesque", sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.font-kicker {
-  font-family: "Adam", "EastmanGrotesque", sans-serif;
-  letter-spacing: 0.34em;
-}
-
-.landing {
-  height: 100vh;
-  overflow: hidden;
-  background: #f6f5f2;
-  color: #0b0b0e;
-}
-
-.landing .landing-muted {
-  color: rgba(0, 0, 0, 0.55);
-}
-.landing .landing-kicker {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-.landing .landing-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 0.95rem 1.5rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  transition: 160ms ease;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.75);
-}
-
-.landing .landing-btn:hover {
-  border-color: rgba(0, 0, 0, 0.22);
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.landing .landing-btn-primary {
-  border: 1px solid rgba(160, 120, 255, 0.35);
-  background: rgba(160, 120, 255, 0.12);
-}
-
-.landing .landing-btn-primary:hover {
-  background: rgba(160, 120, 255, 0.16);
-}
-
-.landing .landing-footer {
-  font-size: 0.7rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-}
-
-/* Landing: no scroll, one-screen gate */
-html:has(.landing) {
-  overflow: hidden;
-}
-body:has(.landing) {
-  overflow: hidden;
-}
-/* Text inside */
-.option-kicker {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
+  font-family: var(--font-kicker);
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   font-size: 0.68rem;
-  color: rgba(0, 0, 0, 0.55);
+  color: var(--muted);
 }
 
-.option-title {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-  margin-top: 0.35rem;
-  color: rgba(0, 0, 0, 0.92);
+.kicker-bright {
+  color: var(--accent-solid);
 }
 
-/* Subtle “selected” pulse (when user hovers/focuses) */
-@keyframes auraPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(160, 120, 255, 0);
-  }
-  45% {
-    box-shadow: 0 0 0 10px rgba(160, 120, 255, 0.14);
-  }
-  100% {
-    box-shadow: 0 0 0 22px rgba(160, 120, 255, 0);
-  }
+/* =========================
+   SECTION SPACING
+   ========================= */
+.section {
+  padding: 6rem 0;
 }
 
-.option:hover,
-.option:focus-visible {
-  animation: auraPulse 900ms ease-out 1;
-}
-
-/* Reduce motion support */
-@media (prefers-reduced-motion: reduce) {
-  .option,
-  .option::before {
-    transition: none;
-  }
-  .option:hover,
-  .option:focus-visible {
-    animation: none;
-  }
-}
-/* LANDING LAYOUT (pins footer to bottom) */
-.landing {
-  height: 100vh;
-  overflow: hidden;
-  background: #f6f5f2;
-  color: #0b0b0e;
-}
-
-.landing-grid {
-  height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto; /* top / center / bottom */
-}
-
-.landing-top {
-  padding-top: 3.5rem;
-}
-
-.landing-center {
-  display: grid;
-  place-items: center;
-  padding: 1.25rem 0;
-}
-
-.landing-bottom {
-  padding-bottom: 2.25rem;
-}
-
-/* Landing text */
-.landing .landing-muted {
-  color: rgba(0, 0, 0, 0.55);
-}
-
-.landing .landing-kicker {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-.landing .landing-footer {
-  font-size: 0.7rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-  text-align: center;
-}
-
-/* Landing: no scroll, one-screen gate */
-html:has(.landing) {
-  overflow: hidden;
-}
-body:has(.landing) {
-  overflow: hidden;
-}
-
-/* LANDING: ensure links are not underlined */
-.landing a {
-  text-decoration: none;
-}
-
-/* LANDING ACTIONS — clean 3-column with sliding aura underline */
-.landing a {
-  text-decoration: none;
-}
-
-/* sliding aura stroke */
-.aura-underline {
-  position: absolute;
-  left: 0;
-  bottom: 0.15rem;
-  height: 2px;
-  width: var(--w, 120px);
-  transform: translateX(var(--x, 0px));
-  border-radius: 999px;
+.section-rule {
+  height: 1px;
   background: linear-gradient(
     to right,
-    rgba(160, 120, 255, 0),
-    rgba(160, 120, 255, 0.55),
-    rgba(160, 120, 255, 0)
+    transparent,
+    var(--hairline-strong),
+    transparent
   );
-  box-shadow: 0 0 18px rgba(160, 120, 255, 0.22);
-  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    width 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
-  pointer-events: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .aura-underline {
-    transition: none;
-  }
-}
-/* LANDING ACTIONS — reveal subtitles on hover */
-.landing a {
-  text-decoration: none;
-}
-
-.landing-actions {
-  position: relative;
-  width: min(760px, 92vw);
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: clamp(1.25rem, 4vw, 3.5rem);
-  justify-items: center;
-  align-items: start;
-  padding: 0.75rem 0 1.2rem;
-}
-
-/* baseline */
-.landing-actions::after {
-  content: "";
-  position: absolute;
+/* =========================
+   NAV
+   ========================= */
+.nav-shell {
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 0.25rem;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(0, 0, 0, 0.14),
-    transparent
-  );
+  z-index: 100;
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(16px) saturate(1.6);
+  border-bottom: 1px solid var(--hairline);
 }
 
-/* the tappable/hoverable block */
-.landing-action {
-  display: grid;
-  justify-items: center;
-  gap: 0.55rem;
-  padding: 0.25rem 0.25rem 0.85rem;
-  text-align: center;
-  outline: none;
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* top label (always visible) */
-.landing-action .k {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.55);
-  transition: color 220ms ease, transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+  color: var(--ink);
+  transition: color var(--transition-fast);
+}
+.nav-logo:hover {
+  color: var(--accent-solid);
 }
 
-/* center option gets slightly more presence */
-.landing-action.center .k {
-  color: rgba(0, 0, 0, 0.7);
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 3vw, 2.2rem);
 }
 
-/* subtitle (hidden by default, revealed on hover/focus) */
-.landing-action .t {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  letter-spacing: -0.01em;
-  font-size: 1.02rem;
-  color: rgba(0, 0, 0, 0.9);
-
-  opacity: 0;
-  transform: translateY(-6px);
-  filter: blur(2px);
-  transition: opacity 220ms ease,
-    transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    filter 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
-  pointer-events: none; /* keep hover stable */
-}
-
-/* reveal */
-.landing-action:hover .t,
-.landing-action:focus-visible .t {
-  opacity: 1;
-  transform: translateY(0px);
-  filter: blur(0px);
-}
-
-.landing-action:hover .k,
-.landing-action:focus-visible .k {
-  color: rgba(0, 0, 0, 0.88);
-  transform: translateY(-1px);
-}
-
-/* focus ring for keyboard users */
-.landing-action:focus-visible {
-  box-shadow: 0 0 0 3px rgba(160, 120, 255, 0.18);
-  border-radius: 12px;
-}
-
-/* sliding aura underline (subtle) */
-.aura-underline {
-  position: absolute;
-  left: 0;
-  bottom: 0.18rem;
-  height: 2px;
-  width: var(--w, 120px);
-  transform: translateX(var(--x, 0px));
-  border-radius: 999px;
-  background: linear-gradient(
-    to right,
-    rgba(160, 120, 255, 0),
-    rgba(160, 120, 255, 0.55),
-    rgba(160, 120, 255, 0)
-  );
-  box-shadow: 0 0 18px rgba(160, 120, 255, 0.18);
-  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    width 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aura-underline,
-  .landing-action .k,
-  .landing-action .t {
-    transition: none;
-  }
-  .landing-action .t {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-/* LIGHT PAGES (team / player) */
-.light-page {
-  min-height: 100vh;
-  background: #f6f5f2;
-  color: #0b0b0e;
-}
-
-.light-muted {
-  color: rgba(0, 0, 0, 0.55);
-}
-.light-rule {
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(0, 0, 0, 0.14),
-    transparent
-  );
-}
-
-/* Editorial typography on light */
-.light-kicker {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
+.nav-link {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-.light-h1 {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: rgba(0, 0, 0, 0.92);
-}
-
-.light-sub {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: 1.02rem;
-  line-height: 1.7;
-  color: rgba(0, 0, 0, 0.58);
-}
-
-/* TEAM GRID CARDS — minimal */
-.roster-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2.25rem;
-}
-
-@media (min-width: 640px) {
-  .roster-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1024px) {
-  .roster-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-.roster-card {
-  display: grid;
-  gap: 0.75rem;
-  text-decoration: none;
-}
-
-.roster-photo {
+  font-size: 0.64rem;
+  color: var(--muted);
+  transition: color var(--transition-fast);
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 18px;
+  padding: 0.25rem 0;
+}
+.nav-link:hover,
+.nav-link.active {
+  color: var(--ink);
+}
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--accent-solid);
+  border-radius: var(--radius-full);
+  opacity: 0.7;
+}
+
+/* Shop inline sub-nav */
+.nav-shop-group {
+  display: flex;
+  align-items: center;
+}
+.nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 0;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    border-color 220ms ease;
+  opacity: 0;
+  transition:
+    max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease;
+}
+.nav-sub.open {
+  max-width: 20rem;
+  opacity: 1;
+}
+.nav-sub-divider {
+  width: 1px;
+  height: 0.75rem;
+  background: var(--hairline);
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+.nav-sub-link {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  color: var(--muted);
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  position: relative;
+  padding: 0.25rem 0;
+}
+.nav-sub-link:hover {
+  color: var(--accent-solid);
 }
 
-.roster-card:hover .roster-photo {
-  transform: translateY(-4px);
-  border-color: rgba(160, 120, 255, 0.28);
+@media (max-width: 640px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  .nav-link {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+  }
+  .nav-sub {
+    gap: 0.5rem;
+  }
+  .nav-sub-divider {
+    margin-left: 0.5rem;
+  }
+  .nav-sub-link {
+    font-size: 0.5rem;
+    letter-spacing: 0.18em;
+  }
 }
 
-.roster-photo::after {
+/* =========================
+   HERO
+   ========================= */
+.hero {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 6rem 2.5rem 4rem;
+  position: relative;
+  overflow: hidden;
+  background: url("/img/hero.png") center center / cover no-repeat;
+}
+
+.hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at 60% 20%,
-    rgba(160, 120, 255, 0.18),
-    transparent 55%
-  );
-  opacity: 0;
-  transition: opacity 420ms ease;
+
   pointer-events: none;
 }
 
-.roster-card:hover .roster-photo::after {
-  opacity: 1;
+.hero > * {
+  position: relative;
+  z-index: 1;
 }
 
-.roster-name {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
-  color: rgba(0, 0, 0, 0.92);
+.hero-headline {
+  font-family: var(--font-body);
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ink);
 }
 
-.roster-meta {
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.92rem, 1.6vw, 1.05rem);
+  line-height: 1.7;
+  color: var(--ink-2);
+  max-width: 540px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-full);
+  padding: 0.85rem 1.8rem;
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  font-size: 0.68rem;
-  color: rgba(0, 0, 0, 0.55);
+  font-size: 0.66rem;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-base);
+  cursor: pointer;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  color: var(--ink);
+}
+.btn:hover {
+  transform: translateY(-1px);
+  background: var(--surface-hover);
+  border-color: var(--hairline-strong);
 }
 
-/* PLAYER PAGE */
+.btn-primary {
+  border-color: var(--accent-edge);
+  background: rgba(var(--accent), 0.12);
+}
+.btn-primary:hover {
+  background: rgba(var(--accent), 0.18);
+  border-color: rgba(var(--accent), 0.36);
+  box-shadow: 0 8px 32px rgba(var(--accent), 0.15);
+}
+
+/* =========================
+   CARDS
+   ========================= */
+.card {
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 1.5rem;
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background var(--transition-base);
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-edge);
+  box-shadow: var(--shadow-hover);
+  background: var(--surface-hover);
+}
+
+.card-media {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--bg-2);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.card-title {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.card-sub {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* =========================
+   ROSTER TABLE
+   ========================= */
+.roster-table-head {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .roster-table-head {
+    display: grid;
+    grid-template-columns: 56px 1.4fr 0.6fr 1fr 1.2fr 40px;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 0 1rem 0.75rem;
+    font-family: var(--font-kicker);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    font-size: 0.56rem;
+    color: var(--muted-2);
+    border-bottom: 1px solid var(--hairline);
+  }
+}
+
+.roster-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 40px;
+  grid-template-rows: auto auto;
+  gap: 0 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--hairline);
+  transition: background var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+}
+
+.roster-row:hover {
+  background: var(--surface-hover);
+}
+
+@media (min-width: 768px) {
+  .roster-row {
+    grid-template-columns: 56px 1.4fr 0.6fr 1fr 1.2fr 40px;
+    grid-template-rows: 1fr;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Photo */
+.roster-row-photo {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--hairline);
+  flex-shrink: 0;
+  grid-row: 1 / 3;
+}
+@media (min-width: 768px) {
+  .roster-row-photo {
+    width: 56px;
+    height: 56px;
+    grid-row: auto;
+  }
+}
+
+.roster-row-photo img {
+  filter: saturate(0.92) contrast(1.04);
+}
+
+/* Name cell */
+.roster-row-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.roster-row-number {
+  font-family: var(--font-kicker);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+/* Desktop data columns */
+.roster-col {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.roster-col-photo {
+  width: 56px;
+}
+
+.roster-col-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Mobile meta line */
+.roster-row-mobile-meta {
+  grid-column: 2;
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+/* Arrow */
+.roster-arrow {
+  font-size: 0.85rem;
+  color: var(--muted-2);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.roster-row:hover .roster-arrow {
+  color: var(--accent-solid);
+  transform: translateX(2px);
+}
+
+/* Responsive show/hide */
+.roster-desktop {
+  display: none;
+}
+.roster-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .roster-desktop {
+    display: block;
+  }
+  .roster-mobile {
+    display: none;
+  }
+}
+
+/* =========================
+   TEAM PREVIEW (homepage marquee)
+   ========================= */
+@keyframes roster-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.roster-marquee {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+.roster-marquee-track {
+  display: flex;
+  gap: 1.75rem;
+  width: max-content;
+  animation: roster-scroll 40s linear infinite;
+}
+
+.roster-marquee:hover .roster-marquee-track {
+  animation-play-state: paused;
+}
+
+.team-preview-card {
+  display: block;
+  text-decoration: none;
+  flex-shrink: 0;
+  width: 11rem;
+}
+
+.team-preview-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--hairline);
+  transition:
+    transform var(--transition-smooth),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+.team-preview-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 50%);
+  pointer-events: none;
+}
+.team-preview-card:hover .team-preview-photo {
+  transform: translateY(-4px);
+  border-color: var(--accent-edge);
+  box-shadow: 0 16px 48px rgba(var(--accent), 0.12);
+}
+.team-preview-photo img {
+  filter: saturate(0.92) contrast(1.04);
+}
+
+.team-preview-name {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.team-preview-meta {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  color: var(--muted);
+}
+
+/* =========================
+   PLAYER PROFILE
+   ========================= */
 .player-shell {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2.25rem;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
 }
-
 @media (min-width: 1024px) {
   .player-shell {
     grid-template-columns: 420px 1fr;
@@ -670,241 +697,433 @@ body:has(.landing) {
   }
 }
 
-.player-panel {
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+.player-photo {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--hairline);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-soft);
+  position: relative;
 }
 
-.player-photo {
-  border-radius: 22px;
+.player-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 60% 18%,
+    rgba(var(--accent), 0.14),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+.player-photo:hover::after {
+  opacity: 1;
+}
+
+.player-photo img {
+  transition: transform 800ms var(--ease-out);
+}
+.player-photo:hover img {
+  transform: scale(1.03);
+}
+
+.player-panel {
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  box-shadow: var(--shadow-soft);
+  position: relative;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(0, 0, 0, 0.04);
+}
+
+.player-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent), 0.18),
+    transparent 35%,
+    transparent 65%,
+    rgba(var(--accent), 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .player-title {
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-family: var(--font-body);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: rgba(0, 0, 0, 0.92);
+  color: var(--ink);
 }
-.roster-photo img,
-.player-photo img {
-  filter: saturate(0.92) contrast(1.02);
+
+.player-nickname {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.player-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.5rem;
+}
+@media (min-width: 900px) {
+  .player-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.player-stat-value {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.player-social {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-base);
+}
+.player-social:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent-edge);
+  box-shadow: 0 12px 36px rgba(var(--accent), 0.1);
+  transform: translateY(-1px);
+}
+
+.player-social-label {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.58rem;
+  color: var(--muted);
+}
+
+.player-social-handle {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.player-block {
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 1.5rem;
+}
+
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.player-list li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.player-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 900px) {
+  .player-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+.player-grid-span {
+  grid-column: 1 / -1;
 }
 
 /* =========================
-   TEAM (NO VERTICAL SCROLL)
-   + HORIZONTAL RUNWAY
+   PRODUCT GRID
    ========================= */
-
-/* Team page wrapper: locks the page to one screen height */
-.team-page {
-  height: 100dvh; /* modern viewport unit */
-  overflow: hidden; /* NO vertical scroll on the page */
-  background: #f6f5f2;
-  color: #0b0b0e;
-}
-
-/* Layout: header / runway / footer in one grid so height is accounted for */
-.team-layout {
-  height: 100%;
+.product-grid {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+  }
+}
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
 }
 
-/* Container width tighter + consistent margins */
-.team-container {
-  width: min(1120px, 90vw);
-  margin: 0 auto;
+/* =========================
+   EVENT TIMELINE
+   ========================= */
+.event-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base);
+}
+.event-card:hover {
+  border-color: var(--hairline-strong);
+  background: var(--surface-hover);
 }
 
-/* Header + footer sizing (small enough to avoid pushing runway off-screen) */
-.team-header {
-  padding-top: 3.5rem;
-  padding-bottom: 1.25rem;
-}
-
-.team-footer {
-  padding-bottom: 1.75rem;
-  padding-top: 0.75rem;
+.event-date-block {
   text-align: center;
 }
-
-/* Middle area: runway sits vertically centered */
-.team-mid {
-  display: grid;
-  align-items: center;
+.event-date-month {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  color: var(--accent-solid);
 }
+.event-date-day {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.event-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+}
+.event-badge.upcoming {
+  background: rgba(var(--accent), 0.12);
+  border: 1px solid var(--accent-edge);
+  color: var(--accent-solid);
+}
+.event-badge.completed {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .event-card {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  .event-date-block {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: baseline;
+  }
+}
+
 /* =========================
-   RUNWAY (WINDOWED, NO SCROLL)
+   CHIPS
    ========================= */
-
-.runway {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
+.chip {
+  display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.58rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.chip:hover,
+.chip.active {
+  border-color: var(--accent-edge);
+  background: rgba(var(--accent), 0.1);
+  color: var(--ink);
 }
 
-/* 5-up rail */
-.runway-rail {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--accent-solid);
+  box-shadow: 0 0 12px rgba(var(--accent), 0.3);
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+.site-footer {
+  border-top: 1px solid var(--hairline);
+  padding: 3.5rem 0;
+  background: transparent;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1.25rem;
-  align-items: end;
-  width: 100%;
 }
 
-/* Each visible card */
-.runway-card {
-  display: grid;
-  gap: 0.75rem;
-  align-content: end;
-  opacity: 0.62;
-  filter: saturate(0.92) contrast(1.02);
-  transform-origin: center bottom;
-  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    opacity 260ms ease, filter 260ms ease;
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.runway-card.is-active {
-  opacity: 1;
-  filter: saturate(1) contrast(1.02);
-  transform: translateY(-14px);
+.footer-link {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  color: var(--muted);
+  transition: color var(--transition-fast);
+}
+.footer-link:hover {
+  color: var(--ink);
 }
 
-.runway-photo {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 22px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  transition: box-shadow 260ms ease, border-color 260ms ease;
+.footer-copy {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.58rem;
+  color: var(--muted-2);
 }
 
-/* active aura edge */
-.runway-card.is-active .runway-photo {
-  border-color: rgba(160, 120, 255, 0.28);
-  box-shadow: 0 18px 70px rgba(160, 120, 255, 0.1);
+/* =========================
+   PAGE HEADER
+   ========================= */
+.page-header {
+  padding-top: 7.5rem;
+  padding-bottom: 3.5rem;
 }
 
-/* make center card larger without affecting layout too hard */
-.runway-card.is-active .runway-photo {
-  transform: scale(1.06);
-  transition: transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1),
-    box-shadow 260ms ease, border-color 260ms ease;
+.page-title {
+  font-family: var(--font-body);
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
-/* Metadata only for active */
-.runway-meta {
-  height: 0;
-  overflow: hidden;
+.page-sub {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 560px;
+}
+
+/* =========================
+   PRICE
+   ========================= */
+.price {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* =========================
+   SCROLL ANIMATIONS
+   ========================= */
+.fade-in {
   opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 220ms ease,
-    transform 520ms cubic-bezier(0.2, 0.9, 0.15, 1);
+  transform: translateY(24px);
+  transition:
+    opacity 600ms ease,
+    transform 600ms var(--ease-out);
 }
-
-.runway-card.is-active .runway-meta {
-  height: auto;
-  overflow: visible;
+.fade-in.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-.runway-role {
-  margin-top: 0.25rem;
-  font-family: "Adam", system-ui, sans-serif;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  color: rgba(0, 0, 0, 0.55);
-  text-align: center;
+/* =========================
+   ACCESSIBLE FOCUS
+   ========================= */
+.btn:focus-visible,
+.card:focus-visible,
+.roster-card:focus-visible,
+.nav-link:focus-visible,
+.player-social:focus-visible,
+.chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.22);
 }
 
-.runway-name {
-  margin-top: 0.35rem;
-  font-family: "EastmanGrotesque", system-ui, sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
-  color: rgba(0, 0, 0, 0.92);
-  text-align: center;
-}
-
-/* Edge arrow buttons (always visible) */
-.runway-edge {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.runway-edge-btn {
-  pointer-events: auto;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-  display: grid;
-  place-items: center;
-  transition: background 160ms ease, border-color 160ms ease,
-    transform 160ms ease;
-}
-
-.runway-edge-btn.left {
-  left: -56px;
-}
-.runway-edge-btn.right {
-  right: -56px;
-}
-
-.runway-edge-btn:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.18);
-  transform: translateY(-50%) scale(1.03);
-}
-
-.runway-edge-icon {
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.72);
-  line-height: 1;
-}
-
-/* smaller screens: still usable */
-@media (max-width: 900px) {
-  .runway-rail {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (max-width: 560px) {
-  .runway-rail {
-    grid-template-columns: 1fr;
-  }
-  .runway-edge-btn.left {
-    left: -10px;
-  }
-  .runway-edge-btn.right {
-    right: -10px;
-  }
-}
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .runway-card,
-  .runway-photo,
-  .runway-meta {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+  .fade-in {
+    opacity: 1;
+    transform: none;
   }
 }

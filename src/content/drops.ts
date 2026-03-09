@@ -9,17 +9,12 @@ export type Drop = {
 
 export const drops: Drop[] = [
   {
-    id: "drop-spring26",
-    slug: "spring26",
-    name: "Spring26",
-    subtitle: "Foundation set.",
+    id: "drop-001",
+    slug: "drop-001",
+    name: "Drop 001",
+    subtitle: "First statement.",
     story:
-      "Spring26 is Aura’s foundation set. Pieces that live in your weekly rotation—practice nights, early lifts, long weekends. Simple. Reliable. Made to be worn hard and kept clean.",
-    featuredProductSlugs: [
-      "spring26-tee-standard",
-      "spring26-tee-performance",
-      "spring26-hoodie",
-      "spring26-sweatpants",
-    ],
+      "One shirt hides in plain sight. The other pulls you in. Midnight Sigil is dark on dark — subtle enough to make you lean in and ask what it says. Void Pull is the spiral, the gravity, the thing about this group that people can't quite explain but can't ignore either.",
+    featuredProductSlugs: ["midnight-sigil", "void-pull"],
   },
 ];

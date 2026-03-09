@@ -1,70 +1,49 @@
-export type ProductTag = "performance" | "lifestyle" | "accessories";
+export type ProductTag = "Performance" | "Lifestyle" | "Accessories";
 
 export type Product = {
   id: string;
   slug: string;
   name: string;
-  price: number;
+  price: number | null;
   currency: "USD";
   description: string;
+  fit: string;
   tags: ProductTag[];
   dropSlug: string;
-  images: string[]; // can be empty for now
+  images: string[];
   stripeCheckoutUrl?: string | null;
   featured?: boolean;
 };
 
 export const products: Product[] = [
   {
-    id: "p-tee-standard",
-    slug: "spring26-tee-standard",
-    name: "Spring26 Tee — Standard",
-    price: 30,
+    id: "p-midnight-sigil",
+    slug: "midnight-sigil",
+    name: "Midnight Sigil",
+    price: null,
     currency: "USD",
-    description: "Clean, dependable, and built for repeat wear.",
-    tags: ["lifestyle"],
-    dropSlug: "spring26",
-    images: [],
+    description:
+      "You won't see it until you're supposed to. Dark-wash heavyweight tee with dark-on-dark print across the back that only reveals itself when the light hits. Oversized fit, sits off the shoulder. Built for the guys who don't need to announce themselves.",
+    fit: "Oversized",
+    tags: ["Lifestyle"],
+    dropSlug: "drop-001",
+    images: ["/img/shop/dark1_front.PNG", "/img/shop/dark1_back.PNG"],
     stripeCheckoutUrl: null,
     featured: true,
   },
   {
-    id: "p-tee-performance",
-    slug: "spring26-tee-performance",
-    name: "Spring26 Tee — Performance",
-    price: 35,
+    id: "p-void-pull",
+    slug: "void-pull",
+    name: "Void Pull",
+    price: null,
     currency: "USD",
-    description: "Lightweight feel with a disciplined, minimal finish.",
-    tags: ["performance"],
-    dropSlug: "spring26",
-    images: [],
+    description:
+      "You'll feel it before you see it. Light-body performance tee in washed bone. Full spiral across the back that hits different when you're walking away from the court.",
+    fit: "Standard",
+    tags: ["Performance"],
+    dropSlug: "drop-001",
+    images: ["/img/shop/light1_front.PNG", "/img/shop/light1_back.PNG"],
     stripeCheckoutUrl: null,
     featured: true,
-  },
-  {
-    id: "p-hoodie",
-    slug: "spring26-hoodie",
-    name: "Spring26 Hoodie",
-    price: 45,
-    currency: "USD",
-    description: "Soft structure. Quiet warmth. Travel-to-training staple.",
-    tags: ["lifestyle"],
-    dropSlug: "spring26",
-    images: [],
-    stripeCheckoutUrl: null,
-    featured: true,
-  },
-  {
-    id: "p-sweats",
-    slug: "spring26-sweatpants",
-    name: "Spring26 Sweatpants",
-    price: 45,
-    currency: "USD",
-    description: "Relaxed, clean lines. Designed for movement and rest.",
-    tags: ["lifestyle"],
-    dropSlug: "spring26",
-    images: [],
-    stripeCheckoutUrl: null,
-    featured: false,
   },
 ];

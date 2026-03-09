@@ -1,53 +1,58 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/Container";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getDropBySlug, getProductsForDrop } from "@/lib/content";
-import { drops } from "@/content/drops";
+import { products } from "@/content/products";
 import { formatPriceUSD } from "@/lib/format";
-import { notFound } from "next/navigation";
+import { useState } from "react";
 
-export function generateStaticParams() {
-  return drops.map((drop) => ({ slug: drop.slug }));
-}
+const FILTERS = ["all", "lifestyle", "performance"] as const;
 
-export default async function DropPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const drop = getDropBySlug(slug);
-  if (!drop) return notFound();
+export default function ShopPage() {
+  const [filter, setFilter] = useState<string>("all");
 
-  const dropProducts = getProductsForDrop(drop.slug);
+  const filtered =
+    filter === "all"
+      ? products
+      : products.filter((p) => p.tags.includes(filter as any));
 
   return (
     <main>
       <div className="page-header">
         <Container>
           <ScrollReveal>
-            <span className="kicker kicker-bright">Drop</span>
-            <h1 className="page-title mt-3">{drop.name}</h1>
-            <p className="page-sub mt-2">{drop.subtitle}</p>
+            <span className="kicker kicker-bright">Drop 001</span>
+            <h1 className="page-title mt-3">The Shop</h1>
+            <p className="page-sub mt-3">
+              Two pieces. Checkout links activate when inventory drops.
+            </p>
             <div className="section-rule mt-8" />
+
+            <div className="flex items-center gap-3 mt-6 flex-wrap">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  className={`chip ${filter === f ? "active" : ""}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f === "all" && <span className="dot" />}
+                  {f}
+                </button>
+              ))}
+              <span className="kicker ml-auto">
+                {filtered.length} piece{filtered.length !== 1 ? "s" : ""}
+              </span>
+            </div>
           </ScrollReveal>
         </Container>
       </div>
 
       <section className="pb-20">
         <Container>
-          <ScrollReveal>
-            <div className="card" style={{ cursor: "default" }}>
-              <span className="kicker">Story</span>
-              <p className="card-sub mt-3" style={{ maxWidth: "48rem" }}>
-                {drop.story}
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="product-grid mt-10">
-            {dropProducts.map((p, i) => (
+          <div className="product-grid">
+            {filtered.map((p, i) => (
               <ScrollReveal key={p.id} delay={i * 80}>
                 <Link href={`/shop/${p.slug}`} className="card block">
                   <div className="card-media" style={{ aspectRatio: "4/3" }}>
@@ -74,6 +79,10 @@ export default async function DropPage({
                         </>
                       )}
                     </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="kicker">View</span>
+                    <span className="kicker">&rarr;</span>
                   </div>
                 </Link>
               </ScrollReveal>

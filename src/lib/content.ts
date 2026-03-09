@@ -17,3 +17,11 @@ export function getProductsByDropSlug(dropSlug: string) {
 export function getPlayerBySlug(slug: string) {
   return players.find((p) => p.slug === slug) ?? null;
 }
+// ✅ drop page should show only items listed in drops.ts
+export function getProductsForDrop(dropSlug: string) {
+  const drop = drops.find((d) => d.slug === dropSlug);
+  if (!drop) return [];
+
+  const set = new Set(drop.featuredProductSlugs);
+  return products.filter((p) => set.has(p.slug));
+}

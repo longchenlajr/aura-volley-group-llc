@@ -1,38 +1,42 @@
-import PageHeader from "@/components/PageHeader";
-import Container from "@/components/Container";
 import Link from "next/link";
+import Container from "@/components/Container";
+import ScrollReveal from "@/components/ScrollReveal";
 import { drops } from "@/content/drops";
 
 export default function DropsPage() {
   return (
     <main>
-      <PageHeader
-        title="Drops"
-        subtitle="Collections built like architecture: measured, minimal, and repeatable."
-      />
-      <Container>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {drops.map((d) => (
-            <Link
-              key={d.id}
-              href={`/drops/${d.slug}`}
-              className="rounded-3xl bg-white/[0.03] ring-1 ring-white/10 p-8 hover:bg-white/[0.05] transition block"
-            >
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
-                <Link href={`/drops/${d.slug}`} className="group">
-                  <div className="meta">Drop</div>
-                  <div className="h2 mt-3">{d.name}</div>
-                  <p className="body mt-3">{d.subtitle}</p>
+      <div className="page-header">
+        <Container>
+          <ScrollReveal>
+            <span className="kicker kicker-bright">Collections</span>
+            <h1 className="page-title mt-3">Drops</h1>
+            <p className="page-sub mt-3">
+              Seasonal collections built like architecture: measured, minimal,
+              repeatable.
+            </p>
+            <div className="section-rule mt-8" />
+          </ScrollReveal>
+        </Container>
+      </div>
 
-                  <div className="mt-6 h-px w-12 bg-white/15 group-hover:bg-violet-400/50 transition" />
+      <section className="pb-20">
+        <Container>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {drops.map((d, i) => (
+              <ScrollReveal key={d.id} delay={i * 100}>
+                <Link href={`/drops/${d.slug}`} className="card block">
+                  <span className="kicker">Drop</span>
+                  <div className="card-title mt-3">{d.name}</div>
+                  <p className="card-sub mt-2">{d.subtitle}</p>
+                  <div className="section-rule mt-6" />
+                  <div className="kicker mt-4 block">&rarr; View Collection</div>
                 </Link>
-              </div>
-              <div className="mt-2 text-sm text-white/55">{d.subtitle}</div>
-              <div className="mt-6 h-px w-14 bg-white/10" />
-            </Link>
-          ))}
-        </div>
-      </Container>
+              </ScrollReveal>
+            ))}
+          </div>
+        </Container>
+      </section>
     </main>
   );
 }

@@ -38,8 +38,7 @@ export default async function ProductPage({
                 product.images.map((src, i) => (
                   <div
                     key={i}
-                    className="card-media"
-                    style={{ aspectRatio: "4/3", minHeight: 400 }}
+                    className="card-media product-detail-image"
                   >
                     <Image
                       src={src}
@@ -52,7 +51,7 @@ export default async function ProductPage({
                   </div>
                 ))
               ) : (
-                <div className="card-media" style={{ aspectRatio: "4/3", minHeight: 400 }}>
+                <div className="card-media product-detail-image">
                   <span className="kicker">Image Coming Soon</span>
                 </div>
               )}

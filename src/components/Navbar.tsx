@@ -118,8 +118,8 @@ export default function Navbar() {
 
           <Link
             href="/about"
-            className={`nav-link ${pathname === "/about" ? "active" : ""}`}
-            aria-current={pathname === "/about" ? "page" : undefined}
+            className={`nav-link ${pathname === "/about" || pathname.startsWith("/about/") ? "active" : ""}`}
+            aria-current={pathname === "/about" || pathname.startsWith("/about/") ? "page" : undefined}
           >
             About
           </Link>
@@ -152,6 +152,9 @@ export default function Navbar() {
 
           <div className="nav-mobile-group">
             <span className="nav-mobile-label">Shop</span>
+            <Link href="/shop" className="nav-mobile-link">
+              Everything
+            </Link>
             {drops.map((d) => (
               <Link
                 key={d.slug}

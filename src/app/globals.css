@@ -951,6 +951,24 @@ a {
 }
 
 /* =========================
+   PRODUCT DETAIL IMAGE
+   ========================= */
+.product-detail-image {
+  aspect-ratio: 1 / 1;
+}
+@media (min-width: 640px) {
+  .product-detail-image {
+    aspect-ratio: 4 / 3;
+  }
+}
+@media (min-width: 1024px) {
+  .product-detail-image {
+    aspect-ratio: 4 / 3;
+    min-height: 400px;
+  }
+}
+
+/* =========================
    PRODUCT DETAIL PANEL
    ========================= */
 .product-detail-panel {

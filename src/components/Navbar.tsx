@@ -33,6 +33,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const shop = useHoverGroup();
   const team = useHoverGroup();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const shopActive =
     pathname === "/shop" ||
@@ -59,8 +65,8 @@ export default function Navbar() {
           Aura Volley
         </Link>
 
-        <nav className="nav-links" aria-label="Primary">
-          {/* A-Town Aura with inline sub-links */}
+        {/* Desktop nav */}
+        <nav className="nav-links nav-desktop" aria-label="Primary">
           <div
             className="nav-shop-group"
             onMouseEnter={team.enter}
@@ -73,7 +79,6 @@ export default function Navbar() {
             >
               A-Town Aura
             </Link>
-
             <div className={`nav-sub ${team.open ? "open" : ""}`}>
               <span className="nav-sub-divider" />
               <Link href="/atownaura" className="nav-sub-link">
@@ -85,7 +90,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Shop with inline sub-links */}
           <div
             className="nav-shop-group"
             onMouseEnter={shop.enter}
@@ -98,7 +102,6 @@ export default function Navbar() {
             >
               Shop
             </Link>
-
             <div className={`nav-sub ${shop.open ? "open" : ""}`}>
               <span className="nav-sub-divider" />
               {drops.map((d) => (
@@ -118,6 +121,49 @@ export default function Navbar() {
             className={`nav-link ${pathname === "/about" ? "active" : ""}`}
             aria-current={pathname === "/about" ? "page" : undefined}
           >
+            About
+          </Link>
+        </nav>
+
+        {/* Mobile hamburger */}
+        <button
+          className={`nav-burger ${mobileOpen ? "open" : ""}`}
+          onClick={() => setMobileOpen((v) => !v)}
+          aria-label="Toggle menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      <div className={`nav-mobile-overlay ${mobileOpen ? "open" : ""}`}>
+        <nav className="nav-mobile-links">
+          <div className="nav-mobile-group">
+            <span className="nav-mobile-label">A-Town Aura</span>
+            <Link href="/atownaura" className="nav-mobile-link">
+              Roster
+            </Link>
+            <Link href="/schedule" className="nav-mobile-link">
+              Schedule
+            </Link>
+          </div>
+
+          <div className="nav-mobile-group">
+            <span className="nav-mobile-label">Shop</span>
+            {drops.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/drops/${d.slug}`}
+                className="nav-mobile-link"
+              >
+                {d.name}
+              </Link>
+            ))}
+          </div>
+
+          <Link href="/about" className="nav-mobile-link">
             About
           </Link>
         </nav>

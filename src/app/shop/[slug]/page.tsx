@@ -59,7 +59,7 @@ export default async function ProductPage({
             </div>
 
             {/* Details panel */}
-            <div className="player-panel" style={{ alignSelf: "start", position: "sticky", top: "5rem" }}>
+            <div className="product-detail-panel">
               <div className="flex items-end justify-between gap-6">
                 <div>
                   <span className="kicker">Price</span>

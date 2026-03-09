@@ -54,7 +54,7 @@ export default function AboutPage() {
                   </p>
                 </div>
                 <div className="card" style={{ cursor: "default" }}>
-                  <span className="kicker kicker-bright">Merch</span>
+                  <span className="kicker kicker-bright">Apparel</span>
                   <div className="card-title mt-3">Aura Wear</div>
                   <p className="card-sub mt-2">
                     Seasonal collections of volleyball-inspired streetwear.

@@ -41,7 +41,7 @@ export default function TeamPage() {
 
               return (
                 <ScrollReveal key={p.id} delay={i * 40}>
-                  <Link href={`/team/${p.slug}`} className="roster-row">
+                  <Link href={`/atownaura/${p.slug}`} className="roster-row">
                     {/* Headshot */}
                     <div className="roster-row-photo">
                       <Image

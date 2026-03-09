@@ -42,7 +42,7 @@ export default function Home() {
           <Link href={`/drops/${drop.slug}`} className="btn btn-primary">
             Shop {drop.name}
           </Link>
-          <Link href="/team" className="btn">
+          <Link href="/atownaura" className="btn">
             Meet the Team
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default function Home() {
                   Corporate tanks by day, clip farmers by night.
                 </p>
               </div>
-              <Link href="/team" className="btn">
+              <Link href="/atownaura" className="btn">
                 Full Roster
               </Link>
             </div>
@@ -130,7 +130,7 @@ export default function Home() {
               {[...allPlayers, ...allPlayers].map((p, i) => (
                 <Link
                   key={`${p.id}-${i}`}
-                  href={`/team/${p.slug}`}
+                  href={`/atownaura/${p.slug}`}
                   className="team-preview-card"
                 >
                   <div className="team-preview-photo">

@@ -3,40 +3,47 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { drops } from "@/content/drops";
 
-const links = [
-  { label: "Team", href: "/team" },
-  { label: "Schedule", href: "/schedule" },
-  { label: "About", href: "/about" },
-];
+function useHoverGroup() {
+  const [open, setOpen] = useState(false);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const enter = useCallback(() => {
+    if (timeout.current) clearTimeout(timeout.current);
+    setOpen(true);
+  }, []);
+
+  const leave = useCallback(() => {
+    timeout.current = setTimeout(() => setOpen(false), 250);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (timeout.current) clearTimeout(timeout.current);
+    },
+    [],
+  );
+
+  return { open, enter, leave };
+}
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [shopOpen, setShopOpen] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shop = useHoverGroup();
+  const team = useHoverGroup();
 
   const shopActive =
     pathname === "/shop" ||
     pathname.startsWith("/shop/") ||
     pathname.startsWith("/drops/");
 
-  function enter() {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setShopOpen(true);
-  }
-
-  function leave() {
-    timeoutRef.current = setTimeout(() => setShopOpen(false), 250);
-  }
-
-  useEffect(
-    () => () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    },
-    [],
-  );
+  const teamActive =
+    pathname === "/atownaura" ||
+    pathname.startsWith("/atownaura/") ||
+    pathname === "/schedule" ||
+    pathname.startsWith("/schedule/");
 
   return (
     <header className="nav-shell">
@@ -53,11 +60,36 @@ export default function Navbar() {
         </Link>
 
         <nav className="nav-links" aria-label="Primary">
+          {/* A-Town Aura with inline sub-links */}
+          <div
+            className="nav-shop-group"
+            onMouseEnter={team.enter}
+            onMouseLeave={team.leave}
+          >
+            <Link
+              href="/atownaura"
+              className={`nav-link ${teamActive ? "active" : ""}`}
+              aria-current={teamActive ? "page" : undefined}
+            >
+              A-Town Aura
+            </Link>
+
+            <div className={`nav-sub ${team.open ? "open" : ""}`}>
+              <span className="nav-sub-divider" />
+              <Link href="/atownaura" className="nav-sub-link">
+                Roster
+              </Link>
+              <Link href="/schedule" className="nav-sub-link">
+                Schedule
+              </Link>
+            </div>
+          </div>
+
           {/* Shop with inline sub-links */}
           <div
             className="nav-shop-group"
-            onMouseEnter={enter}
-            onMouseLeave={leave}
+            onMouseEnter={shop.enter}
+            onMouseLeave={shop.leave}
           >
             <Link
               href="/shop"
@@ -67,11 +99,8 @@ export default function Navbar() {
               Shop
             </Link>
 
-            <div className={`nav-sub ${shopOpen ? "open" : ""}`}>
+            <div className={`nav-sub ${shop.open ? "open" : ""}`}>
               <span className="nav-sub-divider" />
-              {/* <Link href="/shop" className="nav-sub-link">
-                All
-              </Link> */}
               {drops.map((d) => (
                 <Link
                   key={d.slug}
@@ -84,20 +113,13 @@ export default function Navbar() {
             </div>
           </div>
 
-          {links.map((l) => {
-            const active =
-              pathname === l.href || pathname.startsWith(l.href + "/");
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={`nav-link ${active ? "active" : ""}`}
-                aria-current={active ? "page" : undefined}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
+          <Link
+            href="/about"
+            className={`nav-link ${pathname === "/about" ? "active" : ""}`}
+            aria-current={pathname === "/about" ? "page" : undefined}
+          >
+            About
+          </Link>
         </nav>
       </div>
     </header>

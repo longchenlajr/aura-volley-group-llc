@@ -5,7 +5,10 @@ import Footer from "@/components/Footer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
-  title: "Aura Volley Group",
+  title: {
+    default: "Aura Volley Group",
+    template: "%s | Aura Volley Group",
+  },
   description:
     "Aura Volley Group LLC — home of A-Town Aura volleyball and premium volleyball-inspired apparel.",
 };

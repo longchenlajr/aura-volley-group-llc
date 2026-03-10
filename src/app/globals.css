@@ -136,7 +136,8 @@ body {
 }
 
 ::selection {
-  background: rgba(var(--accent), 0.22);
+  background: rgba(var(--accent));
+  color: black;
 }
 
 a {
@@ -306,7 +307,9 @@ a {
   height: 1.5px;
   background: var(--ink);
   border-radius: 1px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 .nav-burger.open span:nth-child(1) {
   transform: translateY(6.5px) rotate(45deg);
@@ -322,16 +325,19 @@ a {
 .nav-mobile-overlay {
   display: none;
   position: fixed;
-  inset: 0;
   top: 60px;
+  left: 0;
+  right: 0;
+  height: calc(100dvh - 60px);
   background: rgba(10, 10, 12, 0.97);
   backdrop-filter: blur(24px);
   z-index: 199;
-  padding: 2rem 2rem 4rem;
-  overflow-y: auto;
+  padding: 2rem 2rem 3rem;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .nav-mobile-overlay.open {
   opacity: 1;
@@ -341,13 +347,13 @@ a {
 .nav-mobile-links {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.75rem;
 }
 
 .nav-mobile-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .nav-mobile-label {
@@ -362,10 +368,10 @@ a {
 
 .nav-mobile-link {
   font-family: var(--font-body);
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--ink-2);
   transition: color var(--transition-fast);
-  padding: 0.25rem 0;
+  padding: 0.2rem 0;
 }
 .nav-mobile-link:hover {
   color: var(--accent-solid);
@@ -672,8 +678,12 @@ a {
    TEAM PREVIEW (homepage marquee)
    ========================= */
 @keyframes roster-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .roster-marquee {
@@ -1222,6 +1232,317 @@ a {
 .chip:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(var(--accent), 0.22);
+}
+
+/* =========================
+   JOIN PAGE
+   ========================= */
+.join-value {
+  padding: 1rem 1.25rem;
+  border-left: 2px solid var(--accent-solid);
+  background: var(--surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.join-value-title {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.join-value-body {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 0.2rem;
+}
+
+.join-plan-card {
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 1.5rem;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.join-plan-tag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: var(--font-kicker);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.54rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--accent), 0.14);
+  border: 1px solid var(--accent-edge);
+  color: var(--accent-solid);
+}
+.join-plan-name {
+  font-family: var(--font-kicker);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-size: 0.64rem;
+  color: var(--muted);
+}
+.join-plan-price {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-top: 0.5rem;
+}
+.join-plan-unit {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 0.15rem;
+}
+.join-plan-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.join-plan-detail-value {
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.join-step {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+}
+.join-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--accent), 0.12);
+  border: 1px solid var(--accent-edge);
+  font-family: var(--font-kicker);
+  font-size: 0.7rem;
+  color: var(--accent-solid);
+  letter-spacing: 0;
+}
+.join-step-title {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* =========================
+   REGISTRATION FORM
+   ========================= */
+.reg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.reg-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.reg-fieldset legend {
+  margin-bottom: 1rem;
+}
+.reg-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.reg-label-text {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+.reg-required {
+  color: var(--accent-solid);
+}
+.reg-input {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+  width: 100%;
+}
+.reg-input::placeholder {
+  color: var(--muted-2);
+}
+.reg-input:focus {
+  border-color: var(--accent-edge);
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.1);
+}
+.reg-textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.reg-input-prefix-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.reg-input-prefix {
+  position: absolute;
+  left: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 1;
+}
+.reg-input-has-prefix {
+  padding-left: 2rem;
+}
+
+/* Checkboxes */
+.reg-checkbox-group,
+.reg-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.reg-checkbox,
+.reg-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+.reg-checkbox:hover,
+.reg-radio:hover {
+  border-color: var(--hairline-strong);
+  background: var(--surface-hover);
+}
+.reg-checkbox input,
+.reg-radio input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.reg-checkbox-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--hairline-strong);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+.reg-checkbox input:checked ~ .reg-checkbox-box {
+  background: var(--accent-solid);
+  border-color: var(--accent-solid);
+}
+.reg-checkbox input:checked ~ .reg-checkbox-box::after {
+  content: "";
+  width: 6px;
+  height: 10px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.reg-radio-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--hairline-strong);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+.reg-radio input:checked ~ .reg-radio-dot {
+  border-color: var(--accent-solid);
+}
+.reg-radio input:checked ~ .reg-radio-dot::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-solid);
+}
+
+.reg-checkbox-label {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+/* Has-checked highlight */
+.reg-checkbox:has(input:checked),
+.reg-radio:has(input:checked) {
+  border-color: var(--accent-edge);
+  background: rgba(var(--accent), 0.06);
+}
+
+/* Error */
+.reg-error {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  color: #ff6b6b;
+  font-size: 0.88rem;
+}
+
+/* Spinner */
+.reg-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--muted-2);
+  border-top-color: var(--accent-solid);
+  border-radius: var(--radius-full);
+  animation: reg-spin 0.6s linear infinite;
+}
+@keyframes reg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Disabled button */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -309,6 +309,29 @@ export const players: Player[] = [
     },
   },
   {
+    id: "pl-lucas",
+    slug: "lucas",
+    name: "Lucas Adam",
+    position: "Outside/Libero",
+    jerseyNumber: 22,
+    height: "5'11",
+    college: "Eastern University",
+    gradYear: 2024,
+    teamsCoached: ["", ""],
+    teamsPlayed: [
+      "Eastern University Men's Volleyball",
+      "SVC Vipers (2024-25)",
+      "Philly Flight (2025-26)",
+    ],
+    careerHighlights: ["Eastern University Men's Volleyball Captain (2024)"],
+    favoriteMovie: "Shawshank Redemption",
+    favoriteShoe: "Saucony Runners",
+    profession: "Technical Staffing Recruiter",
+    socials: {
+      instagram: "lucasadam25",
+    },
+  },
+  {
     id: "pl-aldwin",
     slug: "aldwin",
     name: "Aldwin Lora",
@@ -362,26 +385,6 @@ export const players: Player[] = [
 
     socials: {
       instagram: "bauder83",
-    },
-  },
-  {
-    id: "pl-lucas",
-    slug: "lucas",
-    name: "Lucas Adam",
-    position: "Libero",
-
-    jerseyNumber: 1,
-    height: "",
-    college: "",
-    gradYear: 1,
-    teamsCoached: ["", ""],
-    teamsPlayed: [""],
-    careerHighlights: [],
-    favoriteMovie: "",
-    favoriteShoe: "",
-    profession: "",
-    socials: {
-      instagram: "",
     },
   },
 ];

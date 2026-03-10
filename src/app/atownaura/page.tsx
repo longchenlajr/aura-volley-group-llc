@@ -4,6 +4,8 @@ import Container from "@/components/Container";
 import ScrollReveal from "@/components/ScrollReveal";
 import { players } from "@/content/players";
 
+export const metadata = { title: "Roster" };
+
 export default function TeamPage() {
   return (
     <main>

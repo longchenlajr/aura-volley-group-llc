@@ -20,8 +20,8 @@ export default function SchedulePage() {
             <span className="kicker kicker-bright">A-Town Aura</span>
             <h1 className="page-title mt-3">Schedule</h1>
             <p className="page-sub mt-3">
-              Tournament schedule, league nights, and events for the current
-              season.
+              Practice dates, tournament schedule, and team events for the
+              current season.
             </p>
             <div className="section-rule mt-8" />
           </ScrollReveal>
@@ -50,7 +50,10 @@ export default function SchedulePage() {
                       <div>
                         <div className="card-title">{evt.name}</div>
                         <div className="card-sub mt-1">{evt.location}</div>
-                        <div className="card-sub mt-2" style={{ fontSize: "0.85rem" }}>
+                        <div
+                          className="card-sub mt-2"
+                          style={{ fontSize: "0.85rem" }}
+                        >
                           {evt.description}
                         </div>
                       </div>
@@ -84,13 +87,21 @@ export default function SchedulePage() {
                   <ScrollReveal key={evt.id} delay={i * 80}>
                     <div className="event-card" style={{ opacity: 0.7 }}>
                       <div className="event-date-block">
-                        <div className="event-date-month" style={{ color: "var(--muted)" }}>{month}</div>
+                        <div
+                          className="event-date-month"
+                          style={{ color: "var(--muted)" }}
+                        >
+                          {month}
+                        </div>
                         <div className="event-date-day">{day}</div>
                       </div>
                       <div>
                         <div className="card-title">{evt.name}</div>
                         <div className="card-sub mt-1">{evt.location}</div>
-                        <div className="card-sub mt-2" style={{ fontSize: "0.85rem" }}>
+                        <div
+                          className="card-sub mt-2"
+                          style={{ fontSize: "0.85rem" }}
+                        >
                           {evt.description}
                         </div>
                       </div>

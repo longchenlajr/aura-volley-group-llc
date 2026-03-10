@@ -7,17 +7,26 @@ import { notFound } from "next/navigation";
 import { products } from "@/content/products";
 
 export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return products.map((product) => ({
+    slug: product.dropSlug,
+    productSlug: product.slug,
+  }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ productSlug: string }> }) {
+  const { productSlug } = await params;
+  const product = getProductBySlug(productSlug);
+  return { title: product?.name ?? "Product" };
 }
 
 export default async function ProductPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; productSlug: string }>;
 }) {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
-  if (!product) return notFound();
+  const { slug, productSlug } = await params;
+  const product = getProductBySlug(productSlug);
+  if (!product || product.dropSlug !== slug) return notFound();
 
   const canBuy = Boolean(product.stripeCheckoutUrl);
 

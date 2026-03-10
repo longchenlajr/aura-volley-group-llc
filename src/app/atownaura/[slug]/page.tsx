@@ -8,6 +8,12 @@ export function generateStaticParams() {
   return players.map((player) => ({ slug: player.slug }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const player = getPlayerBySlug(slug);
+  return { title: player?.name ?? "Player" };
+}
+
 function Stat({
   label,
   value,

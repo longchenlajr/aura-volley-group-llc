@@ -3,6 +3,8 @@ import Container from "@/components/Container";
 import ScrollReveal from "@/components/ScrollReveal";
 import { drops } from "@/content/drops";
 
+export const metadata = { title: "Drops" };
+
 export default function DropsPage() {
   return (
     <main>

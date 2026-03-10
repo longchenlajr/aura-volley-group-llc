@@ -69,7 +69,7 @@ export default function Home() {
           <div className="product-grid mt-10">
             {featured.map((p, i) => (
               <ScrollReveal key={p.id} delay={i * 80}>
-                <Link href={`/shop/${p.slug}`} className="card block">
+                <Link href={`/drops/${p.dropSlug}/${p.slug}`} className="card block">
                   <div className="card-media" style={{ aspectRatio: "4/3" }}>
                     {p.images.length > 0 ? (
                       <Image

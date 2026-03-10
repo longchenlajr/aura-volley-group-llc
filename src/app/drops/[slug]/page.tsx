@@ -11,6 +11,12 @@ export function generateStaticParams() {
   return drops.map((drop) => ({ slug: drop.slug }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const drop = getDropBySlug(slug);
+  return { title: drop?.name ?? "Drop" };
+}
+
 export default async function DropPage({
   params,
 }: {
@@ -49,7 +55,7 @@ export default async function DropPage({
           <div className="product-grid mt-10">
             {dropProducts.map((p, i) => (
               <ScrollReveal key={p.id} delay={i * 80}>
-                <Link href={`/shop/${p.slug}`} className="card block">
+                <Link href={`/drops/${drop.slug}/${p.slug}`} className="card block">
                   <div className="card-media" style={{ aspectRatio: "4/3" }}>
                     {p.images.length > 0 ? (
                       <Image

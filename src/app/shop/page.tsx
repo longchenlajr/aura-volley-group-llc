@@ -8,7 +8,7 @@ import { products } from "@/content/products";
 import { formatPriceUSD } from "@/lib/format";
 import { useState } from "react";
 
-const FILTERS = ["all", "lifestyle", "performance"] as const;
+const FILTERS = ["all", "Lifestyle", "Performance"] as const;
 
 export default function ShopPage() {
   const [filter, setFilter] = useState<string>("all");
@@ -23,10 +23,10 @@ export default function ShopPage() {
       <div className="page-header">
         <Container>
           <ScrollReveal>
-            <span className="kicker kicker-bright">Drop 001</span>
+            <span className="kicker kicker-bright">Everything</span>
             <h1 className="page-title mt-3">The Shop</h1>
             <p className="page-sub mt-3">
-              Two pieces. Checkout links activate when inventory drops.
+              Checkout links activate when inventory drops.
             </p>
             <div className="section-rule mt-8" />
 
@@ -54,7 +54,7 @@ export default function ShopPage() {
           <div className="product-grid">
             {filtered.map((p, i) => (
               <ScrollReveal key={p.id} delay={i * 80}>
-                <Link href={`/shop/${p.slug}`} className="card block">
+                <Link href={`/drops/${p.dropSlug}/${p.slug}`} className="card block">
                   <div className="card-media" style={{ aspectRatio: "4/3" }}>
                     {p.images.length > 0 ? (
                       <Image
@@ -71,11 +71,15 @@ export default function ShopPage() {
                   <div className="mt-4">
                     <div className="card-title">{p.name}</div>
                     <div className="flex items-center gap-3 mt-2">
-                      <span className="card-sub">{p.fit} · {p.tags.join(" / ")}</span>
+                      <span className="card-sub">
+                        {p.fit} · {p.tags.join(" / ")}
+                      </span>
                       {p.price != null && (
                         <>
                           <span className="dot" />
-                          <span className="price">{formatPriceUSD(p.price)}</span>
+                          <span className="price">
+                            {formatPriceUSD(p.price)}
+                          </span>
                         </>
                       )}
                     </div>

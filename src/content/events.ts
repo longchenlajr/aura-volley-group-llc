@@ -78,93 +78,93 @@ export const events: AuraEvent[] = [
       "Return trip to Baltimore for the second round of the UMBC x OC men's sixes series.",
   },
 
-  // ── ECV Outdoor Tournament Series ──
-  {
-    id: "evt-ecv-mayfest",
-    name: "East Coast Volleyball — MayFest",
-    date: "2026-05-16",
-    location: "Loan Lane Park — Allentown, PA",
-    description:
-      "Outdoor grass tournament kicking off the ECV summer series. Doubles and quads divisions.",
-  },
-  {
-    id: "evt-ecv-horshamday",
-    name: "East Coast Volleyball — HorshamDay",
-    date: "2026-06-06",
-    location: "Carpenter Park — Horsham, PA",
-    description:
-      "Grass doubles and quads tournament at Carpenter Park. Part of the ECV outdoor circuit.",
-  },
-  {
-    id: "evt-ecv-keystonefrenzy",
-    name: "East Coast Volleyball — Keystone Frenzy",
-    date: "2026-06-13",
-    location: "Cousler Park — York, PA",
-    description:
-      "Mid-June grass tournament in York. Doubles and quads brackets under the ECV banner.",
-  },
-  {
-    id: "evt-ecv-prerumble",
-    name: "East Coast Volleyball — PreRumble",
-    date: "2026-06-20",
-    location: "Cousler Park — York, PA",
-    description:
-      "Outdoor warm-up event leading into the summer peak. Grass doubles and quads at Cousler Park.",
-  },
-  {
-    id: "evt-ecv-playersopen",
-    name: "East Coast Volleyball — Players Open",
-    date: "2026-07-11",
-    location: "Carpenter Park — Horsham, PA",
-    description:
-      "Open-entry grass tournament at Carpenter Park. Doubles and quads for all levels.",
-  },
-  {
-    id: "evt-ecv-sportsfest",
-    name: "East Coast Volleyball — SportsFest",
-    date: "2026-07-18",
-    location: "Grange Park — Allentown, PA",
-    description:
-      "Midsummer grass festival tournament. Doubles and quads divisions in the Lehigh Valley.",
-  },
-  {
-    id: "evt-ecv-theclassic",
-    name: "East Coast Volleyball — The Classic",
-    date: "2026-08-08",
-    location: "Carpenter Park — Horsham, PA",
-    description:
-      "Flagship ECV outdoor event. Competitive grass doubles and quads at Carpenter Park.",
-  },
-  {
-    id: "evt-ecv-vbbones",
-    name: "East Coast Volleyball — VBbones",
-    date: "2026-08-15",
-    location: "Cousler Park — York, PA",
-    description:
-      "Late-summer grass tournament in York. Doubles and quads brackets on the ECV circuit.",
-  },
-  {
-    id: "evt-ecv-phillybrawl",
-    name: "East Coast Volleyball — PhillyBrawl",
-    date: "2026-08-22",
-    location: "Pennypack on the DE — Philadelphia, PA",
-    description:
-      "Outdoor grass tournament in Philly. Doubles and quads divisions with an end-of-summer energy.",
-  },
-  {
-    id: "evt-ecv-spike4mike",
-    name: "East Coast Volleyball — Spike4Mike",
-    date: "2026-08-29",
-    location: "Johnstontown Park — Downingtown, PA",
-    description:
-      "Charity grass tournament in Downingtown. Doubles and quads — compete for a cause.",
-  },
-  {
-    id: "evt-ecv-labordayvolley",
-    name: "East Coast Volleyball — LaborDayVolley",
-    date: "2026-09-05",
-    location: "Centre Square Park — Blue Bell, PA",
-    description:
-      "Season-closing grass tournament over Labor Day weekend. Doubles and quads to send off summer.",
-  },
+  // // ── ECV Outdoor Tournament Series ──
+  // {
+  //   id: "evt-ecv-mayfest",
+  //   name: "East Coast Volleyball — MayFest",
+  //   date: "2026-05-16",
+  //   location: "Loan Lane Park — Allentown, PA",
+  //   description:
+  //     "Outdoor grass tournament kicking off the ECV summer series. Doubles and quads divisions.",
+  // },
+  // {
+  //   id: "evt-ecv-horshamday",
+  //   name: "East Coast Volleyball — HorshamDay",
+  //   date: "2026-06-06",
+  //   location: "Carpenter Park — Horsham, PA",
+  //   description:
+  //     "Grass doubles and quads tournament at Carpenter Park. Part of the ECV outdoor circuit.",
+  // },
+  // {
+  //   id: "evt-ecv-keystonefrenzy",
+  //   name: "East Coast Volleyball — Keystone Frenzy",
+  //   date: "2026-06-13",
+  //   location: "Cousler Park — York, PA",
+  //   description:
+  //     "Mid-June grass tournament in York. Doubles and quads brackets under the ECV banner.",
+  // },
+  // {
+  //   id: "evt-ecv-prerumble",
+  //   name: "East Coast Volleyball — PreRumble",
+  //   date: "2026-06-20",
+  //   location: "Cousler Park — York, PA",
+  //   description:
+  //     "Outdoor warm-up event leading into the summer peak. Grass doubles and quads at Cousler Park.",
+  // },
+  // {
+  //   id: "evt-ecv-playersopen",
+  //   name: "East Coast Volleyball — Players Open",
+  //   date: "2026-07-11",
+  //   location: "Carpenter Park — Horsham, PA",
+  //   description:
+  //     "Open-entry grass tournament at Carpenter Park. Doubles and quads for all levels.",
+  // },
+  // {
+  //   id: "evt-ecv-sportsfest",
+  //   name: "East Coast Volleyball — SportsFest",
+  //   date: "2026-07-18",
+  //   location: "Grange Park — Allentown, PA",
+  //   description:
+  //     "Midsummer grass festival tournament. Doubles and quads divisions in the Lehigh Valley.",
+  // },
+  // {
+  //   id: "evt-ecv-theclassic",
+  //   name: "East Coast Volleyball — The Classic",
+  //   date: "2026-08-08",
+  //   location: "Carpenter Park — Horsham, PA",
+  //   description:
+  //     "Flagship ECV outdoor event. Competitive grass doubles and quads at Carpenter Park.",
+  // },
+  // {
+  //   id: "evt-ecv-vbbones",
+  //   name: "East Coast Volleyball — VBbones",
+  //   date: "2026-08-15",
+  //   location: "Cousler Park — York, PA",
+  //   description:
+  //     "Late-summer grass tournament in York. Doubles and quads brackets on the ECV circuit.",
+  // },
+  // {
+  //   id: "evt-ecv-phillybrawl",
+  //   name: "East Coast Volleyball — PhillyBrawl",
+  //   date: "2026-08-22",
+  //   location: "Pennypack on the DE — Philadelphia, PA",
+  //   description:
+  //     "Outdoor grass tournament in Philly. Doubles and quads divisions with an end-of-summer energy.",
+  // },
+  // {
+  //   id: "evt-ecv-spike4mike",
+  //   name: "East Coast Volleyball — Spike4Mike",
+  //   date: "2026-08-29",
+  //   location: "Johnstontown Park — Downingtown, PA",
+  //   description:
+  //     "Charity grass tournament in Downingtown. Doubles and quads — compete for a cause.",
+  // },
+  // {
+  //   id: "evt-ecv-labordayvolley",
+  //   name: "East Coast Volleyball — LaborDayVolley",
+  //   date: "2026-09-05",
+  //   location: "Centre Square Park — Blue Bell, PA",
+  //   description:
+  //     "Season-closing grass tournament over Labor Day weekend. Doubles and quads to send off summer.",
+  // },
 ];

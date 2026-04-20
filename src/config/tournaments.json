@@ -1,0 +1,94 @@
+{
+  "tournaments": [
+    {
+      "id": "doubles-04-26-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-04-26T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-05-09-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-05-09T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-05-24-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-05-24T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-06-21-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-06-21T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-08-15-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-08-15T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "triples-08-16-2026",
+      "name": "Triples @ Hamilton",
+      "date": "2026-08-16T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "triples",
+      "teamSize": 3,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-08-30-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-08-30T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-09-06-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-09-06T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-10-11-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-10-11T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-10-25-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-10-25T09:00:00-05:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    }
+  ]
+}

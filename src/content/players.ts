@@ -332,26 +332,6 @@ export const players: Player[] = [
     },
   },
   {
-    id: "pl-aldwin",
-    slug: "aldwin",
-    name: "Aldwin Lora",
-    position: "Middle/Outside",
-
-    jerseyNumber: 25,
-    height: "6'2",
-    college: "Penn State University",
-    gradYear: 2023,
-    teamsCoached: ["", ""],
-    teamsPlayed: ["Dieruff HS (2015-19)"],
-    careerHighlights: [],
-    favoriteMovie: "All about the Benjamins",
-    favoriteShoe: "Kyries",
-    profession: "Coach Operator",
-    socials: {
-      instagram: "CarameloBX",
-    },
-  },
-  {
     id: "pl-caleb",
     slug: "caleb",
     name: "Caleb Bauder",

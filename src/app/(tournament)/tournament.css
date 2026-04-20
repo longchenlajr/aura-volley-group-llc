@@ -1,0 +1,1733 @@
+/* ==========================================================
+   LONG VOLLEYBALL — PARCHMENT-FIRST DESIGN SYSTEM
+   ========================================================== */
+
+/* --- TOKENS --- */
+.lv {
+  /* Parchment palette (primary surface) */
+  --lv-parchment: #F5E6C8;
+  --lv-surface: #FFF8E7;
+  --lv-surface-input: #FFFDF6;
+
+  /* Ink palette (primary text on parchment) */
+  --lv-ink: #2A1810;
+  --lv-ink-muted: #6B4E3D;
+
+  /* Dark palette (accent surfaces: header, date pills) */
+  --lv-bg-dark: #0F0704;
+  --lv-bg-dark-elevated: #1A0A00;
+
+  /* Accent colors */
+  --lv-red: #7A1C1C;
+  --lv-red-deep: #4A0F0F;
+  --lv-red-hover: #8E2323;
+  --lv-gold: #9B6B1E;
+  --lv-gold-soft: #B88A2E;
+  --lv-blossom: #C06878;
+  --lv-green: #2E5436;
+  --lv-green-text: #1E6B3A;
+  --lv-error: #c53030;
+
+  /* Light text (for dark accent surfaces) */
+  --lv-cream: #F5E6C8;
+  --lv-cream-muted: #C9B896;
+
+  /* Borders */
+  --lv-border: rgba(122, 28, 28, 0.18);
+  --lv-border-gold: rgba(155, 107, 30, 0.35);
+
+  /* Radii */
+  --lv-radius-sm: 4px;
+  --lv-radius-md: 8px;
+  --lv-radius-lg: 14px;
+
+  /* Shadows */
+  --lv-shadow-card: 0 1px 3px rgba(42, 24, 16, 0.06), 0 8px 24px rgba(42, 24, 16, 0.08);
+  --lv-shadow-card-hover: 0 2px 6px rgba(42, 24, 16, 0.1), 0 12px 32px rgba(42, 24, 16, 0.12);
+
+  /* Base */
+  font-family: var(--lv-font-body), system-ui, -apple-system, sans-serif;
+  background: var(--lv-parchment);
+  color: var(--lv-ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- MICRO-DETAILS --- */
+.lv ::selection {
+  background: var(--lv-red);
+  color: var(--lv-cream);
+}
+
+.lv *:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.15);
+}
+
+.lv ::-webkit-scrollbar {
+  width: 8px;
+}
+.lv ::-webkit-scrollbar-track {
+  background: var(--lv-parchment);
+}
+.lv ::-webkit-scrollbar-thumb {
+  background: rgba(107, 78, 61, 0.25);
+  border-radius: 4px;
+}
+
+/* page transition */
+@keyframes lv-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.lv-animate {
+  animation: lv-fade-in 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-animate { animation: none; }
+  .lv * { transition-duration: 0ms !important; }
+}
+
+/* --- TYPOGRAPHY --- */
+.lv-display {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--lv-ink);
+  white-space: nowrap;
+}
+.lv-h1 {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--lv-ink);
+}
+.lv-h2 {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--lv-ink);
+}
+.lv-h3 {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: var(--lv-ink);
+}
+.lv-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.lv-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.lv-label {
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --- BUTTON SYSTEM --- */
+.lv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: var(--lv-radius-md);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 180ms ease;
+  line-height: 1;
+}
+.lv-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary — dragon red (works on parchment and dark) */
+.lv-btn-primary {
+  background: var(--lv-red);
+  color: var(--lv-cream);
+  border: 1px solid var(--lv-red-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.lv-btn-primary:hover {
+  background: var(--lv-red-hover);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 3px rgba(122, 28, 28, 0.15);
+}
+.lv-btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Secondary — crimson outline on parchment */
+.lv-btn-secondary {
+  background: transparent;
+  color: var(--lv-red);
+  border: 1px solid rgba(122, 28, 28, 0.35);
+}
+.lv-btn-secondary:hover {
+  border-color: var(--lv-red);
+  background: rgba(122, 28, 28, 0.05);
+}
+
+/* Ghost — ink-muted text */
+.lv-btn-ghost {
+  background: transparent;
+  color: var(--lv-ink-muted);
+  border: none;
+  padding: 8px 16px;
+}
+.lv-btn-ghost:hover {
+  color: var(--lv-ink);
+  text-decoration: underline;
+}
+
+/* --- CONTAINER --- */
+.lv-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- LAYOUT CHROME --- */
+
+/* Header — dark accent band with integrated nav */
+.lv-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  background: var(--lv-bg-dark);
+  border-bottom: 0.5px solid rgba(155, 107, 30, 0.25);
+}
+.lv-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.lv-header-wordmark {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--lv-cream);
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  transition: color 180ms ease;
+  flex-shrink: 0;
+}
+.lv-header-wordmark:hover {
+  color: var(--lv-gold);
+}
+
+/* Center nav — tracked uppercase links with diamond separators */
+.lv-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.lv-header-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.lv-header-nav-diamond {
+  width: 4px;
+  height: 4px;
+  background: var(--lv-gold);
+  opacity: 0.4;
+  transform: rotate(45deg);
+  margin: 0 16px;
+  flex-shrink: 0;
+}
+.lv-header-nav-link {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-cream-muted);
+  text-decoration: none;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 180ms ease, border-color 180ms ease;
+  white-space: nowrap;
+}
+.lv-header-nav-link:hover {
+  color: var(--lv-cream);
+}
+.lv-header-nav-link.active {
+  color: var(--lv-cream);
+  border-bottom-color: var(--lv-gold);
+}
+
+/* Right side: CTA + hamburger */
+.lv-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.lv-header-cta {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-cream);
+  background: var(--lv-red);
+  border: 1px solid var(--lv-red-deep);
+  padding: 7px 16px;
+  border-radius: var(--lv-radius-sm);
+  text-decoration: none;
+  transition: background 180ms ease;
+}
+.lv-header-cta:hover {
+  background: var(--lv-red-hover);
+}
+
+/* Hamburger (mobile only) */
+.lv-header-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.lv-header-burger span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: var(--lv-cream-muted);
+  border-radius: 1px;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+.lv-header-burger.open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.lv-header-burger.open span:nth-child(2) {
+  opacity: 0;
+}
+.lv-header-burger.open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* Mobile dropdown menu */
+.lv-mobile-menu {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: var(--lv-bg-dark);
+  border-bottom: 1px solid rgba(155, 107, 30, 0.2);
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 250ms ease, padding 250ms ease;
+}
+.lv-mobile-menu.open {
+  max-height: 300px;
+  padding: 1rem 0 1.5rem;
+}
+.lv-mobile-menu-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 2rem;
+}
+.lv-mobile-menu-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-cream-muted);
+  text-decoration: none;
+  padding: 10px 16px;
+  transition: color 180ms ease;
+  width: 100%;
+  text-align: center;
+}
+.lv-mobile-menu-link:hover,
+.lv-mobile-menu-link.active {
+  color: var(--lv-cream);
+}
+.lv-mobile-menu-link.active {
+  border-left: 2px solid var(--lv-gold);
+}
+
+/* Responsive: hide nav on mobile, show burger */
+@media (max-width: 767px) {
+  .lv-header-nav { display: none; }
+  .lv-header-cta { display: none; }
+  .lv-header-burger { display: flex; }
+}
+
+/* Footer — on parchment */
+.lv-footer {
+  border-top: 1px solid var(--lv-border);
+  padding: 3rem 2rem 2rem;
+}
+.lv-footer-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+.lv-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lv-footer-left-monogram {
+  width: 24px;
+  height: 24px;
+  color: var(--lv-red);
+  opacity: 0.5;
+}
+.lv-footer-left-text {
+  font-size: 13px;
+  color: var(--lv-ink-muted);
+  line-height: 1.5;
+}
+.lv-footer-center {
+  display: flex;
+  justify-content: center;
+}
+.lv-footer-blossom {
+  width: 24px;
+  height: 24px;
+  color: var(--lv-red);
+  opacity: 0.35;
+}
+.lv-footer-right {
+  text-align: right;
+  font-size: 13px;
+  color: var(--lv-ink-muted);
+}
+
+@media (max-width: 640px) {
+  .lv-footer-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1rem;
+  }
+  .lv-footer-left { justify-content: center; }
+  .lv-footer-right { text-align: center; }
+}
+
+/* --- HERO (layered decorative composition) --- */
+.lv-hero {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+  background: var(--lv-parchment);
+}
+.lv-hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 620px;
+  width: 100%;
+}
+.lv-hero-label {
+  color: var(--lv-red);
+  margin-bottom: 0.5rem;
+}
+.lv-hero-heading {
+  margin-bottom: 1rem;
+}
+.lv-hero-sub {
+  max-width: 480px;
+  color: var(--lv-ink-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+.lv-hero-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--lv-gold);
+  margin: 1.75rem 0 0;
+  opacity: 0.5;
+}
+/* Button arrow slides right on hover */
+.lv-btn-primary .lv-btn-arrow {
+  transition: transform 180ms ease;
+}
+.lv-btn-primary:hover .lv-btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Decorative assets — absolute positioned, z-index 0 */
+.lv-decor {
+  position: absolute;
+  z-index: 0;
+}
+/* Dragon head — top right, slow breathing */
+@keyframes lv-dragon-breathe {
+  0%, 100% { transform: translate(5%, 0) rotate(-1deg); }
+  50% { transform: translate(5%, 0) rotate(1deg); }
+}
+.lv-decor-dragon {
+  top: 4%;
+  right: -2%;
+  width: 420px;
+  animation: lv-dragon-breathe 4s ease-in-out infinite;
+}
+.lv-decor-cloud1 {
+  left: 0;
+  top: 20%;
+  width: 200px;
+  opacity: 0.4;
+}
+.lv-decor-cloud2 {
+  bottom: 5%;
+  left: 35%;
+  width: 280px;
+  opacity: 0.25;
+}
+.lv-decor-blossom-branch {
+  top: 0;
+  left: 0;
+  width: 180px;
+  transform: rotate(5deg);
+  transform-origin: top left;
+}
+/* Corner flourishes */
+.lv-decor-corner {
+  width: 80px;
+  opacity: 0.6;
+}
+.lv-decor-corner-tl { top: 12px; left: 12px; }
+.lv-decor-corner-tr { top: 12px; right: 12px; transform: scaleX(-1); }
+.lv-decor-corner-bl { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.lv-decor-corner-br { bottom: 12px; right: 12px; transform: scale(-1); }
+
+/* Tablet */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .lv-hero, .lv-hero-content { min-height: 540px; }
+  .lv-decor-dragon { width: 340px; top: 8%; }
+  .lv-decor-cloud1 { width: 150px; }
+  .lv-decor-cloud2 { width: 200px; }
+  .lv-decor-blossom-branch { width: 140px; }
+  .lv-hero-content { max-width: 420px; }
+}
+
+/* Mobile — stacked, simplified */
+@media (max-width: 767px) {
+  .lv-hero {
+    min-height: auto;
+    padding-bottom: 2rem;
+  }
+  .lv-hero-content {
+    min-height: auto;
+    max-width: 100%;
+    text-align: center;
+    padding-top: 1rem;
+  }
+  .lv-hero-sub { margin-left: auto; margin-right: auto; }
+  .lv-hero-divider { margin-left: auto; margin-right: auto; }
+  /* Dragon: centered block, not absolute */
+  .lv-hero-mobile-dragon {
+    display: block;
+    margin: 1.5rem auto 0;
+    width: 240px;
+    height: auto;
+  }
+  /* Hide ambient decorations on mobile */
+  .lv-decor-cloud1,
+  .lv-decor-cloud2,
+  .lv-decor-blossom-branch { display: none; }
+  /* Shrink corners */
+  .lv-decor-corner { width: 40px; }
+  .lv-decor-corner-bl,
+  .lv-decor-corner-br { display: none; }
+  /* Hide desktop dragon */
+  .lv-decor-dragon { display: none; }
+}
+/* Hide mobile dragon on desktop */
+.lv-hero-mobile-dragon { display: none; }
+@media (max-width: 767px) {
+  .lv-hero-mobile-dragon { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-decor-dragon { animation: none; transform: translate(5%, 0); }
+}
+
+/* --- DISTRIBUTED DECORATIONS (page-wide) --- */
+/* Inline blossom next to section labels */
+.lv-label-with-blossom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lv-label-blossom {
+  width: 32px;
+  height: auto;
+  flex-shrink: 0;
+}
+/* Cloud behind section heading */
+.lv-heading-wrap {
+  position: relative;
+  display: block;
+  text-align: center;
+}
+.lv-heading-cloud {
+  position: absolute;
+  top: -15px;
+  right: -70px;
+  width: 100px;
+  height: auto;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.lv-heading-wrap > *:first-child {
+  position: relative;
+  z-index: 1;
+}
+/* Date strip blossom bookend */
+.lv-date-strip-blossom {
+  width: 20px;
+  height: auto;
+  opacity: 0.4;
+  flex-shrink: 0;
+  align-self: center;
+}
+/* Dossier card corner flourishes */
+.lv-dossier-flourish {
+  position: absolute;
+  width: 50px;
+  height: auto;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.lv-dossier-flourish-tl { top: 10px; left: 10px; }
+.lv-dossier-flourish-br { bottom: 10px; right: 10px; transform: scale(-1); }
+/* About section dragon coil */
+.lv-about-band {
+  position: relative;
+  overflow: hidden;
+}
+.lv-about-dragon-coil {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  height: auto;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+.lv-about-cloud {
+  position: absolute;
+  left: -20px;
+  top: 20%;
+  width: 180px;
+  height: auto;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Section divider image */
+.lv-divider-img {
+  display: block;
+  margin: 0 auto;
+  width: 280px;
+  max-width: 80%;
+  height: auto;
+}
+/* Footer blossom */
+.lv-footer-blossom-img {
+  width: 32px;
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .lv-about-dragon-coil { display: none; }
+  .lv-about-cloud { display: none; }
+  .lv-heading-cloud { display: none; }
+  .lv-dossier-flourish { width: 35px; }
+}
+
+/* --- SECTION --- */
+.lv-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+.lv-section-label {
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+.lv-section-heading {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+/* --- TOURNAMENT CARDS (on parchment) --- */
+.lv-tournament-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .lv-tournament-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1200px) {
+  .lv-tournament-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.lv-card {
+  background: var(--lv-surface);
+  border: 1px solid rgba(122, 28, 28, 0.2);
+  border-radius: var(--lv-radius-lg);
+  padding: 1.75rem 1.5rem;
+  box-shadow: var(--lv-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  cursor: pointer;
+}
+.lv-card:hover {
+  border-color: rgba(122, 28, 28, 0.45);
+  transform: translateY(-2px);
+  box-shadow: var(--lv-shadow-card-hover);
+}
+
+/* Date pill — dark accent */
+.lv-card-date {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-cream);
+  background: var(--lv-bg-dark);
+  padding: 4px 10px;
+  border-radius: var(--lv-radius-sm);
+  width: fit-content;
+  line-height: 1;
+}
+.lv-card-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--lv-ink);
+  margin: 0.25rem 0;
+}
+.lv-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lv-card-tag {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: var(--lv-radius-sm);
+  line-height: 1.4;
+}
+/* Crimson format tag on parchment */
+.lv-card-tag-format {
+  border: 1px solid rgba(122, 28, 28, 0.3);
+  color: var(--lv-red);
+  background: transparent;
+}
+/* Green fill for open */
+.lv-card-tag-open {
+  background: var(--lv-green);
+  color: #d4edda;
+}
+/* Gray fill for closed */
+.lv-card-tag-closed {
+  background: rgba(107, 78, 61, 0.12);
+  color: var(--lv-ink-muted);
+}
+.lv-card-meta {
+  font-size: 13px;
+  color: var(--lv-ink-muted);
+  line-height: 1.5;
+}
+.lv-card-meta-dot {
+  color: var(--lv-gold);
+  margin: 0 6px;
+}
+.lv-card-divider {
+  height: 1px;
+  background: var(--lv-border);
+  margin: 0.25rem 0;
+}
+.lv-card-action {
+  margin-top: auto;
+}
+.lv-card-action .lv-btn {
+  width: 100%;
+}
+
+/* --- ABOUT SECTION --- */
+.lv-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.lv-about-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--lv-ink);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.lv-about-text {
+  margin: 0;
+  color: var(--lv-ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.lv-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.lv-fact {
+  display: flex;
+  align-items: baseline;
+}
+.lv-fact-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+}
+.lv-fact-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--lv-ink);
+  flex-shrink: 0;
+}
+.lv-fact-value {
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .lv-about {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* --- FORM SYSTEM (on parchment) --- */
+.lv-register {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+.lv-register-header {
+  margin-bottom: 2rem;
+}
+.lv-register-label {
+  color: var(--lv-gold);
+  margin-bottom: 0.5rem;
+}
+.lv-register-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 2.25rem;
+  color: var(--lv-ink);
+}
+.lv-register-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  padding: 2.5rem;
+}
+.lv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Field */
+.lv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lv-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-field-helper {
+  font-size: 12px;
+  color: var(--lv-ink-muted);
+}
+.lv-field-error {
+  font-size: 12px;
+  color: var(--lv-error);
+}
+
+/* Input — parchment-white */
+.lv-input {
+  background: var(--lv-surface-input);
+  border: 1px solid rgba(107, 78, 61, 0.25);
+  border-radius: var(--lv-radius-md);
+  padding: 12px 14px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  outline: none;
+}
+.lv-input::placeholder {
+  color: var(--lv-ink-muted);
+  opacity: 0.5;
+}
+.lv-input:focus {
+  border-color: var(--lv-red);
+  box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.12);
+}
+.lv-input option {
+  background: var(--lv-surface-input);
+  color: var(--lv-ink);
+}
+
+/* Select wrapper */
+.lv-select-wrap {
+  position: relative;
+}
+.lv-select-wrap .lv-input {
+  width: 100%;
+  appearance: none;
+  padding-right: 40px;
+}
+.lv-select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--lv-gold);
+  pointer-events: none;
+}
+
+/* Tournament date list (registration page) */
+.lv-date-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid rgba(107, 78, 61, 0.15);
+  border-radius: var(--lv-radius-md);
+  padding: 4px;
+}
+.lv-date-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--lv-radius-sm);
+  cursor: pointer;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  transition: all 160ms ease;
+  text-align: left;
+}
+.lv-date-list-item:hover {
+  background: rgba(122, 28, 28, 0.04);
+  border-color: rgba(122, 28, 28, 0.12);
+}
+.lv-date-list-item.selected {
+  background: var(--lv-red);
+  border-color: var(--lv-red-deep);
+}
+.lv-date-list-date {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--lv-ink);
+}
+.lv-date-list-item.selected .lv-date-list-date {
+  color: var(--lv-cream);
+}
+.lv-date-list-format {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--lv-ink-muted);
+  white-space: nowrap;
+}
+.lv-date-list-item.selected .lv-date-list-format {
+  color: rgba(245, 230, 200, 0.7);
+}
+
+/* Collapsed selected date (single row) */
+.lv-date-list-selected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--lv-red);
+  border: 1px solid var(--lv-red-deep);
+  border-radius: var(--lv-radius-md);
+  cursor: pointer;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  transition: background 180ms ease;
+}
+.lv-date-list-selected:hover {
+  background: var(--lv-red-hover);
+}
+.lv-date-list-selected .lv-date-list-date {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--lv-cream);
+}
+.lv-date-list-selected .lv-date-list-format {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(245, 230, 200, 0.7);
+}
+.lv-date-list-change {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.5);
+}
+
+/* Tournament preview */
+.lv-tournament-preview {
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--lv-parchment);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  font-size: 13px;
+  color: var(--lv-ink-muted);
+}
+
+/* Player group */
+.lv-player-group {
+  background: var(--lv-parchment);
+  border: 1px solid rgba(122, 28, 28, 0.1);
+  border-radius: var(--lv-radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+.lv-player-legend {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+  padding: 0;
+}
+.lv-captain-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: var(--lv-radius-sm);
+  background: rgba(192, 104, 120, 0.15);
+  color: var(--lv-blossom);
+  line-height: 1.4;
+}
+
+/* Submit */
+.lv-submit {
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+  margin-top: 0.5rem;
+}
+.lv-submit svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Error / Full states */
+.lv-error {
+  font-size: 13px;
+  color: var(--lv-error);
+  padding: 0.75rem 1rem;
+  background: rgba(197, 48, 48, 0.06);
+  border: 1px solid rgba(197, 48, 48, 0.2);
+  border-radius: var(--lv-radius-md);
+}
+.lv-full-msg {
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--lv-ink-muted);
+  font-size: 0.95rem;
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+}
+
+/* Spinner */
+@keyframes lv-spin {
+  to { transform: rotate(360deg); }
+}
+.lv-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(245, 230, 200, 0.4);
+  border-top-color: var(--lv-cream);
+  border-radius: 50%;
+  animation: lv-spin 600ms linear infinite;
+}
+
+/* --- SUCCESS STATE (parchment certificate) --- */
+.lv-success {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border-gold);
+  border-radius: var(--lv-radius-lg);
+  padding: 4rem 2.5rem;
+  text-align: center;
+  animation: lv-fade-in 400ms ease;
+}
+.lv-success-ornament {
+  width: 48px;
+  height: 48px;
+  color: var(--lv-gold);
+  margin: 0 auto 1.5rem;
+}
+.lv-success-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.75rem;
+}
+.lv-success-detail {
+  font-size: 1rem;
+  color: var(--lv-ink-muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .lv-register-card { padding: 1.5rem; }
+  .lv-success { padding: 3rem 1.5rem; }
+}
+
+/* ==========================================================
+   HERO ILLUSTRATION & ORNAMENTAL SYSTEM
+   ========================================================== */
+
+/* --- SECTION DIVIDER --- */
+.lv-section-divider {
+  display: block;
+  margin: 0 auto;
+  width: 320px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* --- ABOUT BAND (warmer parchment, full-bleed) --- */
+.lv-about-band {
+  background: linear-gradient(
+    to bottom,
+    var(--lv-parchment) 0%,
+    #EFDEB5 5%,
+    #EFDEB5 95%,
+    var(--lv-parchment) 100%
+  );
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  padding-left: calc(50vw - 50%);
+  padding-right: calc(50vw - 50%);
+}
+
+/* --- CLOUD MOTIF behind section heading --- */
+.lv-heading-wrap {
+  position: relative;
+  display: block;
+  text-align: center;
+}
+.lv-heading-cloud {
+  position: absolute;
+  top: -10px;
+  right: -60px;
+  width: 80px;
+  height: auto;
+  color: var(--lv-red);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+/* --- CARD ENHANCEMENTS --- */
+/* Season icon in top-right corner */
+.lv-card {
+  position: relative;
+}
+.lv-card-season {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 20px;
+  height: 20px;
+  color: var(--lv-gold);
+  opacity: 0.4;
+  transition: transform 400ms ease;
+}
+.lv-card:hover .lv-card-season {
+  transform: rotate(8deg);
+}
+
+/* Date pill — ribbon style (top + bottom border only) */
+.lv-card-date {
+  border: none;
+  border-top: 1px solid var(--lv-gold);
+  border-bottom: 1px solid var(--lv-gold);
+}
+
+/* --- REGISTRATION CERTIFICATE CARD --- */
+.lv-register-card--certificate {
+  background: var(--lv-surface);
+  border-radius: var(--lv-radius-lg);
+  padding: 2.5rem;
+  position: relative;
+  /* Double border: outer via box-shadow, inner via border */
+  border: 1px solid rgba(122, 28, 28, 0.3);
+  box-shadow: 0 0 0 4px var(--lv-surface), 0 0 0 5px rgba(122, 28, 28, 0.3);
+}
+/* Corner flourishes inside the card */
+.lv-register-card--certificate .lv-reg-flourish {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: var(--lv-gold);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.lv-reg-flourish-tl { top: 12px; left: 12px; }
+.lv-reg-flourish-tr { top: 12px; right: 12px; }
+.lv-reg-flourish-bl { bottom: 12px; left: 12px; }
+.lv-reg-flourish-br { bottom: 12px; right: 12px; }
+
+@media (max-width: 640px) {
+  .lv-register-card--certificate {
+    padding: 1.5rem;
+    box-shadow: 0 0 0 3px var(--lv-surface), 0 0 0 4px rgba(122, 28, 28, 0.25);
+  }
+  .lv-register-card--certificate .lv-reg-flourish { width: 28px; height: 28px; }
+}
+
+/* --- GOLD DOT SPINNER (replaces border spinner) --- */
+.lv-dot-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  color: var(--lv-gold);
+}
+/* Keep old .lv-spinner as fallback for admin */
+
+/* --- SUCCESS SECTION DIVIDER --- */
+.lv-success-divider {
+  width: 200px;
+  max-width: 80%;
+  height: auto;
+  color: var(--lv-gold);
+  opacity: 0.5;
+  margin: 0 auto 1rem;
+}
+
+/* ==========================================================
+   TOURNAMENT PICKER — DATE STRIP + DOSSIER CARD
+   ========================================================== */
+
+.lv-picker {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* --- DATE STRIP --- */
+.lv-date-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.lv-date-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: 12px 8px;
+  border: 1px solid rgba(107, 78, 61, 0.2);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-surface-input);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.lv-date-chip:hover {
+  border-color: rgba(122, 28, 28, 0.3);
+  transform: scale(1.02);
+}
+.lv-date-chip.selected {
+  background: var(--lv-red);
+  border-color: var(--lv-red-deep);
+  box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.15);
+}
+
+.lv-date-chip-month {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  line-height: 1;
+}
+.lv-date-chip.selected .lv-date-chip-month {
+  color: rgba(245, 230, 200, 0.7);
+}
+
+.lv-date-chip-day {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--lv-ink);
+}
+.lv-date-chip.selected .lv-date-chip-day {
+  color: var(--lv-cream);
+}
+
+.lv-date-chip-dayname {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--lv-ink-muted);
+  line-height: 1;
+  margin-top: 1px;
+}
+.lv-date-chip.selected .lv-date-chip-dayname {
+  color: rgba(245, 230, 200, 0.6);
+}
+
+/* --- DOSSIER CARD (dark panel on parchment) --- */
+@keyframes lv-dossier-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lv-dossier {
+  margin-top: 1.5rem;
+  background: var(--lv-bg-dark);
+  border: 1px solid rgba(155, 107, 30, 0.2);
+  border-radius: var(--lv-radius-lg);
+  padding: 2rem;
+  animation: lv-dossier-in 200ms ease;
+}
+
+.lv-dossier-inner {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+/* Left — big date */
+.lv-dossier-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 120px;
+  flex-shrink: 0;
+  padding: 0 1.5rem;
+  border-right: 1px solid rgba(155, 107, 30, 0.15);
+  box-sizing: border-box;
+}
+.lv-dossier-date-day {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--lv-cream);
+  letter-spacing: -0.02em;
+}
+.lv-dossier-date-month {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-top: 4px;
+}
+.lv-dossier-date-dayname {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--lv-cream-muted);
+  letter-spacing: 0.04em;
+}
+
+/* Right — structured data rows */
+.lv-dossier-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.lv-dossier-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.lv-dossier-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  min-width: 68px;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+.lv-dossier-value {
+  font-size: 0.95rem;
+  color: var(--lv-cream);
+  line-height: 1.4;
+}
+.lv-dossier-open {
+  color: #6bbd7b;
+}
+.lv-dossier-closed {
+  color: var(--lv-cream-muted);
+}
+
+/* CTA */
+.lv-dossier-cta {
+  text-align: center;
+}
+.lv-dossier-closed-msg {
+  font-size: 0.9rem;
+  color: var(--lv-cream-muted);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .lv-dossier-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .lv-dossier-date {
+    border-right: none;
+    border-bottom: 1px solid rgba(155, 107, 30, 0.15);
+    padding: 0 0 1rem;
+    flex-direction: row;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .lv-dossier-date-day { font-size: 2.5rem; }
+  .lv-date-chip { min-width: 60px; padding: 10px 6px; }
+  .lv-date-chip-day { font-size: 1.25rem; }
+}
+
+/* ==========================================================
+   GALLERY — MASONRY COLLAGE WITH SCROLL REVEAL
+   ========================================================== */
+
+.lv-gallery-page {
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+.lv-gallery-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* CSS columns masonry */
+.lv-masonry {
+  column-count: 4;
+  column-gap: 12px;
+}
+.lv-masonry-item {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+  position: relative;
+  /* Scroll reveal: start hidden */
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+.lv-masonry-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.lv-masonry-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: rgba(107, 78, 61, 0.08);
+}
+/* Hover overlay */
+.lv-masonry-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(42, 24, 16, 0);
+  transition: background 200ms ease;
+}
+.lv-masonry-item:hover::after {
+  background: rgba(42, 24, 16, 0.08);
+}
+
+@media (max-width: 1024px) { .lv-masonry { column-count: 3; } }
+@media (max-width: 768px)  { .lv-masonry { column-count: 2; column-gap: 8px; } .lv-masonry-item { margin-bottom: 8px; } }
+@media (max-width: 480px)  { .lv-masonry { column-count: 2; column-gap: 6px; } .lv-masonry-item { margin-bottom: 6px; border-radius: var(--lv-radius-sm); } }
+
+/* Stagger reveal per column position */
+.lv-masonry-item:nth-child(4n+1) { transition-delay: 0ms; }
+.lv-masonry-item:nth-child(4n+2) { transition-delay: 60ms; }
+.lv-masonry-item:nth-child(4n+3) { transition-delay: 120ms; }
+.lv-masonry-item:nth-child(4n+4) { transition-delay: 180ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-masonry-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================
+   RECORDS — TOURNAMENT RESULTS
+   ========================================================== */
+
+.lv-records-page {
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+.lv-records-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.lv-records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Single tournament result entry */
+.lv-record {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--lv-border);
+}
+.lv-record:first-child {
+  border-top: 1px solid var(--lv-border);
+}
+
+/* Tournament header row */
+.lv-record-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.lv-record-date {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--lv-ink);
+  white-space: nowrap;
+}
+.lv-record-name {
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+}
+/* Year section grouping — collapsible */
+.lv-records-year {
+  margin-bottom: 1rem;
+}
+.lv-records-year-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--lv-red);
+  padding: 0.75rem 0;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+.lv-records-year-toggle:hover {
+  opacity: 0.8;
+}
+.lv-records-year-label {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--lv-ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.lv-records-year-count {
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  margin-left: auto;
+}
+.lv-records-year-chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--lv-ink-muted);
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+.lv-records-year-toggle.open .lv-records-year-chevron {
+  transform: rotate(180deg);
+}
+
+/* Collapsible content */
+.lv-records-year-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms ease;
+}
+.lv-records-year-content.open {
+  grid-template-rows: 1fr;
+}
+.lv-records-year-content > .lv-records-list {
+  overflow: hidden;
+}
+
+/* Bracket results — two columns */
+.lv-record-brackets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.lv-record-brackets--single {
+  grid-template-columns: 1fr;
+}
+.lv-record-bracket {
+  padding: 1rem 1.25rem;
+  background: var(--lv-surface);
+  border-radius: var(--lv-radius-md);
+  border: 1px solid var(--lv-border);
+}
+.lv-record-bracket-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.lv-record-bracket-gold .lv-record-bracket-title {
+  color: var(--lv-gold);
+}
+.lv-record-bracket-silver .lv-record-bracket-title {
+  color: var(--lv-ink-muted);
+}
+
+/* Placement rows */
+.lv-record-placement {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+}
+.lv-record-placement + .lv-record-placement {
+  border-top: 1px solid rgba(122, 28, 28, 0.06);
+  margin-top: 4px;
+  padding-top: 8px;
+}
+.lv-record-place {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--lv-ink);
+  min-width: 24px;
+}
+.lv-record-team {
+  font-size: 0.9rem;
+  color: var(--lv-ink);
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .lv-record-brackets {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .lv-record-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { drops } from "@/content/drops";
+import { useCart } from "@/context/CartContext";
 
 function useHoverGroup() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function Navbar() {
   const shop = useHoverGroup();
   const team = useHoverGroup();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { totalItems, openDrawer } = useCart();
 
   // Close mobile menu on navigation
   useEffect(() => {
@@ -127,18 +129,37 @@ export default function Navbar() {
             >
               About
             </Link>
+
+            <button className="nav-cart" onClick={openDrawer} aria-label="Open cart">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 01-8 0" />
+              </svg>
+              {totalItems > 0 && <span className="nav-cart-badge">{totalItems}</span>}
+            </button>
           </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            className={`nav-burger ${mobileOpen ? "open" : ""}`}
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+          {/* Mobile cart + hamburger */}
+          <div className="nav-mobile-right">
+            <button className="nav-cart nav-cart-mobile" onClick={openDrawer} aria-label="Open cart">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 01-8 0" />
+              </svg>
+              {totalItems > 0 && <span className="nav-cart-badge">{totalItems}</span>}
+            </button>
+            <button
+              className={`nav-burger ${mobileOpen ? "open" : ""}`}
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
         </div>
       </header>
 

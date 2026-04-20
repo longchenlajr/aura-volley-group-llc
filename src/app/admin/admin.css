@@ -1,0 +1,649 @@
+/* ==========================================================
+   ADMIN — UTILITARIAN PARCHMENT VARIANT
+   ========================================================== */
+@import "../(tournament)/tournament.css";
+
+/* --- ADMIN HEADER (dark accent band) --- */
+.lv-admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  background: var(--lv-bg-dark-elevated);
+  border-bottom: 0.5px solid rgba(155, 107, 30, 0.2);
+}
+.lv-admin-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lv-admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lv-admin-brand-monogram {
+  width: 24px;
+  height: 24px;
+  color: var(--lv-gold);
+  opacity: 0.7;
+}
+.lv-admin-brand-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-cream-muted);
+}
+.lv-admin-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* Ghost button on dark header needs light text */
+.lv-admin-header .lv-btn-ghost {
+  color: var(--lv-cream-muted);
+}
+.lv-admin-header .lv-btn-ghost:hover {
+  color: var(--lv-cream);
+}
+
+/* --- ADMIN DASHBOARD (parchment canvas) --- */
+.lv-admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+}
+.lv-admin-page-label {
+  color: var(--lv-gold);
+  margin-bottom: 0.5rem;
+}
+.lv-admin-page-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--lv-ink);
+  margin-bottom: 2rem;
+}
+
+/* Tabs */
+.lv-admin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 0.5px solid var(--lv-border);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+.lv-admin-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--lv-ink-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+.lv-admin-tab:hover {
+  color: var(--lv-ink);
+}
+.lv-admin-tab.active {
+  color: var(--lv-ink);
+  border-bottom-color: var(--lv-red);
+}
+
+/* Info + pill */
+.lv-admin-info {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  line-height: 1.6;
+}
+.lv-admin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  background: var(--lv-surface);
+  color: var(--lv-red);
+  border: 1px solid rgba(122, 28, 28, 0.25);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-left: 8px;
+}
+
+/* Actions */
+.lv-admin-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+/* Table */
+.lv-admin-table-wrap {
+  overflow-x: auto;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+}
+.lv-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.lv-admin-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  background: var(--lv-parchment);
+  border-bottom: 1px solid var(--lv-border);
+  white-space: nowrap;
+}
+.lv-admin-table td {
+  padding: 0 16px;
+  height: 56px;
+  color: var(--lv-ink-muted);
+  font-size: 14px;
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.08);
+  white-space: nowrap;
+}
+.lv-admin-team-name {
+  color: var(--lv-red);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Expandable rows */
+.lv-admin-row-clickable {
+  cursor: pointer;
+}
+.lv-admin-row-clickable.expanded {
+  background: rgba(122, 28, 28, 0.03);
+}
+.lv-admin-expand-icon {
+  flex-shrink: 0;
+  color: var(--lv-ink-muted);
+  transition: transform 200ms ease;
+}
+.lv-admin-expand-icon.open {
+  transform: rotate(180deg);
+}
+.lv-admin-expand-row td {
+  padding: 0 16px 16px;
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.08);
+}
+.lv-admin-teammates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  margin-left: 18px;
+  border-left: 2px solid rgba(122, 28, 28, 0.15);
+  background: rgba(122, 28, 28, 0.02);
+  border-radius: 0 var(--lv-radius-sm) var(--lv-radius-sm) 0;
+}
+.lv-admin-teammate {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.lv-admin-teammate-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lv-ink);
+}
+.lv-admin-teammate-email {
+  font-size: 13px;
+  color: var(--lv-ink-muted);
+}
+.lv-admin-table tbody tr {
+  transition: background 120ms ease;
+}
+.lv-admin-table tbody tr:hover {
+  background: var(--lv-parchment);
+  border-left: 2px solid var(--lv-red);
+}
+
+/* Inline seed input */
+.lv-admin-seed {
+  width: 52px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--lv-radius-sm);
+  padding: 4px 6px;
+  color: var(--lv-ink);
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: right;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.lv-admin-seed:focus {
+  border-color: var(--lv-red);
+  box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.12);
+}
+
+/* Toggle */
+.lv-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: rgba(107, 78, 61, 0.15);
+  border: none;
+  cursor: pointer;
+  transition: background 180ms ease;
+  padding: 0;
+}
+.lv-toggle.on {
+  background: var(--lv-green);
+}
+.lv-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  transition: transform 180ms ease;
+}
+.lv-toggle.on::after {
+  transform: translateX(16px);
+}
+
+/* Action buttons */
+.lv-admin-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lv-ink-muted);
+  padding: 4px;
+  transition: color 180ms ease;
+}
+.lv-admin-action-btn:hover {
+  color: var(--lv-ink);
+}
+.lv-admin-action-btn-danger:hover {
+  color: var(--lv-error);
+}
+
+/* Empty state */
+.lv-admin-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.lv-admin-empty-ornament {
+  width: 32px;
+  height: 32px;
+  color: var(--lv-gold);
+  opacity: 0.4;
+  margin: 0 auto 1rem;
+}
+.lv-admin-empty-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.5rem;
+}
+.lv-admin-empty-sub {
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Registration link callout */
+.lv-admin-link-callout {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 1.25rem 2rem;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  font-size: 13px;
+}
+.lv-admin-link-callout-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-admin-link-callout-url {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--lv-ink);
+  word-break: break-all;
+}
+.lv-admin-link-callout-copy {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--lv-radius-sm);
+  background: transparent;
+  border: 1px solid rgba(122, 28, 28, 0.3);
+  color: var(--lv-red);
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.lv-admin-link-callout-copy:hover {
+  background: rgba(122, 28, 28, 0.05);
+  border-color: var(--lv-red);
+}
+
+/* Modal */
+.lv-admin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(42, 24, 16, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.lv-admin-modal {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.lv-admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.lv-admin-modal-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--lv-ink);
+}
+.lv-admin-modal-close {
+  background: none;
+  border: none;
+  color: var(--lv-ink-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 180ms ease;
+}
+.lv-admin-modal-close:hover {
+  color: var(--lv-ink);
+}
+.lv-admin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* === POOL CREATION === */
+.lv-admin-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.lv-admin-unseeded-warning {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background: rgba(197, 48, 48, 0.06);
+  border: 1px solid rgba(197, 48, 48, 0.2);
+  border-radius: var(--lv-radius-md);
+  font-size: 0.85rem;
+  color: var(--lv-error);
+  line-height: 1.5;
+}
+.lv-admin-unseeded-warning ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+.lv-admin-unseeded-warning li {
+  font-weight: 600;
+  color: var(--lv-ink);
+}
+
+.lv-admin-pool-preview {
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+  padding: 8px 12px;
+  background: rgba(155, 107, 30, 0.06);
+  border-radius: var(--lv-radius-sm);
+  border: 1px solid var(--lv-border-gold);
+}
+
+.lv-admin-pools {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+}
+.lv-admin-pools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.lv-admin-pools-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--lv-ink);
+}
+.lv-admin-pools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.lv-admin-pool-card {
+  padding: 1rem;
+  background: var(--lv-parchment);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+}
+.lv-admin-pool-court {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-red);
+  margin-bottom: 2px;
+}
+.lv-admin-pool-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+}
+.lv-admin-pool-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lv-admin-pool-team {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+.lv-admin-pool-seed {
+  font-weight: 600;
+  color: var(--lv-ink-muted);
+  font-size: 0.75rem;
+  min-width: 24px;
+}
+.lv-admin-pool-name {
+  color: var(--lv-ink);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .lv-admin-pools-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .lv-admin-pool-card { padding: 0.75rem; }
+  .lv-admin-actions { flex-wrap: wrap; }
+}
+
+/* === MOBILE CARD LIST === */
+.lv-admin-cards-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .lv-admin-table-wrap { display: none; }
+  .lv-admin-cards-mobile { display: flex; flex-direction: column; gap: 10px; }
+}
+
+.lv-admin-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+}
+.lv-admin-card.expanded {
+  border-color: rgba(122, 28, 28, 0.3);
+}
+
+.lv-admin-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+}
+.lv-admin-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.lv-admin-card-team-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--lv-red);
+}
+.lv-admin-card-captain {
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+}
+
+.lv-admin-card-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 14px 12px;
+}
+.lv-admin-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lv-admin-card-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+
+.lv-admin-card-details {
+  padding: 0 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(122, 28, 28, 0.08);
+  padding-top: 12px;
+}
+.lv-admin-card-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--lv-ink);
+}
+.lv-admin-card-teammates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+.lv-admin-card-delete {
+  margin-top: 8px;
+  padding: 8px;
+  background: none;
+  border: 1px solid rgba(197, 48, 48, 0.25);
+  border-radius: var(--lv-radius-sm);
+  color: var(--lv-error);
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 180ms ease;
+}
+.lv-admin-card-delete:hover {
+  background: rgba(197, 48, 48, 0.05);
+  border-color: var(--lv-error);
+}
+
+/* Admin login */
+.lv-admin-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+}
+.lv-admin-login-card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.lv-admin-login-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--lv-ink);
+  text-align: center;
+}

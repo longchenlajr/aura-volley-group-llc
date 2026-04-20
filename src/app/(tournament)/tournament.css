@@ -1176,6 +1176,47 @@
   margin-bottom: 2rem;
 }
 
+/* Invoice table */
+.lv-invoice {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: left;
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+}
+.lv-invoice-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  background: var(--lv-parchment);
+  border-bottom: 1px solid var(--lv-border);
+}
+.lv-invoice-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  color: var(--lv-ink);
+  border-bottom: 1px solid rgba(122, 28, 28, 0.06);
+}
+.lv-invoice-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--lv-red);
+  background: var(--lv-parchment);
+  border-top: 1px solid var(--lv-border);
+}
+
 @media (max-width: 640px) {
   .lv-register-card { padding: 1.5rem; }
   .lv-success { padding: 3rem 1.5rem; }

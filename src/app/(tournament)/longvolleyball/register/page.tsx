@@ -34,6 +34,9 @@ function RegisterForm() {
     message: string;
     tournamentName?: string;
     tournamentDate?: string;
+    teamNameResult?: string;
+    playerNames?: string[];
+    teamSize?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -93,6 +96,9 @@ function RegisterForm() {
             day: "numeric",
             year: "numeric",
           }),
+          teamNameResult: teamName,
+          playerNames: players.map((p) => p.name),
+          teamSize: selected.teamSize,
         });
       }
     } catch {
@@ -121,17 +127,37 @@ function RegisterForm() {
   }, [result?.ok]);
 
   if (result?.ok) {
+    const total = (result.teamSize ?? 2) * 25;
     return (
       <div className="lv-register">
         <div className="lv-success">
           <SectionDivider className="lv-success-divider" />
           <Checkmark className="lv-success-ornament" />
-          <h1 className="lv-success-heading">You&rsquo;re in.</h1>
+          <h1 className="lv-success-heading">
+            {result.teamNameResult} is locked in.
+          </h1>
           <p className="lv-success-detail">
-            See you at <strong>{result.tournamentName}</strong> on{" "}
-            {result.tournamentDate}.
+            {result.tournamentName} on {result.tournamentDate}
           </p>
-          <button onClick={reset} className="lv-btn lv-btn-ghost">
+
+          <div className="lv-invoice">
+            <div className="lv-invoice-header">
+              <span>Player</span>
+              <span>Amount</span>
+            </div>
+            {result.playerNames?.map((name, i) => (
+              <div key={i} className="lv-invoice-row">
+                <span>{name} — Registration Fee</span>
+                <span>$25</span>
+              </div>
+            ))}
+            <div className="lv-invoice-total">
+              <span>Total due at check-in</span>
+              <span>${total}</span>
+            </div>
+          </div>
+
+          <button onClick={reset} className="lv-btn lv-btn-ghost" style={{ marginTop: "1.5rem" }}>
             Register another team
           </button>
         </div>
@@ -170,6 +196,7 @@ function RegisterForm() {
               >
                 <span className="lv-date-list-date">
                   {new Date(selected.date).toLocaleDateString("en-US", {
+                    weekday: "long",
                     month: "long",
                     day: "numeric",
                     year: "numeric",
@@ -191,6 +218,7 @@ function RegisterForm() {
                   .map((t) => {
                     const d = new Date(t.date);
                     const label = d.toLocaleDateString("en-US", {
+                      weekday: "long",
                       month: "long",
                       day: "numeric",
                       year: "numeric",

@@ -157,6 +157,7 @@ export default function AdminDashboard() {
           >
             <span className="lv-date-list-date">
               {new Date(active.date).toLocaleDateString("en-US", {
+                weekday: "long",
                 month: "long",
                 day: "numeric",
                 year: "numeric",
@@ -176,6 +177,7 @@ export default function AdminDashboard() {
             {tournaments.map((t) => {
               const d = new Date(t.date);
               const label = d.toLocaleDateString("en-US", {
+                weekday: "long",
                 month: "long",
                 day: "numeric",
                 year: "numeric",

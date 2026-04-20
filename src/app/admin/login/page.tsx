@@ -1,11 +1,8 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,16 +12,39 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
 
-    const res = await signIn("credentials", {
-      password,
-      redirect: false,
-    });
+    try {
+      // Get CSRF token first
+      const csrfRes = await fetch("/api/auth/csrf");
+      const { csrfToken } = await csrfRes.json();
 
-    if (res?.error) {
+      // Submit credentials
+      const res = await fetch("/api/auth/callback/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          csrfToken,
+          password,
+          redirect: "false",
+        }),
+        redirect: "manual",
+      });
+
+      // Auth.js returns a redirect on success (302) or error page on failure
+      if (res.type === "opaqueredirect" || res.status === 302 || res.ok) {
+        // Check if we actually got a session
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        if (session?.user) {
+          window.location.href = "/admin";
+          return;
+        }
+      }
+
       setError("Invalid password.");
+    } catch {
+      setError("Something went wrong. Try again.");
+    } finally {
       setLoading(false);
-    } else {
-      router.push("/admin");
     }
   }
 

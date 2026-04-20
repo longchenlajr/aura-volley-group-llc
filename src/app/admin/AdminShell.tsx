@@ -3,20 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 import { inter, fraunces } from "@/lib/fonts";
 
 const NAV_LINKS = [
   { href: "/longvolleyball", label: "Tournaments" },
+  { href: "/longvolleyball/live", label: "Live" },
   { href: "/longvolleyball/gallery", label: "Gallery" },
   { href: "/longvolleyball/records", label: "Records" },
 ];
 
 function AdminHeader() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((r) => r.json())
+      .then((data) => setIsLoggedIn(!!data?.user))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
@@ -25,6 +32,12 @@ function AdminHeader() {
       return pathname === "/longvolleyball" || pathname === "/longvolleyball/";
     }
     return pathname.startsWith(href);
+  }
+
+  function handleLogout() {
+    fetch("/api/auth/signout", { method: "POST" })
+      .then(() => { window.location.href = "/admin/login"; })
+      .catch(() => { window.location.href = "/admin/login"; });
   }
 
   return (
@@ -50,13 +63,17 @@ function AdminHeader() {
           </nav>
 
           <div className="lv-header-right">
-            {session && (
-              <button
-                className="lv-header-cta"
-                onClick={() => signOut({ callbackUrl: "/admin/login" })}
-              >
+            <Link href="/longvolleyball/register" className="lv-header-cta">
+              Register
+            </Link>
+            {isLoggedIn ? (
+              <button className="lv-header-login" onClick={handleLogout}>
                 Log out
               </button>
+            ) : (
+              <Link href="/admin/login" className="lv-header-login">
+                Log in
+              </Link>
             )}
             <button
               className={`lv-header-burger ${mobileOpen ? "open" : ""}`}
@@ -82,14 +99,21 @@ function AdminHeader() {
               {link.label}
             </Link>
           ))}
-          {session && (
+          <Link href="/longvolleyball/register" className="lv-btn lv-btn-primary" style={{ marginTop: "0.5rem" }}>
+            Register
+          </Link>
+          {isLoggedIn ? (
             <button
-              className="lv-btn lv-btn-secondary"
-              style={{ marginTop: "0.5rem" }}
-              onClick={() => signOut({ callbackUrl: "/admin/login" })}
+              className="lv-btn lv-btn-ghost"
+              style={{ marginTop: "0.25rem" }}
+              onClick={handleLogout}
             >
               Log out
             </button>
+          ) : (
+            <Link href="/admin/login" className="lv-btn lv-btn-ghost" style={{ marginTop: "0.25rem" }}>
+              Log in
+            </Link>
           )}
         </nav>
       </div>
@@ -98,12 +122,17 @@ function AdminHeader() {
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = "html,body{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}";
+    document.head.appendChild(style);
+    return () => { style.remove(); };
+  }, []);
+
   return (
-    <SessionProvider>
-      <div className={`lv ${inter.variable} ${fraunces.variable}`}>
-        <AdminHeader />
-        <main>{children}</main>
-      </div>
-    </SessionProvider>
+    <div className={`lv ${inter.variable} ${fraunces.variable}`}>
+      <AdminHeader />
+      <main>{children}</main>
+    </div>
   );
 }

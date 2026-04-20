@@ -1,7 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { NextResponse } from "next/server";
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const host = req.headers.get("host") || "";
   const { pathname } = req.nextUrl;
 
@@ -13,7 +13,6 @@ export default auth((req) => {
     const clean = pathname.replace(/^\/longvolleyball/, "") || "/";
     const url = req.nextUrl.clone();
     url.pathname = clean;
-    // Preserve query string
     return NextResponse.redirect(url, 308);
   }
 
@@ -34,13 +33,14 @@ export default auth((req) => {
     pathname.startsWith("/admin") &&
     !pathname.startsWith("/admin/login")
   ) {
-    if (!req.auth) {
+    const session = await auth();
+    if (!session) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [

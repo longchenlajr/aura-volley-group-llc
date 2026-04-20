@@ -27,6 +27,7 @@ function RegisterForm() {
   const [selectedId, setSelectedId] = useState(preselected);
   const [teamName, setTeamName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [players, setPlayers] = useState<{ name: string; email: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -64,9 +65,20 @@ function RegisterForm() {
     );
   }
 
+  function validatePhone(value: string): boolean {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 10 || (digits.length === 11 && digits.startsWith("1"))) {
+      setPhoneError("");
+      return true;
+    }
+    setPhoneError("Phone must be a valid 10-digit US number.");
+    return false;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selected) return;
+    if (!validatePhone(contactPhone)) return;
     setSubmitting(true);
     setResult(null);
 
@@ -147,7 +159,7 @@ function RegisterForm() {
             </div>
             {result.playerNames?.map((name, i) => (
               <div key={i} className="lv-invoice-row">
-                <span>{name} — Registration Fee</span>
+                <span>{name}</span>
                 <span>$25</span>
               </div>
             ))}
@@ -157,7 +169,11 @@ function RegisterForm() {
             </div>
           </div>
 
-          <button onClick={reset} className="lv-btn lv-btn-ghost" style={{ marginTop: "1.5rem" }}>
+          <button
+            onClick={reset}
+            className="lv-btn lv-btn-ghost"
+            style={{ marginTop: "1.5rem" }}
+          >
             Register another team
           </button>
         </div>
@@ -304,10 +320,12 @@ function RegisterForm() {
                           className="lv-input"
                           type="tel"
                           value={contactPhone}
-                          onChange={(e) => setContactPhone(e.target.value)}
+                          onChange={(e) => { setContactPhone(e.target.value); setPhoneError(""); }}
+                          onBlur={() => { if (contactPhone) validatePhone(contactPhone); }}
                           required
                           placeholder="(555) 123-4567"
                         />
+                        {phoneError && <span className="lv-field-error">{phoneError}</span>}
                       </div>
                     )}
                   </fieldset>

@@ -1,13 +1,14 @@
-import { getTournaments } from "@/lib/tournaments";
+import { getUpcomingTournaments } from "@/lib/tournaments";
 import Link from "next/link";
 import { ArrowRight } from "../ornaments";
 import { DecorativeAsset } from "../DecorativeAsset";
 import { TournamentPicker } from "../TournamentPicker";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: { absolute: "Home | Long Volleyball" } };
 
 export default function TournamentsPage() {
-  const tournaments = getTournaments();
+  const tournaments = getUpcomingTournaments();
 
   return (
     <>
@@ -154,7 +155,7 @@ export default function TournamentsPage() {
                   <div className="lv-fact-content">
                     <span className="lv-fact-label">Location</span>
                     <span className="lv-fact-value">
-                      515 S. Ott Street, Allentown, PA 18104
+                      515 South Ott Street, Allentown, PA 18104
                     </span>
                   </div>
                 </div>

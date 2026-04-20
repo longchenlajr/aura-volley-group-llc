@@ -12,33 +12,33 @@ interface TournamentResult {
 }
 
 const RESULTS: TournamentResult[] = [
-    {
+  {
     date: "10/12/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
     gold: {
-      first: "Brayden McCreery + Steve",
-      second: "Jacob Posluszny + Carlos",
+      first: "Brayden McCreery + Steven McCreery",
+      second: "Jacob Posluszny + Carlos Vergara",
     },
     silver: {
-      first: "Mason Strawn + Frank",
-      second: "Cameron Rogers + Luis",
+      first: "Mason Strawn + Frank Benedetto",
+      second: "Cameron Rogers + Luis Romano",
     },
   },
-    {
+  {
     date: "9/28/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
     gold: {
       first: "Lucas Adam + Rachel Robb",
-      second: "Fernando Munoz + Luis Angel",
+      second: "Fernando Munoz + Luis Angel Ruiz",
     },
     silver: {
-      first: "Walmy + Jacob ",
-      second: "Cameron Rogers + Hanzy",
+      first: "Walmy Veras + Jacob",
+      second: "Cameron Rogers + Hanzy Chalas",
     },
   },
-    {
+  {
     date: "9/14/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
@@ -47,24 +47,24 @@ const RESULTS: TournamentResult[] = [
       second: "Owen McFadden + Keith Hardaway",
     },
     silver: {
-      first: "Walmy + Jai",
+      first: "Walmy Veras + Jai Hills",
       second: "Cameron Rogers + Evan",
     },
   },
-    {
+  {
     date: "8/17/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
     gold: {
-      first: "Nairi Lin + Klo",
+      first: "Nairi Lin + Klo Kynaw",
       second: "Caden Dempsey + Kieran Lieb",
     },
     silver: {
       first: "Heng Long + Nelly Rodriguez",
-      second: "Michael + Joseph",
+      second: "Michael Spradlin + Joseph Spradlin",
     },
   },
-    {
+  {
     date: "7/5/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
@@ -77,7 +77,7 @@ const RESULTS: TournamentResult[] = [
       second: "Brian Badillo + Nick Chang",
     },
   },
-    {
+  {
     date: "6/29/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
@@ -90,7 +90,7 @@ const RESULTS: TournamentResult[] = [
       second: "Kalliyana Long + Anh Hyunh",
     },
   },
-    {
+  {
     date: "5/24/25",
     name: "Doubles @ Hamilton",
     format: "doubles",
@@ -112,7 +112,7 @@ const RESULTS: TournamentResult[] = [
       second: "Will Stiles + Aidan OBrien",
     },
     silver: {
-      first: "Brad Chamberlain + Josh",
+      first: "Brad Chamberlain + Joshua Harclerode",
       second: "Jordan Morris + Lexi Straub",
     },
   },
@@ -121,7 +121,7 @@ const RESULTS: TournamentResult[] = [
     name: "Doubles @ Hamilton",
     format: "doubles",
     gold: {
-      first: "Owen McFadden + Zander",
+      first: "Owen McFadden + Zander Marks",
       second: "Daniel Sledz + Dan Barckholtz",
     },
     silver: {
@@ -136,10 +136,10 @@ const RESULTS: TournamentResult[] = [
     gold: {
       first: "Chenla Long, Jr. + Justin Flor",
       second: "Owen McFadden + Trey West",
-    }
+    },
   },
   {
-    date: "9/31/24",
+    date: "9/30/24",
     name: "Doubles @ Hamilton",
     format: "doubles",
     gold: {
@@ -148,7 +148,7 @@ const RESULTS: TournamentResult[] = [
     },
     silver: {
       first: "Quinn Hornberger + Gracie Kiser",
-      second: "Matt Achey + Suzie",
+      second: "Matt Achey + Suzie Brito",
     },
   },
   {
@@ -160,7 +160,7 @@ const RESULTS: TournamentResult[] = [
       second: "Nairi Lin + Harry Lin",
     },
     silver: {
-      first: "Brad + Caden",
+      first: "Brad Chamberlain + Caden Dempsey",
       second: "Janilyz + Luis",
     },
   },
@@ -169,9 +169,9 @@ const RESULTS: TournamentResult[] = [
     name: "Quads @ Hamilton",
     format: "quads",
     gold: {
-      first: "Nairi Lin + Harry Lin + Klo + Luther Ser",
-      second: "Bryce Nelligan + Reno Plesnarski + Liam + Owen",
-    }
+      first: "Nairi Lin + Harry Lin + Klo Kynaw + Luther Ser",
+      second: "Bryce Nelligan + Reno Plesnarski + Liam Ruggie Pratt + Owen",
+    },
   },
   {
     date: "6/8/24",
@@ -182,7 +182,7 @@ const RESULTS: TournamentResult[] = [
       second: "Justin Flor + Kalliyana Long",
     },
     silver: {
-      first: "Alex + Marcus Scheirer",
+      first: "Alex Schoenen + Marcus Scheirer",
       second: "Jon Yu + Harry Lin",
     },
   },
@@ -193,7 +193,7 @@ const RESULTS: TournamentResult[] = [
     gold: {
       first: "Chenla Long, Jr. + Kalliyana Long + Justin Flor + Dylan Flor",
       second: "Quinn Hornberger + Zachary Shay + Caleb Bauder + Nilansh Gupta",
-    }
+    },
   },
   {
     date: "7/8/23",
@@ -201,7 +201,7 @@ const RESULTS: TournamentResult[] = [
     format: "doubles",
     gold: {
       first: "Calvin Long + Will Stiles",
-      second: "Owen + Liam",
+      second: "Owen + Liam Ruggie Pratt",
     },
     silver: {
       first: "Mark Fredericksen + Devin Ellis",

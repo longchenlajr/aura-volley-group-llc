@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv atownaura *)",
+      "Bash(mv checkout *)",
+      "Bash(mv drops *)",
+      "Bash(cp -r C:/Users/Admin/Documents/auravg/aura-volley-group-llc/src/app/checkout C:/Users/Admin/Documents/auravg/aura-volley-group-llc/\"src/app/\\(main\\)/checkout\")",
+      "Bash(cp -r C:/Users/Admin/Documents/auravg/aura-volley-group-llc/src/app/drops C:/Users/Admin/Documents/auravg/aura-volley-group-llc/\"src/app/\\(main\\)/drops\")",
+      "Bash(where node *)",
+      "Bash(export PATH=\"/c/Users/Admin/AppData/Roaming/fnm/node-versions/v23.9.0/installation:$PATH\")",
+      "Bash(python3 *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/api/register?check=tournaments\")",
+      "Bash(curl -s \"http://localhost:3000/api/register?check=tournaments\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/api/admin/teams?tournament=doubles-04-26-2026\")",
+      "Bash(\"/c/Program Files/ImageMagick-7.1.1-Q16-HDRI/magick.exe\" --version)",
+      "Bash(find *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/api/auth/session\")",
+      "Bash(curl -s -X POST \"http://localhost:3000/api/auth/callback/credentials\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"password=zenitsu&csrfToken=test\" -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s -v \"http://localhost:3000/api/auth/session\")"
+    ]
+  }
+}

@@ -9,6 +9,7 @@ import "./tournament.css";
 
 const NAV_LINKS = [
   { href: "/longvolleyball", label: "Tournaments" },
+  { href: "/longvolleyball/live", label: "Live" },
   { href: "/longvolleyball/gallery", label: "Gallery" },
   { href: "/longvolleyball/records", label: "Records" },
 ];
@@ -18,11 +19,16 @@ export default function TournamentLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
 
-    // Set favicon for tournament pages
+    // Hide scrollbar on html and body
+    const style = document.createElement("style");
+    style.textContent = "html,body{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}";
+    document.head.appendChild(style);
+
     let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     const prev = link?.href;
     if (!link) {
@@ -34,11 +40,19 @@ export default function TournamentLayout({
 
     return () => {
       document.documentElement.style.scrollBehavior = "auto";
+      style.remove();
       if (link && prev) link.href = prev;
     };
   }, []);
 
-  // Close mobile menu on navigation
+  // Lightweight session check (no SessionProvider needed)
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((r) => r.json())
+      .then((data) => setIsLoggedIn(!!data?.user))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -55,12 +69,10 @@ export default function TournamentLayout({
       {/* Header */}
       <header className="lv-header">
         <div className="lv-container lv-header-inner">
-          {/* Left: wordmark */}
           <Link href="/longvolleyball" className="lv-header-wordmark">
             Long Volleyball
           </Link>
 
-          {/* Center: nav links (desktop) */}
           <nav className="lv-header-nav" aria-label="Tournament navigation">
             {NAV_LINKS.map((link, i) => (
               <span key={link.href} className="lv-header-nav-item">
@@ -76,11 +88,19 @@ export default function TournamentLayout({
             ))}
           </nav>
 
-          {/* Right: register CTA + mobile hamburger */}
           <div className="lv-header-right">
             <Link href="/longvolleyball/register" className="lv-header-cta">
               Register
             </Link>
+            {isLoggedIn ? (
+              <Link href="/admin" className="lv-header-login">
+                Admin
+              </Link>
+            ) : (
+              <Link href="/admin/login" className="lv-header-login">
+                Log in
+              </Link>
+            )}
             <button
               className={`lv-header-burger ${mobileOpen ? "open" : ""}`}
               onClick={() => setMobileOpen((v) => !v)}
@@ -109,6 +129,15 @@ export default function TournamentLayout({
           <Link href="/longvolleyball/register" className="lv-btn lv-btn-primary" style={{ marginTop: "0.5rem" }}>
             Register
           </Link>
+          {isLoggedIn ? (
+            <Link href="/admin" className="lv-btn lv-btn-ghost" style={{ marginTop: "0.25rem" }}>
+              Admin Dashboard
+            </Link>
+          ) : (
+            <Link href="/admin/login" className="lv-btn lv-btn-ghost" style={{ marginTop: "0.25rem" }}>
+              Log in
+            </Link>
+          )}
         </nav>
       </div>
 

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { Tournament } from "@/lib/tournaments";
+import type { Tournament, TournamentStatus } from "@/lib/tournaments";
 import { ArrowRight, DividerOrnament } from "./ornaments";
 import { DecorativeAsset } from "./DecorativeAsset";
+import { StatusTag } from "./StatusTag";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -23,7 +24,13 @@ function formatLabel(format: string): string {
   return format;
 }
 
-export function TournamentPicker({ tournaments }: { tournaments: Tournament[] }) {
+interface TournamentPickerProps {
+  tournaments: (Tournament & { status?: TournamentStatus })[];
+  showStatus?: boolean;
+}
+
+export function TournamentPicker({ tournaments, showStatus = false }: TournamentPickerProps) {
+  // If no pre-sorting from parent, sort chronologically
   const sorted = [...tournaments].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
@@ -40,22 +47,27 @@ export function TournamentPicker({ tournaments }: { tournaments: Tournament[] })
           const day = d.getDate();
           const dayName = DAYS[d.getDay()];
           const isSelected = t.id === selectedId;
+          const status = t.status;
 
           return (
             <button
               key={t.id}
               role="option"
               aria-selected={isSelected}
-              className={`lv-date-chip ${isSelected ? "selected" : ""}`}
+              className={`lv-date-chip ${isSelected ? "selected" : ""} ${showStatus && status === "live" ? "lv-date-chip--live" : ""}`}
               onClick={() => setSelectedId(isSelected ? null : t.id)}
             >
+              {showStatus && status && (
+                <span className="lv-date-chip-status">
+                  <StatusTag status={status} />
+                </span>
+              )}
               <span className="lv-date-chip-month">{month}</span>
               <span className="lv-date-chip-day">{day}</span>
               <span className="lv-date-chip-dayname">{dayName}</span>
             </button>
           );
         })}
-
       </div>
 
       {/* Dossier card — appears when date is selected */}

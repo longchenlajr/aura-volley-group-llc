@@ -65,15 +65,20 @@
   box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.15);
 }
 
+.lv {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 .lv ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
-.lv ::-webkit-scrollbar-track {
-  background: var(--lv-parchment);
+.lv ~ *,
+html:has(.lv) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.lv ::-webkit-scrollbar-thumb {
-  background: rgba(107, 78, 61, 0.25);
-  border-radius: 4px;
+html:has(.lv)::-webkit-scrollbar {
+  display: none;
 }
 
 /* page transition */
@@ -314,6 +319,25 @@
 .lv-header-cta:hover {
   background: var(--lv-red-hover);
 }
+.lv-header-login {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  background: transparent;
+  border: 1px solid rgba(155, 107, 30, 0.4);
+  padding: 7px 16px;
+  border-radius: var(--lv-radius-sm);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.lv-header-login:hover {
+  border-color: var(--lv-gold);
+  background: rgba(155, 107, 30, 0.1);
+}
 
 /* Hamburger (mobile only) */
 .lv-header-burger {
@@ -395,6 +419,7 @@
 @media (max-width: 767px) {
   .lv-header-nav { display: none; }
   .lv-header-cta { display: none; }
+  .lv-header-login { display: none; }
   .lv-header-burger { display: flex; }
 }
 
@@ -980,7 +1005,6 @@
 }
 .lv-date-list-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -1014,6 +1038,7 @@
   font-weight: 500;
   color: var(--lv-ink-muted);
   white-space: nowrap;
+  margin-left: auto;
 }
 .lv-date-list-item.selected .lv-date-list-format {
   color: rgba(245, 230, 200, 0.7);
@@ -1528,11 +1553,27 @@
     border-right: none;
     border-bottom: 1px solid rgba(155, 107, 30, 0.15);
     padding: 0 0 1rem;
-    flex-direction: row;
-    gap: 12px;
-    align-items: baseline;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    grid-template-rows: auto auto;
+    gap: 0 10px;
+    align-items: center;
+    width: 100%;
   }
-  .lv-dossier-date-day { font-size: 2.5rem; }
+  .lv-dossier-date-day {
+    font-size: 2.5rem;
+    grid-row: 1 / 3;
+    text-align: center;
+  }
+  .lv-dossier-date-month {
+    align-self: end;
+    text-align: left;
+    margin-top: 0;
+  }
+  .lv-dossier-date-dayname {
+    align-self: start;
+    text-align: left;
+  }
   .lv-date-chip { min-width: 60px; padding: 10px 6px; }
   .lv-date-chip-day { font-size: 1.25rem; }
 }
@@ -1548,6 +1589,15 @@
 .lv-gallery-header {
   text-align: center;
   margin-bottom: 3rem;
+}
+.lv-gallery-empty {
+  text-align: center;
+  color: var(--lv-ink-muted);
+  font-size: 0.95rem;
+  padding: 3rem 1rem;
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-surface);
 }
 
 /* CSS columns masonry */
@@ -1771,4 +1821,123 @@
     flex-wrap: wrap;
     gap: 6px;
   }
+}
+
+/* ==========================================================
+   STATUS TAGS + LIVE PAGE
+   ========================================================== */
+
+/* --- STATUS TAGS --- */
+.lv-status-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  line-height: 1.4;
+  white-space: nowrap;
+  min-width: 62px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lv-status-tag--upcoming {
+  border: 1px solid rgba(155, 107, 30, 0.5);
+  color: var(--lv-gold);
+  background: transparent;
+}
+.lv-status-tag--live {
+  background: var(--lv-red);
+  color: var(--lv-cream);
+  border: 1px solid var(--lv-red);
+  animation: lv-live-pulse 2s ease-in-out infinite;
+}
+.lv-status-tag--archive {
+  border: 1px solid rgba(107, 78, 61, 0.3);
+  color: var(--lv-ink-muted);
+  background: transparent;
+}
+
+@keyframes lv-live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-status-tag--live { animation: none; }
+}
+
+/* Date chip with status tag */
+.lv-date-chip-status {
+  margin-bottom: 2px;
+}
+.lv-date-chip--live {
+  box-shadow: 0 0 0 2px rgba(122, 28, 28, 0.2);
+}
+
+/* --- LIVE PAGE --- */
+.lv-live-page {
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+.lv-live-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Placeholder card (dark on parchment) */
+.lv-live-placeholder {
+  position: relative;
+  max-width: 680px;
+  margin: 2rem auto 0;
+  background: var(--lv-bg-dark);
+  border: 1px solid rgba(155, 107, 30, 0.2);
+  border-radius: var(--lv-radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+.lv-live-placeholder-cloud {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 100px;
+  height: auto;
+  opacity: 0.2;
+  pointer-events: none;
+}
+.lv-live-placeholder-divider {
+  display: block;
+  margin: 0 auto 1.25rem;
+  width: 160px;
+  height: auto;
+  color: var(--lv-gold);
+  opacity: 0.4;
+}
+.lv-live-placeholder-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--lv-cream);
+  margin-bottom: 0.5rem;
+}
+.lv-live-placeholder-text {
+  font-size: 0.9rem;
+  color: var(--lv-cream-muted);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.lv-live-placeholder-count {
+  margin-top: 1.5rem;
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--lv-gold);
+}
+
+@media (max-width: 640px) {
+  .lv-live-placeholder { padding: 2rem 1.25rem; }
+  .lv-live-placeholder-cloud { display: none; }
 }

@@ -4,7 +4,7 @@ import { ArrowRight } from "../ornaments";
 import { DecorativeAsset } from "../DecorativeAsset";
 import { TournamentPicker } from "../TournamentPicker";
 
-export const metadata = { title: "Home | Long Volleyball" };
+export const metadata = { title: { absolute: "Home | Long Volleyball" } };
 
 export default function TournamentsPage() {
   const tournaments = getTournaments();

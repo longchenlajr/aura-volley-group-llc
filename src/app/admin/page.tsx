@@ -36,16 +36,22 @@ export default function AdminDashboard() {
         );
         setTournaments(sorted);
         if (sorted.length > 0) setActiveTab(sorted[0].id);
-      });
+      })
+      .catch((err) => console.error("Failed to load tournaments:", err));
   }, []);
 
   const loadTeams = useCallback(async () => {
     if (!activeTab) return;
     setLoading(true);
-    const res = await fetch(`/api/admin/teams?tournament=${activeTab}`);
-    const data = await res.json();
-    setTeams(data.teams ?? []);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/admin/teams?tournament=${activeTab}`);
+      const data = await res.json();
+      setTeams(data.teams ?? []);
+    } catch (err) {
+      console.error("Failed to load teams:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [activeTab]);
 
   useEffect(() => { loadTeams(); }, [loadTeams]);

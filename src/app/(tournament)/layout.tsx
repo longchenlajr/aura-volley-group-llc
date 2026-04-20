@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { inter, fraunces } from "@/lib/fonts";
 import { DecorativeAsset } from "./DecorativeAsset";
-import "./tournament.css"
+import "./tournament.css";
 
 const NAV_LINKS = [
   { href: "/longvolleyball", label: "Tournaments" },
@@ -21,8 +21,20 @@ export default function TournamentLayout({
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
+
+    // Set favicon for tournament pages
+    let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    const prev = link?.href;
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = "/longvolleyball/vb.ico";
+
     return () => {
       document.documentElement.style.scrollBehavior = "auto";
+      if (link && prev) link.href = prev;
     };
   }, []);
 

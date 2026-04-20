@@ -39,7 +39,8 @@ function RegisterForm() {
   useEffect(() => {
     fetch("/api/register?check=tournaments")
       .then((r) => r.json())
-      .then((data) => setTournaments(data.tournaments ?? []));
+      .then((data) => setTournaments(data.tournaments ?? []))
+      .catch((err) => console.error("Failed to load tournaments:", err));
   }, []);
 
   const selected = tournaments.find((t) => t.id === selectedId) ?? null;

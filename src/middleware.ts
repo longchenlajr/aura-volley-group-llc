@@ -5,10 +5,24 @@ export default auth((req) => {
   const host = req.headers.get("host") || "";
   const { pathname } = req.nextUrl;
 
-  // Domain rewrite: longvolleyball.com → /longvolleyball prefix
+  // longvolleyball.com: strip /longvolleyball prefix from URL (redirect)
   if (
     host.includes("longvolleyball") &&
-    !pathname.startsWith("/longvolleyball")
+    pathname.startsWith("/longvolleyball")
+  ) {
+    const clean = pathname.replace(/^\/longvolleyball/, "") || "/";
+    const url = req.nextUrl.clone();
+    url.pathname = clean;
+    // Preserve query string
+    return NextResponse.redirect(url, 308);
+  }
+
+  // longvolleyball.com: add /longvolleyball prefix internally (rewrite)
+  if (
+    host.includes("longvolleyball") &&
+    !pathname.startsWith("/longvolleyball") &&
+    !pathname.startsWith("/api") &&
+    !pathname.startsWith("/admin")
   ) {
     const url = req.nextUrl.clone();
     url.pathname = `/longvolleyball${pathname}`;

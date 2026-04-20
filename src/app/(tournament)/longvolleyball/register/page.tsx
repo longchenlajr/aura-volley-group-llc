@@ -113,6 +113,12 @@ function RegisterForm() {
   }
 
   // Success — parchment certificate with section divider
+  useEffect(() => {
+    if (result?.ok) {
+      document.title = "Reg. Success | Long Volleyball";
+    }
+  }, [result?.ok]);
+
   if (result?.ok) {
     return (
       <div className="lv-register">

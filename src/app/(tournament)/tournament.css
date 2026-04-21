@@ -1937,7 +1937,1159 @@ html:has(.lv)::-webkit-scrollbar {
   color: var(--lv-gold);
 }
 
+/* Pool preview on Live page (read-only) */
+.lv-live-pool-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 1.25rem;
+  text-align: left;
+}
+.lv-live-pool-card {
+  background: rgba(155, 107, 30, 0.08);
+  border: 1px solid rgba(155, 107, 30, 0.2);
+  border-radius: var(--lv-radius-md);
+  padding: 0.75rem;
+}
+.lv-live-pool-label {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--lv-cream);
+  margin-bottom: 2px;
+}
+.lv-live-pool-court {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.5rem;
+}
+.lv-live-pool-team {
+  font-size: 0.8rem;
+  color: var(--lv-cream-muted);
+  padding: 2px 0;
+}
+
+/* Match schedule on Live page */
+.lv-live-match-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--lv-cream);
+  padding: 0;
+  transition: color 180ms ease;
+}
+.lv-live-match-toggle:hover {
+  color: var(--lv-gold);
+}
+.lv-live-match-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.8rem;
+}
+.lv-live-match-num {
+  font-weight: 700;
+  color: var(--lv-cream-muted);
+  min-width: 16px;
+  text-align: center;
+  font-size: 0.7rem;
+}
+.lv-live-match-teams {
+  color: var(--lv-cream);
+}
+.lv-live-match-work {
+  color: var(--lv-gold);
+  font-size: 0.7rem;
+  margin-left: auto;
+}
+
+/* === LIVE VIEW — Real-time tournament display === */
+
+/* Refresh indicator */
+.lv-live-refresh {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.lv-live-refresh-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lv-gold);
+  transition: background 200ms ease;
+}
+.lv-live-refresh-dot.fetching {
+  background: var(--lv-red);
+  animation: lv-live-pulse 1s ease-in-out infinite;
+}
+.lv-live-refresh-label {
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+}
+
+/* Sections */
+.lv-live-section {
+  margin-bottom: 2.5rem;
+}
+.lv-live-section-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--lv-ink);
+  margin-bottom: 1rem;
+}
+
+/* Now Playing cards */
+.lv-live-now-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.lv-live-now-card {
+  background: var(--lv-bg-dark);
+  border: 1px solid rgba(155, 107, 30, 0.2);
+  border-radius: var(--lv-radius-lg);
+  padding: 1.25rem;
+}
+.lv-live-now-meta {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+}
+.lv-live-now-teams {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lv-live-now-team {
+  flex: 1;
+  text-align: center;
+}
+.lv-live-now-name {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lv-cream);
+  margin-bottom: 0.5rem;
+}
+.lv-live-now-score {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--lv-cream);
+  line-height: 1;
+}
+.lv-live-now-vs {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--lv-cream-muted);
+  flex-shrink: 0;
+}
+.lv-live-now-prev {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--lv-cream-muted);
+}
+@keyframes lv-live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.lv-live-pulse {
+  animation: lv-live-pulse 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lv-live-pulse { animation: none; }
+}
+
+/* Empty state */
+.lv-live-empty {
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  background: var(--lv-surface);
+}
+.lv-live-empty-text {
+  color: var(--lv-ink-muted);
+  font-size: 0.9rem;
+}
+
+/* Standings grid */
+.lv-live-standings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.lv-live-standings-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  padding: 1rem;
+  overflow-x: auto;
+}
+.lv-live-standings-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+}
+.lv-live-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.lv-live-standings-table th {
+  text-align: left;
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+  border-bottom: 1px solid var(--lv-border);
+}
+.lv-live-standings-table td {
+  padding: 6px 8px;
+  color: var(--lv-ink);
+  border-bottom: 1px solid rgba(122, 28, 28, 0.06);
+}
+.lv-live-standings-name {
+  font-weight: 600;
+}
+.lv-live-standings-first td {
+  border-left: 3px solid var(--lv-gold);
+}
+.lv-live-standings-second td {
+  border-left: 3px solid rgba(122, 28, 28, 0.3);
+}
+
+/* Recent results */
+.lv-live-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lv-live-recent-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--lv-surface);
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.85rem;
+}
+.lv-live-recent-pool {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lv-gold);
+  min-width: 48px;
+  flex-shrink: 0;
+}
+.lv-live-recent-teams {
+  flex: 1;
+  color: var(--lv-ink);
+}
+.lv-live-recent-score {
+  font-weight: 600;
+  color: var(--lv-ink);
+  white-space: nowrap;
+}
+.lv-live-recent-time {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  white-space: nowrap;
+}
+
+/* Upcoming matches */
+.lv-live-upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lv-live-upcoming-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+}
+
+/* Countdown */
+.lv-live-countdown {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--lv-cream);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Share block */
+.lv-live-share {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(155, 107, 30, 0.08);
+  border: 1px solid rgba(155, 107, 30, 0.2);
+  border-radius: var(--lv-radius-md);
+}
+.lv-live-share-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.5rem;
+}
+.lv-live-share-url {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--lv-cream);
+  word-break: break-all;
+  margin-bottom: 0.75rem;
+}
+
+/* Champion banner (Archive) */
+.lv-live-champion {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(155, 107, 30, 0.1);
+  border: 1px solid rgba(155, 107, 30, 0.3);
+  border-radius: var(--lv-radius-lg);
+}
+.lv-live-champion-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.5rem;
+}
+.lv-live-champion-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.75rem;
+  color: var(--lv-cream);
+}
+
+@media (max-width: 640px) {
+  .lv-live-now-grid { grid-template-columns: 1fr; }
+  .lv-live-standings-grid { grid-template-columns: 1fr; }
+  .lv-live-now-score { font-size: 2rem; }
+  .lv-live-recent-row { flex-wrap: wrap; gap: 4px; }
+  .lv-live-countdown { font-size: 1.2rem; }
+}
+
 @media (max-width: 640px) {
   .lv-live-placeholder { padding: 2rem 1.25rem; }
   .lv-live-placeholder-cloud { display: none; }
+}
+
+/* ==========================================================
+   SCORE SUBMISSION PAGE
+   ========================================================== */
+
+.lv-score-page {
+  min-height: 100vh;
+  background: var(--lv-parchment);
+}
+
+/* Compact header bar */
+.lv-score-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--lv-bg-dark);
+  border-bottom: 0.5px solid rgba(155, 107, 30, 0.25);
+}
+.lv-score-header-home {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--lv-gold);
+  text-decoration: none;
+}
+.lv-score-header-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--lv-cream);
+}
+
+.lv-score-content {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+  max-width: 480px;
+}
+
+/* Match context */
+.lv-score-context {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.lv-score-context-pool {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-score-context-match {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--lv-ink);
+  margin: 0.25rem 0;
+}
+.lv-score-context-format {
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+}
+
+/* Set card */
+.lv-score-set {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+}
+.lv-score-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.lv-score-timer {
+  font-size: 0.7rem;
+  color: var(--lv-gold);
+  font-weight: 500;
+}
+.lv-score-locked-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+  background: rgba(107, 78, 61, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.lv-score-set-complete {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--lv-green);
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Teams side by side */
+.lv-score-teams {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lv-score-team {
+  flex: 1;
+  text-align: center;
+}
+.lv-score-team-a {
+  border-left: 3px solid var(--lv-red);
+  border-radius: var(--lv-radius-sm);
+  padding-left: 8px;
+}
+.lv-score-team-b {
+  border-right: 3px solid var(--lv-gold);
+  border-radius: var(--lv-radius-sm);
+  padding-right: 8px;
+}
+.lv-score-team-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-ink);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.lv-score-vs {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--lv-ink-muted);
+  flex-shrink: 0;
+}
+
+/* Score input group */
+.lv-score-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.lv-score-btn {
+  width: 44px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lv-parchment);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-sm);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--lv-ink);
+  cursor: pointer;
+  transition: all 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.lv-score-btn:active:not(:disabled) {
+  background: rgba(122, 28, 28, 0.08);
+}
+.lv-score-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.lv-score-input {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--lv-ink);
+  background: var(--lv-surface-input);
+  border: 2px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.lv-score-input:focus {
+  border-color: var(--lv-red);
+}
+.lv-score-input:disabled {
+  opacity: 0.4;
+}
+
+/* Work info */
+.lv-score-work-info {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Submit button */
+.lv-score-submit {
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+}
+
+/* Results overlay */
+.lv-score-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(42, 24, 16, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: lv-fade-in 200ms ease;
+}
+.lv-score-overlay-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Match results card (also used inside overlay) */
+.lv-score-results {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  text-align: center;
+  animation: lv-fade-in 200ms ease;
+}
+.lv-score-results-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+}
+.lv-score-results-matchup {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.5rem;
+}
+.lv-score-results-record {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.75rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.25rem;
+}
+.lv-score-results-sets {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.lv-score-results-set {
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  font-weight: 500;
+}
+.lv-score-results-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--lv-parchment);
+  border-radius: var(--lv-radius-md);
+}
+.lv-score-results-diff-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--lv-ink);
+}
+.lv-score-results-winner {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-red);
+}
+
+@media (max-width: 480px) {
+  .lv-score-teams {
+    gap: 8px;
+  }
+  .lv-score-team-name {
+    font-size: 0.85rem;
+  }
+  .lv-score-input {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+  }
+}
+
+/* ==========================================================
+   POOL TABS
+   ========================================================== */
+
+.lv-pool-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--lv-border);
+  padding-bottom: 8px;
+}
+.lv-pool-tabs::-webkit-scrollbar { display: none; }
+
+.lv-pool-tab {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--lv-surface-input);
+  color: var(--lv-ink);
+  transition: all 160ms ease;
+  flex-shrink: 0;
+}
+.lv-pool-tab:hover {
+  background: var(--lv-surface);
+  color: var(--lv-red);
+}
+.lv-pool-tab.active {
+  background: var(--lv-red);
+  color: var(--lv-cream);
+}
+
+/* Gold bracket tab */
+.lv-pool-tab--gold:hover {
+  background: rgba(181, 148, 72, 0.15);
+  color: #8B6914;
+}
+.lv-pool-tab--gold.active {
+  background: linear-gradient(135deg, #B59448, #9A7B30);
+  color: #fff;
+}
+
+/* Silver bracket tab */
+.lv-pool-tab--silver:hover {
+  background: rgba(140, 140, 150, 0.15);
+  color: #5A5A6A;
+}
+.lv-pool-tab--silver.active {
+  background: linear-gradient(135deg, #8C8C96, #6E6E7A);
+  color: #fff;
+}
+
+/* ==========================================================
+   OVERVIEW (pool summary tables)
+   ========================================================== */
+
+.lv-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lv-overview-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.lv-overview-empty-text {
+  color: var(--lv-ink-muted);
+  font-size: 0.9rem;
+}
+.lv-overview-pool {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  transition: all 160ms ease;
+}
+.lv-overview-pool:hover {
+  border-color: rgba(122, 28, 28, 0.3);
+  background: var(--lv-surface-input);
+}
+.lv-overview-pool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+.lv-overview-pool-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-ink);
+}
+.lv-overview-pool-court {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.lv-overview-table th {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--lv-border);
+  text-align: left;
+}
+.lv-overview-table th:nth-child(n+3) { text-align: right; }
+
+.lv-overview-table td {
+  padding: 5px 6px;
+  color: var(--lv-ink-muted);
+  border-bottom: 1px solid rgba(122, 28, 28, 0.04);
+  text-align: left;
+}
+.lv-overview-table td:nth-child(n+3) { text-align: right; }
+
+.lv-overview-table tr:last-child td {
+  border-bottom: none;
+}
+.lv-overview-row-first td {
+  color: var(--lv-ink);
+  font-weight: 600;
+}
+.lv-overview-rank {
+  font-weight: 700;
+  color: var(--lv-gold) !important;
+  white-space: nowrap;
+  width: 1%;
+  padding-right: 12px !important;
+}
+.lv-overview-name {
+  font-weight: 500;
+}
+/* Stat columns: fixed narrow width */
+.lv-overview-table td:nth-child(n+3),
+.lv-overview-table th:nth-child(n+3) {
+  white-space: nowrap;
+  width: 1%;
+  padding-left: 10px;
+}
+.lv-overview-diff-pos { color: var(--lv-green) !important; }
+.lv-overview-diff-neg { color: var(--lv-error) !important; }
+.lv-overview-pool-progress {
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+  text-align: right;
+}
+
+/* ==========================================================
+   POOL VIEW
+   ========================================================== */
+
+.lv-pool-view-header {
+  margin-bottom: 1.5rem;
+}
+.lv-pool-view-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--lv-ink);
+}
+.lv-pool-view-meta {
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  margin-top: 0.25rem;
+}
+.lv-pool-view-standings {
+  margin-bottom: 1.5rem;
+}
+.lv-pool-view-matches {
+  margin-top: 1.5rem;
+}
+
+/* ==========================================================
+   MATCH CARDS (pool view feed)
+   ========================================================== */
+
+.lv-match-card {
+  padding: 1rem;
+  margin-bottom: 8px;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+}
+.lv-match-card--live {
+  border-color: rgba(122, 28, 28, 0.3);
+  border-left: 3px solid var(--lv-red);
+}
+.lv-match-card--complete {
+  border-left: 3px solid var(--lv-green);
+}
+.lv-match-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+.lv-match-card-num {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-match-card-final {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--lv-green);
+}
+.lv-match-card-scheduled {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--lv-ink-muted);
+  font-style: italic;
+}
+.lv-match-card-teams {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+.lv-match-card-team {
+  font-weight: 500;
+  color: var(--lv-ink);
+}
+.lv-match-card-vs {
+  color: var(--lv-ink-muted);
+  font-size: 0.75rem;
+}
+.lv-match-card-scores {
+  display: flex;
+  gap: 12px;
+  margin-top: 0.5rem;
+}
+.lv-match-card-set {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lv-ink);
+  background: rgba(122, 28, 28, 0.04);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.lv-match-card-set-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--lv-ink-muted);
+  margin-right: 2px;
+}
+.lv-match-card-outcome {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.lv-match-card-outcome--win {
+  color: var(--lv-green);
+}
+.lv-match-card-outcome--split {
+  color: var(--lv-gold);
+}
+.lv-match-card-work {
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+  margin-top: 0.5rem;
+}
+.lv-match-card-pending {
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* ==========================================================
+   BRACKET VIEW — CSS Grid bracket with connector lines
+   ========================================================== */
+
+.lv-bracket {
+  margin-bottom: 2rem;
+}
+.lv-bracket-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.lv-bracket-type {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--lv-ink);
+}
+.lv-bracket-type--gold { color: #8B6914; }
+.lv-bracket-type--silver { color: #6E6E7A; }
+.lv-bracket-format {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+}
+
+/* Scrollable wrapper — one layout for desktop + mobile */
+.lv-bk-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+.lv-bk-inner {
+  min-width: max-content;
+}
+
+/* Round labels row (shares grid-template-columns with bracket grid) */
+.lv-bk-round-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  padding: 0 6px;
+  margin-bottom: 8px;
+}
+
+/* Matchup box */
+.lv-bk-matchup {
+  position: relative;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-sm);
+  margin: 0 6px;
+  overflow: visible;
+}
+.lv-bk-matchup--bye {
+  background: transparent;
+  border-style: dashed;
+  border-color: rgba(122, 28, 28, 0.1);
+  opacity: 0.55;
+}
+.lv-bk-matchup--live {
+  border-color: rgba(122, 28, 28, 0.4);
+  box-shadow: 0 0 0 1px rgba(122, 28, 28, 0.12);
+}
+.lv-bk-matchup--done {
+  border-color: rgba(46, 84, 54, 0.25);
+}
+
+/* Entry line — horizontal from left connector to matchup */
+.lv-bk-has-entry::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background: var(--lv-border);
+}
+
+/* Exit line — horizontal from matchup to right connector */
+.lv-bk-has-exit::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background: var(--lv-border);
+}
+
+/* Team slot inside matchup */
+.lv-bk-slot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  color: var(--lv-ink-muted);
+  min-height: 28px;
+}
+.lv-bk-slot:first-child {
+  border-bottom: 1px solid rgba(122, 28, 28, 0.06);
+}
+.lv-bk-slot--winner {
+  color: var(--lv-ink);
+  font-weight: 700;
+  background: rgba(46, 84, 54, 0.04);
+}
+.lv-bk-slot--bye {
+  font-style: italic;
+  opacity: 0.4;
+}
+.lv-bk-slot-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 6px;
+}
+.lv-bk-slot-score {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  min-width: 18px;
+  text-align: right;
+}
+/* Caption beneath matchup — absolutely positioned so it doesn't
+   shift the matchup center away from the connector lines */
+.lv-bk-caption {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 2px 0;
+  font-size: 0.55rem;
+  color: var(--lv-ink-muted);
+  opacity: 0.45;
+}
+
+/* Connector column — draws bracket lines between rounds
+   4 children each flex:1 dividing the connector height into quarters.
+   Top-arm and bot-arm use borders to draw the bracket shape:
+
+       ──────────  y=25%  (spacer border-bottom → feeder A exit)
+                │         (top-arm border-right)
+                │         (bot-arm border-right)
+       ──────────  y=75%  (spacer border-top → feeder B exit)
+
+   The next-round matchup's ::before connects at the midpoint (y=50%).
+*/
+.lv-bk-connector {
+  display: flex;
+  flex-direction: column;
+}
+.lv-bk-conn-spacer {
+  flex: 1;
+}
+/* Top spacer bottom border — horizontal line at feeder A level */
+.lv-bk-conn-spacer:first-child {
+  border-bottom: 1px solid var(--lv-border);
+}
+/* Bottom spacer top border — horizontal line at feeder B level */
+.lv-bk-conn-spacer:last-child {
+  border-top: 1px solid var(--lv-border);
+}
+/* Top arm — vertical right line from y=25% to y=50% */
+.lv-bk-conn-top {
+  flex: 1;
+  border-right: 1px solid var(--lv-border);
+}
+/* Bottom arm — vertical right line from y=50% to y=75% */
+.lv-bk-conn-bot {
+  flex: 1;
+  border-right: 1px solid var(--lv-border);
 }

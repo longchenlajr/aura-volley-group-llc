@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getUpcomingTournaments, getTournament } from "@/lib/tournaments";
+import { auth } from "@/auth";
 import { Resend } from "resend";
 
 // --- Rate limiter (in-memory, per IP, 5 requests / 10 min) ---
@@ -48,13 +49,16 @@ export async function GET(req: NextRequest) {
 
 // POST: register a new team
 export async function POST(req: NextRequest) {
-  // Rate limit check
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json(
-      { error: "Too many registration attempts. Please try again in a few minutes." },
-      { status: 429 },
-    );
+  // Rate limit check — skip for authenticated admins
+  const session = await auth();
+  if (!session) {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again in a few minutes." },
+        { status: 429 },
+      );
+    }
   }
 
   const body = await req.json();

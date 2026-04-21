@@ -168,6 +168,11 @@
   align-items: center;
   gap: 6px;
 }
+.lv-admin-team-record {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+}
 
 /* Expandable rows */
 .lv-admin-row-clickable {
@@ -507,6 +512,38 @@
 .lv-admin-pool-name {
   color: var(--lv-ink);
   font-weight: 500;
+  flex: 1;
+}
+
+/* Pool swap button */
+.lv-admin-pool-swap-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lv-ink-muted);
+  padding: 2px;
+  opacity: 0.4;
+  transition: opacity 180ms ease, color 180ms ease;
+  flex-shrink: 0;
+}
+.lv-admin-pool-swap-btn:hover {
+  opacity: 1;
+  color: var(--lv-red);
+}
+
+/* Swappable team row in modal */
+.lv-admin-pool-team-swappable {
+  width: 100%;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--lv-radius-sm);
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: all 160ms ease;
+}
+.lv-admin-pool-team-swappable:hover {
+  background: rgba(122, 28, 28, 0.04);
+  border-color: rgba(122, 28, 28, 0.15);
 }
 
 @media (max-width: 640px) {
@@ -624,6 +661,238 @@
 .lv-admin-card-delete:hover {
   background: rgba(197, 48, 48, 0.05);
   border-color: var(--lv-error);
+}
+
+/* Match rows */
+.lv-admin-match-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.85rem;
+  transition: background 120ms ease;
+}
+.lv-admin-match-row:hover {
+  background: rgba(122, 28, 28, 0.03);
+}
+.lv-admin-match-num {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  min-width: 20px;
+  text-align: center;
+}
+.lv-admin-match-teams {
+  flex: 1;
+  color: var(--lv-ink);
+  font-weight: 500;
+}
+.lv-admin-match-work {
+  font-size: 0.75rem;
+  color: var(--lv-gold);
+  background: none;
+  border: 1px solid rgba(155, 107, 30, 0.25);
+  border-radius: var(--lv-radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+.lv-admin-match-work:hover {
+  border-color: var(--lv-gold);
+  background: rgba(155, 107, 30, 0.05);
+}
+.lv-admin-match-status {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.lv-admin-match-status--scheduled {
+  color: var(--lv-ink-muted);
+  border: 1px solid rgba(107, 78, 61, 0.2);
+}
+.lv-admin-match-status--in_progress {
+  color: var(--lv-red);
+  border: 1px solid rgba(122, 28, 28, 0.3);
+  background: rgba(122, 28, 28, 0.05);
+}
+.lv-admin-match-status--complete {
+  color: var(--lv-green);
+  border: 1px solid rgba(46, 84, 54, 0.3);
+  background: rgba(46, 84, 54, 0.05);
+}
+.lv-admin-match-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.lv-admin-match-score {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--lv-red);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .lv-admin-match-row {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .lv-admin-match-actions {
+    margin-left: auto;
+  }
+}
+
+/* === PLAYOFF SETUP === */
+.lv-playoff-standings {
+  margin-bottom: 1rem;
+}
+.lv-playoff-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+.lv-playoff-gold-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-playoff-silver-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+}
+.lv-playoff-byes {
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+}
+.lv-playoff-team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.85rem;
+}
+.lv-playoff-gold {
+  background: rgba(155, 107, 30, 0.04);
+}
+.lv-playoff-silver {
+  background: rgba(107, 78, 61, 0.03);
+}
+.lv-playoff-rank {
+  font-weight: 700;
+  color: var(--lv-ink-muted);
+  min-width: 28px;
+  font-size: 0.8rem;
+}
+.lv-playoff-name {
+  font-weight: 600;
+  color: var(--lv-ink);
+  flex: 1;
+}
+.lv-playoff-origin {
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+  white-space: nowrap;
+}
+.lv-playoff-record {
+  font-size: 0.8rem;
+  color: var(--lv-ink);
+  font-weight: 500;
+}
+.lv-playoff-cutoff {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 2px dashed var(--lv-red);
+  border-bottom: 2px dashed var(--lv-red);
+  margin: 4px 0;
+}
+.lv-playoff-cutoff-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-red);
+}
+.lv-playoff-cutoff-btn {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-sm);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--lv-red);
+  transition: all 160ms ease;
+}
+.lv-playoff-cutoff-btn:hover:not(:disabled) {
+  background: rgba(122, 28, 28, 0.05);
+  border-color: var(--lv-red);
+}
+.lv-playoff-cutoff-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.lv-playoff-rec {
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  padding: 8px 12px;
+  background: rgba(155, 107, 30, 0.05);
+  border-radius: var(--lv-radius-sm);
+  margin-bottom: 1rem;
+  border: 1px solid var(--lv-border-gold);
+}
+.lv-playoff-formats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.lv-playoff-format-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lv-playoff-format-toggle {
+  display: flex;
+  gap: 4px;
+}
+.lv-playoff-format-btn {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--lv-radius-sm);
+  border: 1px solid var(--lv-border);
+  background: transparent;
+  color: var(--lv-ink-muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.lv-playoff-format-btn.active {
+  background: var(--lv-red);
+  color: var(--lv-cream);
+  border-color: var(--lv-red);
 }
 
 /* Admin login */

@@ -241,13 +241,27 @@ export default function LivePage() {
       <div className="lv-container">
         {/* Header */}
         <div className="lv-live-header">
-          <p className="lv-label" style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}>Live</p>
-          <h1 className="lv-h1">Tournament live</h1>
-          <p style={{ color: "var(--lv-ink-muted)", fontSize: "0.95rem", marginTop: "0.5rem" }}>
-            Standings, scores, and tournament updates.
+          <p
+            className="lv-label"
+            style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}
+          >
+            Live
+          </p>
+          <h1 className="lv-h1">Tournament Status</h1>
+          <p
+            style={{
+              color: "var(--lv-ink-muted)",
+              fontSize: "0.95rem",
+              marginTop: "0.5rem",
+            }}
+          >
+            Standings, scores, and tournament updates in real-time.
           </p>
           <div style={{ marginTop: "1.5rem" }}>
-            <SectionDivider className="lv-section-divider" style={{ color: "var(--lv-gold)", opacity: 0.5 }} />
+            <SectionDivider
+              className="lv-section-divider"
+              style={{ color: "var(--lv-gold)", opacity: 0.5 }}
+            />
           </div>
         </div>
 
@@ -255,20 +269,46 @@ export default function LivePage() {
         <div className="lv-field" style={{ marginBottom: "1.5rem" }}>
           <span className="lv-field-label">Tournament Date</span>
           {selected ? (
-            <button type="button" className="lv-date-list-selected" onClick={() => setSelectedId(null)}>
+            <button
+              type="button"
+              className="lv-date-list-selected"
+              onClick={() => setSelectedId(null)}
+            >
               <StatusTag status={selected.status} />
               <span className="lv-date-list-date">
-                {new Date(selected.date).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+                {new Date(selected.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </span>
               <span className="lv-date-list-change">Change</span>
             </button>
           ) : (
             <div className="lv-date-list" role="listbox">
               {tournaments.map((t) => {
-                const label = new Date(t.date).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-                const fmt = t.format === "doubles" ? "Doubles (2v2)" : t.format === "triples" ? "Triples (3v3)" : `${t.format} (${t.teamSize}v${t.teamSize})`;
+                const label = new Date(t.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                });
+                const fmt =
+                  t.format === "doubles"
+                    ? "Doubles (2v2)"
+                    : t.format === "triples"
+                      ? "Triples (3v3)"
+                      : `${t.format} (${t.teamSize}v${t.teamSize})`;
                 return (
-                  <button key={t.id} type="button" role="option" aria-selected={false} className="lv-date-list-item" onClick={() => setSelectedId(t.id)}>
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="option"
+                    aria-selected={false}
+                    className="lv-date-list-item"
+                    onClick={() => setSelectedId(t.id)}
+                  >
                     <StatusTag status={t.status} />
                     <span className="lv-date-list-date">{label}</span>
                     <span className="lv-date-list-format">{fmt}</span>
@@ -283,12 +323,21 @@ export default function LivePage() {
         {selected && isLive && (
           <>
             <div className="lv-live-refresh">
-              <span className={`lv-live-refresh-dot ${standingsFetching ? "fetching" : ""}`} />
-              <span className="lv-live-refresh-label">Live · updates every 12s</span>
+              <span
+                className={`lv-live-refresh-dot ${standingsFetching ? "fetching" : ""}`}
+              />
+              <span className="lv-live-refresh-label">
+                Live · updates every 12s
+              </span>
             </div>
 
             {(poolTabs.length > 0 || bracketTabs.length > 0) && (
-              <PoolTabs pools={poolTabs} brackets={bracketTabs} activeTab={activeTab} onSelect={setActiveTab} />
+              <PoolTabs
+                pools={poolTabs}
+                brackets={bracketTabs}
+                activeTab={activeTab}
+                onSelect={setActiveTab}
+              />
             )}
 
             {renderTabContent()}
@@ -298,10 +347,16 @@ export default function LivePage() {
         {/* === UPCOMING VIEW === */}
         {selected && isUpcoming && (
           <div className="lv-live-placeholder">
-            <DecorativeAsset src="cloud-1.png" className="lv-live-placeholder-cloud" width={100} height={60} />
+            <DecorativeAsset
+              src="cloud-1.png"
+              className="lv-live-placeholder-cloud"
+              width={100}
+              height={60}
+            />
             <SectionDivider className="lv-live-placeholder-divider" />
             <div className="lv-live-countdown">
-              {daysUntil(selected.date)} day{daysUntil(selected.date) !== 1 ? "s" : ""} until tournament
+              {daysUntil(selected.date)} day
+              {daysUntil(selected.date) !== 1 ? "s" : ""} until tournament
             </div>
 
             {upcomingPools ? (
@@ -310,47 +365,103 @@ export default function LivePage() {
                 <div className="lv-live-pool-preview">
                   {upcomingPools.map((pool) => (
                     <div key={pool.pool_label} className="lv-live-pool-card">
-                      <div className="lv-live-pool-label">Pool {pool.pool_label}</div>
-                      <div className="lv-live-pool-court">Court {pool.court_number}</div>
-                      {pool.teams.map((t) => <div key={t.seed_in_pool} className="lv-live-pool-team">{t.team_name}</div>)}
+                      <div className="lv-live-pool-label">
+                        Pool {pool.pool_label}
+                      </div>
+                      <div className="lv-live-pool-court">
+                        Court {pool.court_number}
+                      </div>
+                      {pool.teams.map((t) => (
+                        <div key={t.seed_in_pool} className="lv-live-pool-team">
+                          {t.team_name}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
                 {upcomingMatches && (
                   <div style={{ marginTop: "1.5rem", textAlign: "left" }}>
-                    <h3 className="lv-live-placeholder-heading" style={{ fontSize: "1rem" }}>Match schedule</h3>
+                    <h3
+                      className="lv-live-placeholder-heading"
+                      style={{ fontSize: "1rem" }}
+                    >
+                      Match schedule
+                    </h3>
                     {(() => {
                       const byPool = new Map<string, PublicMatch[]>();
-                      for (const m of upcomingMatches) { if (!byPool.has(m.pool_label)) byPool.set(m.pool_label, []); byPool.get(m.pool_label)!.push(m); }
-                      return Array.from(byPool.entries()).map(([label, pmatches]) => (
-                        <div key={label} style={{ marginBottom: "1rem" }}>
-                          <div className="lv-live-pool-label" style={{ marginBottom: "0.5rem" }}>Pool {label} · Court {pmatches[0]?.court_number}</div>
-                          {pmatches.sort((a, b) => a.match_order - b.match_order).map((m) => (
-                            <div key={`${m.pool_label}-${m.match_order}`} className="lv-live-match-row">
-                              <span className="lv-live-match-num">{m.match_order}</span>
-                              <span className="lv-live-match-teams">{m.team_a} vs {m.team_b}</span>
-                              {m.work_team && <span className="lv-live-match-work">Work: {m.work_team}</span>}
+                      for (const m of upcomingMatches) {
+                        if (!byPool.has(m.pool_label))
+                          byPool.set(m.pool_label, []);
+                        byPool.get(m.pool_label)!.push(m);
+                      }
+                      return Array.from(byPool.entries()).map(
+                        ([label, pmatches]) => (
+                          <div key={label} style={{ marginBottom: "1rem" }}>
+                            <div
+                              className="lv-live-pool-label"
+                              style={{ marginBottom: "0.5rem" }}
+                            >
+                              Pool {label} · Court {pmatches[0]?.court_number}
                             </div>
-                          ))}
-                        </div>
-                      ));
+                            {pmatches
+                              .sort((a, b) => a.match_order - b.match_order)
+                              .map((m) => (
+                                <div
+                                  key={`${m.pool_label}-${m.match_order}`}
+                                  className="lv-live-match-row"
+                                >
+                                  <span className="lv-live-match-num">
+                                    {m.match_order}
+                                  </span>
+                                  <span className="lv-live-match-teams">
+                                    {m.team_a} vs {m.team_b}
+                                  </span>
+                                  {m.work_team && (
+                                    <span className="lv-live-match-work">
+                                      Work: {m.work_team}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        ),
+                      );
                     })()}
                   </div>
                 )}
               </>
             ) : (
               <>
-                <h2 className="lv-live-placeholder-heading">This tournament hasn&rsquo;t started yet.</h2>
-                {teamCount !== null && teamCount > 0 && <p className="lv-live-placeholder-text">{teamCount} team{teamCount !== 1 ? "s" : ""} registered.</p>}
-                <p className="lv-live-placeholder-text">Pool assignments will appear here once registration closes and teams are seeded.</p>
+                <h2 className="lv-live-placeholder-heading">
+                  This tournament hasn&rsquo;t started yet.
+                </h2>
+                {teamCount !== null && teamCount > 0 && (
+                  <p className="lv-live-placeholder-text">
+                    {teamCount} team{teamCount !== 1 ? "s" : ""} registered.
+                  </p>
+                )}
+                <p className="lv-live-placeholder-text">
+                  Pool assignments will appear here once registration closes and
+                  teams are seeded.
+                </p>
               </>
             )}
 
             <div className="lv-live-share" style={{ marginTop: "2rem" }}>
               <span className="lv-live-share-label">Registration link</span>
-              <div className="lv-live-share-url">longvolleyball.com/longvolleyball/register?tournament={selected.id}</div>
-              <button className="lv-btn lv-btn-secondary" style={{ fontSize: "0.8rem", padding: "6px 14px" }}
-                onClick={() => navigator.clipboard.writeText(`${window.location.origin}/longvolleyball/register?tournament=${selected.id}`)}>
+              <div className="lv-live-share-url">
+                longvolleyball.com/longvolleyball/register?tournament=
+                {selected.id}
+              </div>
+              <button
+                className="lv-btn lv-btn-secondary"
+                style={{ fontSize: "0.8rem", padding: "6px 14px" }}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/longvolleyball/register?tournament=${selected.id}`,
+                  )
+                }
+              >
                 Copy link
               </button>
             </div>
@@ -364,30 +475,67 @@ export default function LivePage() {
               <>
                 {/* Champion banner */}
                 {(() => {
-                  const goldBracket = bracketData?.find((b) => b.bracket_type === "gold");
-                  const silverBracket = bracketData?.find((b) => b.bracket_type === "silver");
+                  const goldBracket = bracketData?.find(
+                    (b) => b.bracket_type === "gold",
+                  );
+                  const silverBracket = bracketData?.find(
+                    (b) => b.bracket_type === "silver",
+                  );
 
                   if (goldBracket) {
-                    const goldFinalRound = Math.max(...goldBracket.slots.map((s) => s.round_number));
-                    const goldFinalSlot = goldBracket.slots.find((s) => s.round_number === goldFinalRound && s.team_name);
+                    const goldFinalRound = Math.max(
+                      ...goldBracket.slots.map((s) => s.round_number),
+                    );
+                    const goldFinalSlot = goldBracket.slots.find(
+                      (s) => s.round_number === goldFinalRound && s.team_name,
+                    );
                     const goldChamp = goldFinalSlot?.team_name ?? null;
 
-                    const silverFinalRound = silverBracket ? Math.max(...silverBracket.slots.map((s) => s.round_number)) : 0;
-                    const silverFinalSlot = silverBracket?.slots.find((s) => s.round_number === silverFinalRound && s.team_name);
+                    const silverFinalRound = silverBracket
+                      ? Math.max(
+                          ...silverBracket.slots.map((s) => s.round_number),
+                        )
+                      : 0;
+                    const silverFinalSlot = silverBracket?.slots.find(
+                      (s) => s.round_number === silverFinalRound && s.team_name,
+                    );
                     const silverChamp = silverFinalSlot?.team_name ?? null;
 
                     return (
                       <>
                         {goldChamp && (
                           <div className="lv-live-champion">
-                            <span className="lv-live-champion-label">Gold Bracket Champion</span>
-                            <span className="lv-live-champion-name">{goldChamp}</span>
+                            <span className="lv-live-champion-label">
+                              Gold Bracket Champion
+                            </span>
+                            <span className="lv-live-champion-name">
+                              {goldChamp}
+                            </span>
                           </div>
                         )}
                         {silverChamp && (
-                          <div className="lv-live-champion" style={{ background: "rgba(107, 78, 61, 0.08)", borderColor: "rgba(107, 78, 61, 0.2)" }}>
-                            <span className="lv-live-champion-label" style={{ color: "var(--lv-ink-muted)" }}>Silver Bracket Champion</span>
-                            <span className="lv-live-champion-name" style={{ color: "var(--lv-cream)", fontSize: "1.25rem" }}>{silverChamp}</span>
+                          <div
+                            className="lv-live-champion"
+                            style={{
+                              background: "rgba(107, 78, 61, 0.08)",
+                              borderColor: "rgba(107, 78, 61, 0.2)",
+                            }}
+                          >
+                            <span
+                              className="lv-live-champion-label"
+                              style={{ color: "var(--lv-ink-muted)" }}
+                            >
+                              Silver Bracket Champion
+                            </span>
+                            <span
+                              className="lv-live-champion-name"
+                              style={{
+                                color: "var(--lv-cream)",
+                                fontSize: "1.25rem",
+                              }}
+                            >
+                              {silverChamp}
+                            </span>
                           </div>
                         )}
                       </>
@@ -397,24 +545,42 @@ export default function LivePage() {
                   const topTeam = archiveStandings.pools[0]?.standings[0];
                   return topTeam ? (
                     <div className="lv-live-champion">
-                      <span className="lv-live-champion-label">Tournament Champion</span>
-                      <span className="lv-live-champion-name">{topTeam.team_name}</span>
+                      <span className="lv-live-champion-label">
+                        Tournament Champion
+                      </span>
+                      <span className="lv-live-champion-name">
+                        {topTeam.team_name}
+                      </span>
                     </div>
                   ) : null;
                 })()}
 
                 {(poolTabs.length > 0 || bracketTabs.length > 0) && (
-                  <PoolTabs pools={poolTabs} brackets={bracketTabs} activeTab={activeTab} onSelect={setActiveTab} />
+                  <PoolTabs
+                    pools={poolTabs}
+                    brackets={bracketTabs}
+                    activeTab={activeTab}
+                    onSelect={setActiveTab}
+                  />
                 )}
 
                 {renderTabContent()}
               </>
             ) : (
               <div className="lv-live-placeholder">
-                <DecorativeAsset src="cloud-1.png" className="lv-live-placeholder-cloud" width={100} height={60} />
+                <DecorativeAsset
+                  src="cloud-1.png"
+                  className="lv-live-placeholder-cloud"
+                  width={100}
+                  height={60}
+                />
                 <SectionDivider className="lv-live-placeholder-divider" />
-                <h2 className="lv-live-placeholder-heading">Results not available</h2>
-                <p className="lv-live-placeholder-text">Detailed results are not available for this tournament.</p>
+                <h2 className="lv-live-placeholder-heading">
+                  Results not available
+                </h2>
+                <p className="lv-live-placeholder-text">
+                  Detailed results are not available for this tournament.
+                </p>
               </div>
             )}
           </>

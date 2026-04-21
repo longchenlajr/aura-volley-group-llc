@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DecorativeAsset } from "../../DecorativeAsset";
+import { SectionDivider } from "../../ornaments";
 import { GalleryGrid } from "./GalleryGrid";
 
 export const dynamic = "force-dynamic";
@@ -27,38 +27,55 @@ export default function GalleryPage() {
   return (
     <div className="lv-gallery-page">
       <div className="lv-container">
-        {/* Champions Wall */}
-        <div className="lv-gallery-header">
-          <div style={{ marginBottom: "1.5rem" }}>
-            <DecorativeAsset src="divider.png" className="lv-divider-img" width={280} height={24} />
-          </div>
-          <p className="lv-label" style={{ color: "var(--lv-gold)", marginBottom: "0.5rem" }}>
-            Hall of Fame
+        {/* Header */}
+        <div className="lv-live-header">
+          <p
+            className="lv-label"
+            style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}
+          >
+            Gallery
           </p>
-          <h1 className="lv-h1">Champions Wall</h1>
+          <h1 className="lv-h1">Photo Book</h1>
+          <p
+            style={{
+              color: "var(--lv-ink-muted)",
+              fontSize: "0.95rem",
+              marginTop: "0.5rem",
+            }}
+          >
+            Memories captured over the years.
+          </p>
+          <div style={{ marginTop: "1.5rem" }}>
+            <SectionDivider
+              className="lv-section-divider"
+              style={{ color: "var(--lv-gold)", opacity: 0.5 }}
+            />
+          </div>
         </div>
 
         {champions.length > 0 ? (
           <GalleryGrid images={champions} />
         ) : (
-          <p className="lv-gallery-empty">Photos coming soon — check back after the first tournament.</p>
+          <p className="lv-gallery-empty">
+            Photos coming soon — check back after the first tournament.
+          </p>
         )}
 
         {/* Gallery */}
-        <div className="lv-gallery-header" style={{ marginTop: "4rem" }}>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <DecorativeAsset src="divider.png" className="lv-divider-img" width={280} height={24} />
-          </div>
-          <p className="lv-label" style={{ color: "var(--lv-gold)", marginBottom: "0.5rem" }}>
-            Moments
-          </p>
+        <div className="lv-live-header" style={{ marginTop: "4rem" }}>
+          {/* <p className="lv-label" style={{ color: "var(--lv-gold)", marginBottom: "0.5rem" }}>Moments</p>
           <h1 className="lv-h1">Gallery</h1>
+          <div style={{ marginTop: "1.5rem" }}>
+            <SectionDivider className="lv-section-divider" style={{ color: "var(--lv-gold)", opacity: 0.5 }} />
+          </div> */}
         </div>
 
         {gallery.length > 0 ? (
           <GalleryGrid images={gallery} />
         ) : (
-          <p className="lv-gallery-empty">Photos coming soon — check back after the first tournament.</p>
+          <p className="lv-gallery-empty">
+            Photos coming soon — check back after the first tournament.
+          </p>
         )}
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DecorativeAsset } from "../../DecorativeAsset";
+import { SectionDivider } from "../../ornaments";
 
 interface TournamentResult {
   date: string;
@@ -260,11 +260,15 @@ export default function RecordsPage() {
   return (
     <div className="lv-records-page">
       <div className="lv-container">
-        <div className="lv-records-header">
-          <div style={{ marginBottom: "1.5rem" }}>
-            <DecorativeAsset src="divider.png" className="lv-divider-img" width={280} height={24} />
+        <div className="lv-live-header">
+          <p className="lv-label" style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}>Records</p>
+          <h1 className="lv-h1">Tournament History</h1>
+          <p style={{ color: "var(--lv-ink-muted)", fontSize: "0.95rem", marginTop: "0.5rem" }}>
+            The best of the best.
+          </p>
+          <div style={{ marginTop: "1.5rem" }}>
+            <SectionDivider className="lv-section-divider" style={{ color: "var(--lv-gold)", opacity: 0.5 }} />
           </div>
-          <h1 className="lv-h1">Tournament Records</h1>
         </div>
 
         {grouped.map(({ year, results }) => {

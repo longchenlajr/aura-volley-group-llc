@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   },
   description:
     "Aura Volley Group LLC — home of A-Town Aura volleyball and premium volleyball-inspired apparel.",
+  openGraph: {
+    siteName: "Aura Volley Group",
+    description:
+      "Home of A-Town Aura volleyball and premium volleyball-inspired apparel.",
+  },
 };
 
 export default function RootLayout({

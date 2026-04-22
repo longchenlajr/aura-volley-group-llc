@@ -170,8 +170,7 @@ const RESULTS: TournamentResult[] = [
     format: "quads",
     gold: {
       first: "Nairi Lin + Harry Lin + Klo Kynaw + Luther Ser",
-      second:
-        "Bryce Nelligan + Reno Plesnarski + Liam Ruggie Pratt + Owen Pratt",
+      second: "Bryce Nelligan + Reno Plesnarski + Liam Ruggie + Owen Pratt",
     },
   },
   {
@@ -202,7 +201,7 @@ const RESULTS: TournamentResult[] = [
     format: "doubles",
     gold: {
       first: "Calvin Long + Will Stiles",
-      second: "Owen Pratt + Liam Ruggie Pratt",
+      second: "Owen Pratt + Liam Ruggie",
     },
     silver: {
       first: "Mark Fredericksen + Devin Ellis",

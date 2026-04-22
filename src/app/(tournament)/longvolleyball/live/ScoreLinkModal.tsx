@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   matchId: string;
+  matchType?: "pool" | "bracket";
   workTeamName: string;
   onClose: () => void;
 }
 
-export function ScoreLinkModal({ matchId, workTeamName, onClose }: Props) {
+export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onClose }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -25,7 +26,7 @@ export function ScoreLinkModal({ matchId, workTeamName, onClose }: Props) {
       const res = await fetch("/api/public/score-link/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ match_id: matchId, email: email.trim() }),
+        body: JSON.stringify({ match_id: matchId, match_type: matchType, email: email.trim() }),
       });
 
       const data = await res.json();
@@ -36,8 +37,8 @@ export function ScoreLinkModal({ matchId, workTeamName, onClose }: Props) {
         return;
       }
 
-      // Redirect to score submission page
-      router.push(`/longvolleyball/score/${data.token}`);
+      // Redirect using the path returned by the API
+      router.push(data.redirectPath);
     } catch {
       setError("Something went wrong. Try again.");
       setVerifying(false);

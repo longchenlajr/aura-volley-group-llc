@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PoolStandings } from "@/lib/standings";
 import { ScoreLinkModal } from "./ScoreLinkModal";
+import { SubmitScoresButton } from "./SubmitScoresButton";
 
 interface MatchDisplay {
   match_id: string;
@@ -51,7 +52,11 @@ function computeOutcome(m: MatchDisplay): { label: string; type: "win" | "split"
 }
 
 export function PoolView({ pool, matches, totalMatches, completeMatches, teamSeeds }: Props) {
-  const [scoreLinkMatch, setScoreLinkMatch] = useState<{ matchId: string; workTeamName: string } | null>(null);
+  const [scoreLinkMatch, setScoreLinkMatch] = useState<{
+    matchId: string;
+    matchType: "pool" | "bracket";
+    workTeamName: string;
+  } | null>(null);
 
   // Reverse order: most recent (highest match_order complete first), then in-progress, then scheduled
   const sorted = [...matches].sort((a, b) => {
@@ -63,6 +68,10 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
     if (a.status === "complete") return b.match_order - a.match_order;
     return a.match_order - b.match_order;
   });
+
+  function handleOpenModal(matchId: string, matchType: "pool" | "bracket", workTeamName: string) {
+    setScoreLinkMatch({ matchId, matchType, workTeamName });
+  }
 
   return (
     <div>
@@ -143,10 +152,19 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
                 </div>
               )}
 
-              {/* Scorekeeper */}
+              {/* Scorekeeper + submit button */}
               {m.work_team && (
                 <div className="lv-match-card-work">Scorekeeper: {m.work_team}</div>
               )}
+
+              <SubmitScoresButton
+                matchId={m.match_id}
+                matchType="pool"
+                workTeamName={m.work_team ?? ""}
+                status={m.status}
+                hasWorkTeam={!!m.work_team}
+                onOpenModal={handleOpenModal}
+              />
 
               {m.status === "scheduled" && (
                 <div className="lv-match-card-pending">Not yet played</div>
@@ -160,6 +178,7 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
       {scoreLinkMatch && (
         <ScoreLinkModal
           matchId={scoreLinkMatch.matchId}
+          matchType={scoreLinkMatch.matchType}
           workTeamName={scoreLinkMatch.workTeamName}
           onClose={() => setScoreLinkMatch(null)}
         />

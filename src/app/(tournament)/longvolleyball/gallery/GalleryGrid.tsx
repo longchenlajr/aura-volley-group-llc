@@ -2,7 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-export function GalleryGrid({ images }: { images: string[] }) {
+interface GalleryImage {
+  src: string;
+  thumb: string;
+}
+
+export function GalleryGrid({ images }: { images: GalleryImage[] }) {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,7 +23,7 @@ export function GalleryGrid({ images }: { images: string[] }) {
           }
         });
       },
-      { rootMargin: "0px 0px -60px 0px", threshold: 0.1 },
+      { rootMargin: "0px 0px -40px 0px", threshold: 0.05 },
     );
 
     const items = grid.querySelectorAll(".lv-masonry-item");
@@ -29,13 +34,13 @@ export function GalleryGrid({ images }: { images: string[] }) {
 
   return (
     <div className="lv-masonry" ref={gridRef}>
-      {images.map((src, i) => (
-        <div key={src} className="lv-masonry-item">
+      {images.map((img, i) => (
+        <div key={img.src} className="lv-masonry-item">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={src}
+            src={img.thumb}
             alt={`Photo ${i + 1}`}
-            loading="lazy"
+            loading={i < 12 ? "eager" : "lazy"}
           />
         </div>
       ))}

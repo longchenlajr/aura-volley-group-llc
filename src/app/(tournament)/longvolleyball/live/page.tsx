@@ -26,7 +26,7 @@ interface BracketData {
   bracket_type: string; points_per_set: number;
   slots: Array<{ round_number: number; slot_position: number; team_name: string | null; team_id: string | null; is_bye: boolean }>;
   matches: Array<{
-    round_number: number; match_position: number; court_number: number; match_order: number; status: string;
+    match_id: string; round_number: number; match_position: number; court_number: number; match_order: number; status: string;
     team_a: string; team_b: string; team_a_id: string | null; team_b_id: string | null;
     score_a: number | null; score_b: number | null; work_team: string | null;
   }>;
@@ -483,23 +483,24 @@ export default function LivePage() {
                   );
 
                   if (goldBracket) {
-                    const goldFinalRound = Math.max(
-                      ...goldBracket.slots.map((s) => s.round_number),
-                    );
-                    const goldFinalSlot = goldBracket.slots.find(
-                      (s) => s.round_number === goldFinalRound && s.team_name,
-                    );
-                    const goldChamp = goldFinalSlot?.team_name ?? null;
+                    // Champion = winner of the final match (highest round)
+                    const getChampion = (bracket: typeof goldBracket | null | undefined) => {
+                      if (!bracket) return null;
+                      const finalRound = Math.max(
+                        ...bracket.matches.map((m) => m.round_number),
+                        0,
+                      );
+                      const finalMatch = bracket.matches.find(
+                        (m) => m.round_number === finalRound && m.status === "complete",
+                      );
+                      if (!finalMatch || finalMatch.score_a == null || finalMatch.score_b == null) return null;
+                      return finalMatch.score_a > finalMatch.score_b
+                        ? finalMatch.team_a
+                        : finalMatch.team_b;
+                    };
 
-                    const silverFinalRound = silverBracket
-                      ? Math.max(
-                          ...silverBracket.slots.map((s) => s.round_number),
-                        )
-                      : 0;
-                    const silverFinalSlot = silverBracket?.slots.find(
-                      (s) => s.round_number === silverFinalRound && s.team_name,
-                    );
-                    const silverChamp = silverFinalSlot?.team_name ?? null;
+                    const goldChamp = getChampion(goldBracket);
+                    const silverChamp = getChampion(silverBracket ?? null);
 
                     return (
                       <>
@@ -517,22 +518,19 @@ export default function LivePage() {
                           <div
                             className="lv-live-champion"
                             style={{
-                              background: "rgba(107, 78, 61, 0.08)",
-                              borderColor: "rgba(107, 78, 61, 0.2)",
+                              background: "var(--lv-bg-dark-elevated)",
+                              borderColor: "rgba(107, 78, 61, 0.3)",
                             }}
                           >
                             <span
                               className="lv-live-champion-label"
-                              style={{ color: "var(--lv-ink-muted)" }}
+                              style={{ color: "var(--lv-cream-muted)" }}
                             >
                               Silver Bracket Champion
                             </span>
                             <span
                               className="lv-live-champion-name"
-                              style={{
-                                color: "var(--lv-cream)",
-                                fontSize: "1.25rem",
-                              }}
+                              style={{ fontSize: "1.25rem" }}
                             >
                               {silverChamp}
                             </span>

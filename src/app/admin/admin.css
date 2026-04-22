@@ -895,6 +895,553 @@
   border-color: var(--lv-red);
 }
 
+/* ==========================================================
+   TOURNAMENT VIEW — REBUILT ADMIN DASHBOARD
+   ========================================================== */
+
+/* --- TOURNAMENT TOOLBAR --- */
+.lv-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+.lv-toolbar .lv-btn {
+  font-size: 0.8rem;
+  padding: 7px 14px;
+}
+.lv-btn-destructive {
+  background: transparent;
+  color: var(--lv-error);
+  border: 1px solid rgba(197, 48, 48, 0.35);
+}
+.lv-btn-destructive:hover {
+  background: rgba(197, 48, 48, 0.06);
+  border-color: var(--lv-error);
+}
+
+.lv-tournament-status {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  margin-bottom: 1.5rem;
+  padding: 6px 0;
+}
+.lv-tournament-status strong {
+  color: var(--lv-ink);
+}
+
+/* --- TOURNAMENT INFO DROPDOWN --- */
+.lv-info-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.lv-info-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  min-width: 260px;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  padding: 1rem;
+  box-shadow: var(--lv-shadow-card);
+}
+.lv-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.8rem;
+}
+.lv-info-row-label {
+  color: var(--lv-ink-muted);
+}
+.lv-info-row-value {
+  color: var(--lv-ink);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* --- POOL SUMMARY CARDS --- */
+.lv-pool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 768px) {
+  .lv-pool-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lv-pool-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+  transition: border-color 160ms ease;
+}
+.lv-pool-card.expanded {
+  border-color: rgba(122, 28, 28, 0.35);
+  grid-column: 1 / -1;
+}
+
+.lv-pool-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+}
+.lv-pool-card-header:hover {
+  background: rgba(122, 28, 28, 0.02);
+}
+
+.lv-pool-card-left {
+  flex: 1;
+  min-width: 0;
+}
+.lv-pool-card-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--lv-red);
+  margin-bottom: 2px;
+}
+.lv-pool-card-progress-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+  margin-bottom: 4px;
+}
+.lv-pool-card-progress-bar {
+  height: 3px;
+  background: rgba(122, 28, 28, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.lv-pool-card-progress-fill {
+  height: 100%;
+  background: var(--lv-red);
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+.lv-pool-card-standings-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.lv-pool-card-standing-line {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lv-pool-card-standing-line strong {
+  color: var(--lv-ink);
+}
+
+.lv-pool-card-chevron {
+  flex-shrink: 0;
+  color: var(--lv-ink-muted);
+  transition: transform 200ms ease;
+  margin-left: 8px;
+}
+.lv-pool-card-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Expanded pool body */
+.lv-pool-card-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid rgba(122, 28, 28, 0.08);
+}
+
+/* Standings table (expanded) */
+.lv-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.lv-standings-table th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  border-bottom: 1px solid var(--lv-border);
+}
+.lv-standings-table td {
+  padding: 6px 8px;
+  font-size: 0.8rem;
+  color: var(--lv-ink-muted);
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
+}
+.lv-standings-row-1 {
+  border-left: 3px solid var(--lv-gold);
+}
+.lv-standings-row-2 {
+  border-left: 3px solid var(--lv-red);
+}
+.lv-standings-team-name {
+  font-weight: 600;
+  color: var(--lv-ink);
+}
+.lv-standings-swap-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lv-ink-muted);
+  padding: 2px;
+  opacity: 0.4;
+  transition: opacity 180ms ease, color 180ms ease;
+}
+.lv-standings-swap-btn:hover {
+  opacity: 1;
+  color: var(--lv-red);
+}
+
+/* --- MATCH TABLE (within pool card) --- */
+.lv-match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Desktop match row */
+.lv-match-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.8rem;
+  transition: background 120ms ease;
+}
+.lv-match-row:hover {
+  background: rgba(122, 28, 28, 0.03);
+}
+.lv-match-row--live {
+  border-left: 3px solid var(--lv-red);
+}
+.lv-match-row--complete {
+  opacity: 0.7;
+}
+.lv-match-num {
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lv-match-teams {
+  flex: 1;
+  color: var(--lv-ink);
+  font-weight: 500;
+  min-width: 0;
+}
+.lv-match-teams .withdrawn-tag {
+  font-size: 0.65rem;
+  color: var(--lv-ink-muted);
+  font-weight: 400;
+  font-style: italic;
+}
+.lv-match-winner {
+  font-weight: 700;
+}
+.lv-match-work {
+  font-size: 0.7rem;
+  color: var(--lv-gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lv-match-work .withdrawn-tag {
+  color: var(--lv-ink-muted);
+  font-style: italic;
+}
+.lv-match-score {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--lv-red);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lv-match-tag {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lv-match-tag--scheduled {
+  color: var(--lv-ink-muted);
+  border: 1px solid rgba(107, 78, 61, 0.2);
+}
+.lv-match-tag--live {
+  color: var(--lv-red);
+  border: 1px solid rgba(122, 28, 28, 0.3);
+  background: rgba(122, 28, 28, 0.05);
+  animation: lv-pulse 2s ease-in-out infinite;
+}
+@keyframes lv-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.lv-match-tag--final {
+  color: var(--lv-green);
+  border: 1px solid rgba(46, 84, 54, 0.3);
+  background: rgba(46, 84, 54, 0.05);
+}
+.lv-match-tag--forfeit {
+  color: var(--lv-gold);
+  border: 1px solid var(--lv-border-gold);
+  background: rgba(155, 107, 30, 0.06);
+}
+.lv-match-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* Mobile match cards */
+@media (max-width: 640px) {
+  .lv-match-row {
+    flex-wrap: wrap;
+    gap: 3px 8px;
+    padding: 8px;
+    border: 1px solid rgba(122, 28, 28, 0.08);
+    border-radius: var(--lv-radius-sm);
+    margin-bottom: 2px;
+  }
+  .lv-match-row--live {
+    border-left: 3px solid var(--lv-red);
+  }
+  .lv-match-actions {
+    margin-left: auto;
+  }
+}
+
+/* --- TEAM ROSTER SECTION --- */
+.lv-roster-section {
+  margin-bottom: 1.5rem;
+}
+.lv-roster-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+}
+.lv-roster-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-ink);
+  flex: 1;
+}
+.lv-roster-summary {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+}
+.lv-roster-add-btn {
+  flex-shrink: 0;
+}
+
+.lv-roster-body {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+}
+
+/* Roster desktop table */
+.lv-roster-table-wrap {
+  overflow-x: auto;
+}
+.lv-roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.lv-roster-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  background: var(--lv-parchment);
+  border-bottom: 1px solid var(--lv-border);
+  white-space: nowrap;
+}
+.lv-roster-table td {
+  padding: 0 12px;
+  height: 48px;
+  color: var(--lv-ink-muted);
+  font-size: 13px;
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
+  white-space: nowrap;
+}
+.lv-roster-table .lv-admin-team-name {
+  font-size: 13px;
+}
+
+/* Roster mobile cards */
+.lv-roster-cards {
+  display: none;
+}
+@media (max-width: 768px) {
+  .lv-roster-table-wrap { display: none; }
+  .lv-roster-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+}
+
+.lv-roster-card {
+  position: relative;
+  padding: 12px;
+  border: 1px solid rgba(122, 28, 28, 0.08);
+  border-radius: var(--lv-radius-sm);
+}
+.lv-roster-card-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--lv-red);
+  margin-bottom: 2px;
+}
+.lv-roster-card-captain {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  margin-bottom: 6px;
+}
+.lv-roster-card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.lv-roster-card-delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Withdrawn teams toggle */
+.lv-withdrawn-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(122, 28, 28, 0.06);
+  width: 100%;
+}
+.lv-withdrawn-toggle:hover {
+  color: var(--lv-ink);
+}
+
+/* --- WITHDRAW TEAM MODAL --- */
+.lv-withdraw-affected {
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+.lv-withdraw-affected li {
+  font-size: 0.8rem;
+  padding: 4px 0;
+  color: var(--lv-ink);
+}
+.lv-withdraw-affected li .forfeit-score {
+  color: var(--lv-ink-muted);
+  font-weight: 500;
+}
+.lv-withdraw-work-callout {
+  margin-top: 0.75rem;
+  padding: 10px 12px;
+  background: rgba(155, 107, 30, 0.06);
+  border: 1px solid var(--lv-border-gold);
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.8rem;
+  color: var(--lv-ink);
+}
+.lv-withdraw-work-callout strong {
+  color: var(--lv-gold);
+}
+.lv-withdraw-reassign-btn {
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--lv-radius-sm);
+  background: transparent;
+  border: 1px solid var(--lv-border-gold);
+  color: var(--lv-gold);
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 160ms ease;
+}
+.lv-withdraw-reassign-btn:hover {
+  background: rgba(155, 107, 30, 0.08);
+  border-color: var(--lv-gold);
+}
+
+/* --- ADVANCED DELETE --- */
+.lv-advanced-toggle {
+  font-size: 0.7rem;
+  color: var(--lv-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 0.75rem;
+}
+.lv-advanced-toggle:hover {
+  color: var(--lv-ink);
+}
+
+/* --- EMAIL WITHDRAWN WARNING --- */
+.lv-email-withdrawn-warning {
+  margin-top: 0.5rem;
+  padding: 6px 10px;
+  background: rgba(155, 107, 30, 0.06);
+  border: 1px solid var(--lv-border-gold);
+  border-radius: var(--lv-radius-sm);
+  font-size: 0.8rem;
+  color: var(--lv-gold);
+}
+
 /* Admin login */
 .lv-admin-login {
   display: flex;

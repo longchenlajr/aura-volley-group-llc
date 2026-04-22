@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       id, match_order, court_number, work_team_id,
       team_a:teams!matches_team_a_id_fkey(team_name),
       team_b:teams!matches_team_b_id_fkey(team_name),
-      work_team:teams!matches_work_team_id_fkey(team_name, contact_email),
+      work_team:teams!matches_work_team_id_fkey(team_name, contact_email, withdrawn_at),
       pool:pools!matches_pool_id_fkey(pool_label, court_number)
     `)
     .eq("tournament_id", tournament_id)
@@ -83,10 +83,18 @@ export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   let sent = 0;
   let failed = 0;
+  let skippedWithdrawn = 0;
 
   for (const [, teamMatches] of byWorkTeam) {
-    const workTeam = teamMatches[0].work_team as unknown as { team_name: string; contact_email: string };
+    const workTeam = teamMatches[0].work_team as unknown as { team_name: string; contact_email: string; withdrawn_at: string | null };
     if (!workTeam?.contact_email) continue;
+
+    // Skip withdrawn teams — log and count separately
+    if (workTeam.withdrawn_at) {
+      console.log(`[RESEND] Skipping withdrawn work team: ${workTeam.team_name} (${workTeam.contact_email})`);
+      skippedWithdrawn++;
+      continue;
+    }
 
     const matchListHtml = teamMatches.map((m) => {
       const poolLabel = (m.pool as unknown as { pool_label: string })?.pool_label ?? "";
@@ -151,7 +159,7 @@ export async function POST(req: NextRequest) {
       id, match_order, court_number, round_number, work_team_id,
       team_a:teams!bracket_matches_team_a_id_fkey(team_name),
       team_b:teams!bracket_matches_team_b_id_fkey(team_name),
-      work_team:teams!bracket_matches_work_team_id_fkey(team_name, contact_email),
+      work_team:teams!bracket_matches_work_team_id_fkey(team_name, contact_email, withdrawn_at),
       bracket:brackets!bracket_matches_bracket_id_fkey(bracket_type, tournament_id)
     `)
     .not("work_team_id", "is", null);
@@ -173,8 +181,14 @@ export async function POST(req: NextRequest) {
     }
 
     for (const [, teamBracketMatches] of byWorkTeam) {
-      const wt = teamBracketMatches[0].work_team as unknown as { team_name: string; contact_email: string };
+      const wt = teamBracketMatches[0].work_team as unknown as { team_name: string; contact_email: string; withdrawn_at: string | null };
       if (!wt?.contact_email) continue;
+
+      if (wt.withdrawn_at) {
+        console.log(`[RESEND] Skipping withdrawn bracket work team: ${wt.team_name} (${wt.contact_email})`);
+        skippedWithdrawn++;
+        continue;
+      }
 
       const matchListHtml = teamBracketMatches.map((m) => {
         const bracketType = (m.bracket as unknown as { bracket_type: string })?.bracket_type ?? "gold";
@@ -205,5 +219,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, sent, failed });
+  return NextResponse.json({ ok: true, sent, failed, skippedWithdrawn });
 }

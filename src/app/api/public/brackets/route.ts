@@ -65,6 +65,7 @@ export async function GET(req: NextRequest) {
       matches: (matches ?? []).map((m) => {
         const score = scoresMap.get(m.id);
         return {
+          match_id: m.id,
           round_number: m.round_number,
           match_position: m.match_position,
           court_number: m.court_number,

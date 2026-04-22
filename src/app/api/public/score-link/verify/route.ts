@@ -3,8 +3,8 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // Rate limiter: 5 attempts per IP per match per hour
 const verifyRateMap = new Map<string, { count: number; resetAt: number }>();
-function checkVerifyRate(ip: string, matchId: string): boolean {
-  const key = `${ip}:${matchId}`;
+function checkVerifyRate(ip: string, matchId: string, matchType: string): boolean {
+  const key = `${ip}:${matchType}:${matchId}`;
   const now = Date.now();
   const entry = verifyRateMap.get(key);
   if (!entry || now > entry.resetAt) {
@@ -21,13 +21,21 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
   const body = await req.json();
-  const { match_id, email } = body as { match_id: string; email: string };
+  const { match_id, email, match_type = "pool" } = body as {
+    match_id: string;
+    email: string;
+    match_type?: "pool" | "bracket";
+  };
 
   if (!match_id || !email) {
     return NextResponse.json({ error: "Missing match_id or email" }, { status: 400 });
   }
 
-  if (!checkVerifyRate(ip, match_id)) {
+  if (match_type !== "pool" && match_type !== "bracket") {
+    return NextResponse.json({ error: "Invalid match_type" }, { status: 400 });
+  }
+
+  if (!checkVerifyRate(ip, match_id, match_type)) {
     return NextResponse.json(
       { error: "Too many verification attempts. Please try again later." },
       { status: 429 },
@@ -36,9 +44,10 @@ export async function POST(req: NextRequest) {
 
   const sb = getSupabaseAdmin();
 
-  // Get match and its work team
+  // Look up match and work team based on match type
+  const table = match_type === "bracket" ? "bracket_matches" : "matches";
   const { data: match } = await sb
-    .from("matches")
+    .from(table)
     .select("id, work_team_id")
     .eq("id", match_id)
     .single();
@@ -74,16 +83,32 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Fetch the token for this match
-  const { data: tokenRow } = await sb
-    .from("match_tokens")
-    .select("token")
-    .eq("match_id", match_id)
-    .single();
+  // Fetch the token based on match type
+  let token: string | null = null;
+  if (match_type === "bracket") {
+    const { data: tokenRow } = await sb
+      .from("bracket_match_tokens")
+      .select("token")
+      .eq("bracket_match_id", match_id)
+      .single();
+    token = tokenRow?.token ?? null;
+  } else {
+    const { data: tokenRow } = await sb
+      .from("match_tokens")
+      .select("token")
+      .eq("match_id", match_id)
+      .single();
+    token = tokenRow?.token ?? null;
+  }
 
-  if (!tokenRow) {
+  if (!token) {
     return NextResponse.json({ error: "No score link found for this match. Contact an admin." }, { status: 404 });
   }
 
-  return NextResponse.json({ token: tokenRow.token });
+  // Return token and the redirect path so the client doesn't need to know the URL format
+  const redirectPath = match_type === "bracket"
+    ? `/longvolleyball/bracket-score/${token}`
+    : `/longvolleyball/score/${token}`;
+
+  return NextResponse.json({ token, redirectPath });
 }

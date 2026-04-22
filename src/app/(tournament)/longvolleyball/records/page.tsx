@@ -34,7 +34,7 @@ const RESULTS: TournamentResult[] = [
       second: "Fernando Munoz + Luis Angel Ruiz",
     },
     silver: {
-      first: "Walmy Veras + Jacob",
+      first: "Walmy Veras + Jacob Hernandez",
       second: "Cameron Rogers + Hanzy Chalas",
     },
   },
@@ -48,7 +48,7 @@ const RESULTS: TournamentResult[] = [
     },
     silver: {
       first: "Walmy Veras + Jai Hills",
-      second: "Cameron Rogers + Evan",
+      second: "Cameron Rogers + Evan Rice",
     },
   },
   {
@@ -161,7 +161,7 @@ const RESULTS: TournamentResult[] = [
     },
     silver: {
       first: "Brad Chamberlain + Caden Dempsey",
-      second: "Janilyz + Luis",
+      second: "Janilyz Romero + Luis Romero",
     },
   },
   {
@@ -170,7 +170,8 @@ const RESULTS: TournamentResult[] = [
     format: "quads",
     gold: {
       first: "Nairi Lin + Harry Lin + Klo Kynaw + Luther Ser",
-      second: "Bryce Nelligan + Reno Plesnarski + Liam Ruggie Pratt + Owen",
+      second:
+        "Bryce Nelligan + Reno Plesnarski + Liam Ruggie Pratt + Owen Pratt",
     },
   },
   {
@@ -201,7 +202,7 @@ const RESULTS: TournamentResult[] = [
     format: "doubles",
     gold: {
       first: "Calvin Long + Will Stiles",
-      second: "Owen + Liam Ruggie Pratt",
+      second: "Owen Pratt + Liam Ruggie Pratt",
     },
     silver: {
       first: "Mark Fredericksen + Devin Ellis",

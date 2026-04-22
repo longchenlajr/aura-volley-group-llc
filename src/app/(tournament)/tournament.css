@@ -1579,12 +1579,12 @@ html:has(.lv)::-webkit-scrollbar {
 }
 
 /* ==========================================================
-   GALLERY — MASONRY COLLAGE WITH SCROLL REVEAL
+   GALLERY — EDGE-TO-EDGE MASONRY
    ========================================================== */
 
 .lv-gallery-page {
   padding-top: 3rem;
-  padding-bottom: 5rem;
+  padding-bottom: 0;
 }
 .lv-gallery-header {
   text-align: center;
@@ -1600,21 +1600,23 @@ html:has(.lv)::-webkit-scrollbar {
   background: var(--lv-surface);
 }
 
-/* CSS columns masonry */
+/* Edge-to-edge CSS columns masonry — preserves full aspect ratios */
 .lv-masonry {
-  column-count: 4;
-  column-gap: 12px;
+  column-count: 5;
+  column-gap: 2px;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background: var(--lv-bg);
 }
 .lv-masonry-item {
   break-inside: avoid;
-  margin-bottom: 12px;
-  border-radius: var(--lv-radius-md);
+  margin-bottom: 2px;
   overflow: hidden;
   position: relative;
-  /* Scroll reveal: start hidden */
+  /* Scroll reveal */
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 500ms ease, transform 500ms ease;
+  transform: translateY(20px);
+  transition: opacity 450ms ease, transform 450ms ease;
 }
 .lv-masonry-item.revealed {
   opacity: 1;
@@ -1638,15 +1640,17 @@ html:has(.lv)::-webkit-scrollbar {
   background: rgba(42, 24, 16, 0.08);
 }
 
-@media (max-width: 1024px) { .lv-masonry { column-count: 3; } }
-@media (max-width: 768px)  { .lv-masonry { column-count: 2; column-gap: 8px; } .lv-masonry-item { margin-bottom: 8px; } }
-@media (max-width: 480px)  { .lv-masonry { column-count: 2; column-gap: 6px; } .lv-masonry-item { margin-bottom: 6px; border-radius: var(--lv-radius-sm); } }
-
 /* Stagger reveal per column position */
-.lv-masonry-item:nth-child(4n+1) { transition-delay: 0ms; }
-.lv-masonry-item:nth-child(4n+2) { transition-delay: 60ms; }
-.lv-masonry-item:nth-child(4n+3) { transition-delay: 120ms; }
-.lv-masonry-item:nth-child(4n+4) { transition-delay: 180ms; }
+.lv-masonry-item:nth-child(5n+1) { transition-delay: 0ms; }
+.lv-masonry-item:nth-child(5n+2) { transition-delay: 60ms; }
+.lv-masonry-item:nth-child(5n+3) { transition-delay: 120ms; }
+.lv-masonry-item:nth-child(5n+4) { transition-delay: 180ms; }
+.lv-masonry-item:nth-child(5n+5) { transition-delay: 240ms; }
+
+/* Responsive */
+@media (max-width: 1024px) { .lv-masonry { column-count: 4; } }
+@media (max-width: 768px)  { .lv-masonry { column-count: 3; } }
+@media (max-width: 480px)  { .lv-masonry { column-count: 2; } }
 
 @media (prefers-reduced-motion: reduce) {
   .lv-masonry-item {
@@ -2278,8 +2282,8 @@ html:has(.lv)::-webkit-scrollbar {
   text-align: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: rgba(155, 107, 30, 0.1);
-  border: 1px solid rgba(155, 107, 30, 0.3);
+  background: var(--lv-bg-dark);
+  border: 1px solid rgba(155, 107, 30, 0.4);
   border-radius: var(--lv-radius-lg);
 }
 .lv-live-champion-label {
@@ -2906,6 +2910,17 @@ html:has(.lv)::-webkit-scrollbar {
   color: var(--lv-ink-muted);
   margin-top: 0.5rem;
 }
+
+/* Submit scores button — small secondary variant */
+.lv-btn-submit-scores {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  margin-top: 0.4rem;
+  cursor: pointer;
+}
 .lv-match-card-pending {
   font-size: 0.8rem;
   color: var(--lv-ink-muted);
@@ -2939,9 +2954,10 @@ html:has(.lv)::-webkit-scrollbar {
   color: var(--lv-ink-muted);
 }
 
-/* Scrollable wrapper — one layout for desktop + mobile */
+/* Scrollable wrapper — horizontal scroll only, no vertical clipping */
 .lv-bk-scroll {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 8px;
   scrollbar-width: thin;

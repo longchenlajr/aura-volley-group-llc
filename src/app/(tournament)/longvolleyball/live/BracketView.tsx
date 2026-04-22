@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { getRoundLabel } from "@/lib/bracket-generation";
+import { ScoreLinkModal } from "./ScoreLinkModal";
+import { SubmitScoresButton } from "./SubmitScoresButton";
 
 interface BracketSlot {
   round_number: number;
@@ -11,6 +14,7 @@ interface BracketSlot {
 }
 
 interface BracketMatch {
+  match_id: string;
   round_number: number;
   match_position: number;
   court_number: number;
@@ -58,6 +62,12 @@ export function BracketView({
   matches,
   teamRecords,
 }: Props) {
+  const [scoreLinkMatch, setScoreLinkMatch] = useState<{
+    matchId: string;
+    matchType: "pool" | "bracket";
+    workTeamName: string;
+  } | null>(null);
+
   const totalRounds = Math.max(...slots.map((s) => s.round_number), 1);
   const bracketSize = Math.pow(2, totalRounds);
 
@@ -101,6 +111,10 @@ export function BracketView({
   }
   const gridTemplateCols = cols.join(" ");
 
+  function handleOpenModal(matchId: string, matchType: "pool" | "bracket", workTeamName: string) {
+    setScoreLinkMatch({ matchId, matchType, workTeamName });
+  }
+
   // Build all grid elements
   const items: React.ReactNode[] = [];
 
@@ -124,8 +138,10 @@ export function BracketView({
       let court: number | null = null;
       let winner: "a" | "b" | null = null;
       let workTeam: string | null = null;
+      let matchId: string | null = null;
 
       if (mu.match) {
+        matchId = mu.match.match_id;
         teamAName = mu.match.team_a;
         teamBName = mu.match.team_b;
         teamAId = mu.match.team_a_id;
@@ -195,12 +211,20 @@ export function BracketView({
               <span className="lv-bk-slot-score">{scoreB}</span>
             )}
           </div>
-          {!mu.isBye && (court != null || workTeam) && (
-            <div className="lv-bk-caption">
-              {court != null && <span>Ct {court}</span>}
-              {workTeam && <span>Work: {workTeam}</span>}
-            </div>
-          )}
+          <div className="lv-bk-caption">
+            {court != null && <span>Ct {court}</span>}
+            {workTeam && <span>Work: {workTeam}</span>}
+            {matchId && workTeam && (
+              <SubmitScoresButton
+                matchId={matchId}
+                matchType="bracket"
+                workTeamName={workTeam}
+                status={status}
+                hasWorkTeam={true}
+                onOpenModal={handleOpenModal}
+              />
+            )}
+          </div>
         </div>,
       );
 
@@ -261,13 +285,23 @@ export function BracketView({
             style={{
               display: "grid",
               gridTemplateColumns: gridTemplateCols,
-              gridTemplateRows: `repeat(${bracketSize}, minmax(36px, 1fr))`,
+              gridTemplateRows: `repeat(${bracketSize}, 48px)`,
             }}
           >
             {items}
           </div>
         </div>
       </div>
+
+      {/* Score link verification modal */}
+      {scoreLinkMatch && (
+        <ScoreLinkModal
+          matchId={scoreLinkMatch.matchId}
+          matchType={scoreLinkMatch.matchType}
+          workTeamName={scoreLinkMatch.workTeamName}
+          onClose={() => setScoreLinkMatch(null)}
+        />
+      )}
     </div>
   );
 }

@@ -46,6 +46,19 @@ export async function GET(req: NextRequest) {
       .eq("bracket_id", bracket.id)
       .order("match_order");
 
+    // Fetch tokens for bracket matches
+    const matchIds = (matches ?? []).map((m) => m.id);
+    const tokenMap = new Map<string, string>();
+    if (matchIds.length > 0) {
+      const { data: tokens } = await sb
+        .from("bracket_match_tokens")
+        .select("bracket_match_id, token")
+        .in("bracket_match_id", matchIds);
+      if (tokens) {
+        for (const t of tokens) tokenMap.set(t.bracket_match_id, t.token);
+      }
+    }
+
     result.push({
       bracket,
       slots: (slots ?? []).map((s) => ({
@@ -57,6 +70,7 @@ export async function GET(req: NextRequest) {
         team_a_name: (m.team_a as unknown as { team_name: string })?.team_name ?? null,
         team_b_name: (m.team_b as unknown as { team_name: string })?.team_name ?? null,
         work_team_name: (m.work_team as unknown as { team_name: string })?.team_name ?? null,
+        token: tokenMap.get(m.id) ?? null,
       })),
     });
   }

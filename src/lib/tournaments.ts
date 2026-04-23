@@ -11,7 +11,11 @@ export interface Tournament {
   maxTeams?: number;
 }
 
-const tournaments: Tournament[] = (data as { tournaments: Tournament[] }).tournaments;
+const allTournaments: Tournament[] = (data as { tournaments: Tournament[] }).tournaments;
+const tournaments: Tournament[] =
+  process.env.NODE_ENV === "development"
+    ? allTournaments
+    : allTournaments.filter((t) => !t.id.startsWith("dev-"));
 
 export function getTournaments(): Tournament[] {
   return tournaments;

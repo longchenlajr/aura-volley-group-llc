@@ -9,6 +9,7 @@ import { computeOverallStandings, getDefaultGoldCutoff, type OverallTeamStanding
 import { getMatchFormat } from "@/lib/score-format";
 import { TournamentToolbar } from "./TournamentToolbar";
 import { PoolSummaryCard } from "./PoolSummaryCard";
+import { BracketSummaryCard } from "./BracketSummaryCard";
 import { TeamRoster } from "./TeamRoster";
 import { WithdrawTeamModal } from "./WithdrawTeamModal";
 import type { MatchData, Team } from "./types";
@@ -27,11 +28,13 @@ export default function TournamentViewPage() {
   const [bracketsExist, setBracketsExist] = useState(false);
   const [bracketDataAdmin, setBracketDataAdmin] = useState<Array<{
     bracket: { id: string; bracket_type: string; points_per_set: number };
-    matches: Array<{ id: string; round_number: number; match_position: number; court_number: number; match_order: number; status: string; team_a_name: string | null; team_b_name: string | null; work_team_name: string | null; winner_slot_id: string | null; token?: string | null }>;
+    matches: Array<{ id: string; round_number: number; match_position: number; court_number: number; match_order: number; status: string; team_a_name: string | null; team_b_name: string | null; work_team_name: string | null; winner_slot_id: string | null; token?: string | null; score?: { team_a_score: number; team_b_score: number } | null }>;
   }> | null>(null);
+  const [bracketScoreModal, setBracketScoreModal] = useState<{ matchId: string; pointsPerSet: number; team_a_name: string; team_b_name: string; existingScore: { team_a_score: number; team_b_score: number } | null } | null>(null);
 
   // Expansion state (persists within session)
   const [expandedPools, setExpandedPools] = useState<Set<string>>(new Set());
+  const [expandedBrackets, setExpandedBrackets] = useState<Set<string>>(new Set());
 
   // Modals
   const [addTeamModal, setAddTeamModal] = useState(false);
@@ -443,6 +446,65 @@ export default function TournamentViewPage() {
         />
       )}
 
+      {/* Bracket summary cards — above pools when playoffs exist */}
+      {bracketDataAdmin && bracketDataAdmin.length > 0 && (
+        <div className="lv-pool-grid">
+          <div className="lv-bracket-grid-header">
+            <span className="lv-bracket-grid-title">Playoff Brackets</span>
+            <button className="lv-btn lv-btn-destructive" style={{ fontSize: "0.75rem", padding: "4px 10px" }} onClick={async () => {
+              if (!confirm("Delete all brackets for this tournament?")) return;
+              await fetch(`/api/admin/brackets?tournament=${tournamentId}`, { method: "DELETE" });
+              setBracketsExist(false);
+              setBracketDataAdmin(null);
+            }}>
+              Delete brackets
+            </button>
+          </div>
+          {bracketDataAdmin.map((bd) => (
+            <BracketSummaryCard
+              key={bd.bracket.id}
+              bracket={bd.bracket}
+              matches={bd.matches}
+              expanded={expandedBrackets.has(bd.bracket.id)}
+              onToggle={() => {
+                setExpandedBrackets((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(bd.bracket.id)) next.delete(bd.bracket.id);
+                  else next.add(bd.bracket.id);
+                  return next;
+                });
+              }}
+              onOverrideScore={(matchId) => {
+                const match = bd.matches.find((m) => m.id === matchId);
+                if (!match) return;
+                setBracketScoreModal({
+                  matchId,
+                  pointsPerSet: bd.bracket.points_per_set,
+                  team_a_name: match.team_a_name ?? "TBD",
+                  team_b_name: match.team_b_name ?? "TBD",
+                  existingScore: match.score ?? null,
+                });
+              }}
+              onResetScores={async (matchId) => {
+                if (!confirm("Undo this match result? This will cascade to all dependent later-round matches.")) return;
+                const res = await fetch(`/api/admin/brackets/${matchId}/reset-scores`, { method: "POST" });
+                if (res.ok) {
+                  checkBrackets();
+                } else {
+                  const data = await res.json();
+                  alert(data.error ?? "Failed to reset scores.");
+                }
+              }}
+              onCopyScoreLink={(token) => {
+                navigator.clipboard.writeText(`${window.location.origin}/longvolleyball/bracket-score/${token}`);
+                setCopiedToken(token);
+                setTimeout(() => setCopiedToken(null), 2000);
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Pool summary cards */}
       {poolsLoading ? (
         <p style={{ color: "var(--lv-ink-muted)", fontSize: "0.9rem", padding: "1rem 0" }}>Loading pools&hellip;</p>
@@ -469,98 +531,6 @@ export default function TournamentViewPage() {
               onCopyScoreLink={handleCopyScoreLink}
               onSwapMatchOrder={swapMatchOrder}
             />
-          ))}
-        </div>
-      )}
-
-      {/* Bracket matches (admin view) — existing behavior */}
-      {bracketDataAdmin && bracketDataAdmin.length > 0 && (
-        <div className="lv-admin-pools" style={{ marginTop: "1.5rem" }}>
-          <div className="lv-admin-pools-header">
-            <h3 className="lv-admin-pools-title">Playoff Brackets</h3>
-            <button className="lv-btn lv-btn-destructive" style={{ fontSize: "0.75rem", padding: "4px 10px" }} onClick={async () => {
-              if (!confirm("Delete all brackets for this tournament?")) return;
-              await fetch(`/api/admin/brackets?tournament=${tournamentId}`, { method: "DELETE" });
-              setBracketsExist(false);
-              setBracketDataAdmin(null);
-            }}>
-              Delete brackets
-            </button>
-          </div>
-          {bracketDataAdmin.map((bd) => (
-            <div key={bd.bracket.id} style={{ marginBottom: "1.5rem" }}>
-              <div className="lv-admin-pool-court" style={{ marginBottom: "0.75rem" }}>
-                {bd.bracket.bracket_type === "gold" ? "Gold" : "Silver"} Bracket &middot; 1 set to {bd.bracket.points_per_set}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                {bd.matches
-                  .sort((a, b) => a.match_order - b.match_order)
-                  .map((m) => (
-                    <div key={m.id} className="lv-admin-match-row">
-                      <span className="lv-admin-match-num">{m.match_order}</span>
-                      <span className="lv-admin-match-teams">
-                        {m.team_a_name ?? "TBD"} vs {m.team_b_name ?? "TBD"}
-                      </span>
-                      {m.work_team_name && (
-                        <span className="lv-admin-match-work" style={{ cursor: "default" }}>
-                          Work: {m.work_team_name}
-                        </span>
-                      )}
-                      <span className={`lv-admin-match-status lv-admin-match-status--${m.status}`}>
-                        {m.status}
-                      </span>
-                      {m.token && (
-                        <button
-                          className="lv-admin-action-btn"
-                          title="Copy score link"
-                          onClick={() => navigator.clipboard.writeText(`${window.location.origin}/longvolleyball/bracket-score/${m.token}`)}
-                          aria-label="Copy score link"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="8" y="8" width="10" height="10" rx="2" /><path d="M4 12H3a1 1 0 01-1-1V3a1 1 0 011-1h8a1 1 0 011 1v1" />
-                          </svg>
-                        </button>
-                      )}
-                      {m.token && (
-                        <button
-                          className="lv-admin-action-btn"
-                          title="Regenerate token"
-                          onClick={async () => {
-                            if (!confirm("Regenerate this score link? The old link will stop working.")) return;
-                            const res = await fetch(`/api/admin/brackets/${m.id}/refresh-token`, { method: "POST" });
-                            if (res.ok) checkBrackets();
-                          }}
-                          aria-label="Regenerate token"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M17 1v5h-5M3 19v-5h5" /><path d="M14.5 5.5A7.5 7.5 0 013 10M5.5 14.5A7.5 7.5 0 0017 10" />
-                          </svg>
-                        </button>
-                      )}
-                      {m.status === "complete" && (
-                        <button
-                          className="lv-admin-action-btn lv-admin-action-btn-danger"
-                          title="Undo result"
-                          onClick={async () => {
-                            if (!confirm("Undo this match result? This will cascade to all dependent later-round matches.")) return;
-                            await fetch("/api/admin/brackets/undo", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ match_id: m.id }),
-                            });
-                            checkBrackets();
-                          }}
-                          aria-label="Undo result"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M3 10h4l-4-4v4zM7 10a6 6 0 1 1 0 0" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
           ))}
         </div>
       )}
@@ -666,6 +636,19 @@ export default function TournamentViewPage() {
           pools={savedPools}
           onClose={() => setScoreOverrideModal(null)}
           onSaved={() => { setScoreOverrideModal(null); loadMatches(); }}
+        />
+      )}
+
+      {/* Bracket score override modal */}
+      {bracketScoreModal && (
+        <BracketScoreModal
+          matchId={bracketScoreModal.matchId}
+          pointsPerSet={bracketScoreModal.pointsPerSet}
+          teamAName={bracketScoreModal.team_a_name}
+          teamBName={bracketScoreModal.team_b_name}
+          existingScore={bracketScoreModal.existingScore}
+          onClose={() => setBracketScoreModal(null)}
+          onSaved={() => { setBracketScoreModal(null); checkBrackets(); }}
         />
       )}
 
@@ -1025,7 +1008,7 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, onClose, onGen
                 <span className="lv-playoff-rank">#{t.overall_rank}</span>
                 <span className="lv-playoff-name">{t.team_name}</span>
                 <span className="lv-playoff-origin">Pool {t.pool_label} #{t.pool_rank}</span>
-                <span className="lv-playoff-record">{t.matches_won}-{t.matches_lost}</span>
+                <span className="lv-playoff-record">{t.sets_won}-{t.sets_lost}</span>
                 <span style={{ color: t.point_differential >= 0 ? "var(--lv-green)" : "var(--lv-error)", fontSize: "0.8rem" }}>
                   {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
                 </span>
@@ -1171,6 +1154,81 @@ function ScoreOverrideModal({ matchId, match, pools, onClose, onSaved }: {
             />
           </div>
         ))}
+        <div className="lv-admin-modal-footer">
+          <button type="button" className="lv-btn lv-btn-ghost" onClick={onClose}>Cancel</button>
+          <button type="button" className="lv-btn lv-btn-primary" disabled={saving} onClick={handleSave}>
+            {saving ? "Saving..." : "Save score"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- BRACKET SCORE MODAL ---- */
+function BracketScoreModal({ matchId, pointsPerSet, teamAName, teamBName, existingScore, onClose, onSaved }: {
+  matchId: string;
+  pointsPerSet: number;
+  teamAName: string;
+  teamBName: string;
+  existingScore: { team_a_score: number; team_b_score: number } | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [scoreA, setScoreA] = useState(existingScore?.team_a_score ?? 0);
+  const [scoreB, setScoreB] = useState(existingScore?.team_b_score ?? 0);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    const res = await fetch(`/api/admin/brackets/${matchId}/score`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ team_a_score: scoreA, team_b_score: scoreB }),
+    });
+    if (res.ok) {
+      onSaved();
+    } else {
+      alert("Failed to save score");
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="lv-admin-overlay" onClick={onClose}>
+      <div className="lv-admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
+        <div className="lv-admin-modal-header">
+          <h2 className="lv-admin-modal-title">Override bracket score</h2>
+          <button className="lv-admin-modal-close" onClick={onClose} aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
+          </button>
+        </div>
+        <p style={{ fontSize: "0.85rem", color: "var(--lv-ink)", marginBottom: "0.5rem" }}>
+          {teamAName} vs {teamBName}
+        </p>
+        <p style={{ fontSize: "0.75rem", color: "var(--lv-ink-muted)", marginBottom: "1rem" }}>
+          1 set to {pointsPerSet}
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--lv-ink-muted)", minWidth: 40 }}>Set 1</span>
+          <input
+            type="number"
+            className="lv-admin-seed"
+            style={{ width: 60 }}
+            min={0}
+            value={scoreA}
+            onChange={(e) => setScoreA(parseInt(e.target.value) || 0)}
+          />
+          <span style={{ fontSize: "0.8rem", color: "var(--lv-ink-muted)" }}>&mdash;</span>
+          <input
+            type="number"
+            className="lv-admin-seed"
+            style={{ width: 60 }}
+            min={0}
+            value={scoreB}
+            onChange={(e) => setScoreB(parseInt(e.target.value) || 0)}
+          />
+        </div>
         <div className="lv-admin-modal-footer">
           <button type="button" className="lv-btn lv-btn-ghost" onClick={onClose}>Cancel</button>
           <button type="button" className="lv-btn lv-btn-primary" disabled={saving} onClick={handleSave}>

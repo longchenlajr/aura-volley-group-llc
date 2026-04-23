@@ -111,29 +111,25 @@ export function computePoolStandings(
   // Sort with tiebreaker chain
   const standings = Array.from(standingsMap.values());
   standings.sort((x, y) => {
-    // 1. Matches won (descending)
-    if (x.matches_won !== y.matches_won) return y.matches_won - x.matches_won;
+    // 1. Sets won (descending)
+    if (x.sets_won !== y.sets_won) return y.sets_won - x.sets_won;
 
     // 2. Head-to-head (only for exactly 2-team ties)
-    // Check if these two teams are in a unique 2-way tie at this win level
-    const sameWins = standings.filter((t) => t.matches_won === x.matches_won);
-    if (sameWins.length === 2) {
+    const sameSetsWon = standings.filter((t) => t.sets_won === x.sets_won);
+    if (sameSetsWon.length === 2) {
       const h2hKey = `${x.team_id}:${y.team_id}`;
       const h2hWinner = headToHead.get(h2hKey);
       if (h2hWinner === x.team_id) return -1;
       if (h2hWinner === y.team_id) return 1;
     }
 
-    // 3. Sets won (descending)
-    if (x.sets_won !== y.sets_won) return y.sets_won - x.sets_won;
-
-    // 4. Point differential (descending)
+    // 3. Point differential (descending)
     if (x.point_differential !== y.point_differential) return y.point_differential - x.point_differential;
 
-    // 5. Points for (descending)
+    // 4. Points for (descending)
     if (x.points_for !== y.points_for) return y.points_for - x.points_for;
 
-    // 6. Seed (ascending — lower seed wins)
+    // 5. Seed (ascending — lower seed wins)
     return x.seed_in_pool - y.seed_in_pool;
   });
 

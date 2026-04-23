@@ -989,6 +989,22 @@
   }
 }
 
+/* Bracket grid header */
+.lv-bracket-grid-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lv-bracket-grid-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lv-ink-muted);
+}
+
 .lv-pool-card {
   background: var(--lv-surface);
   border: 1px solid var(--lv-border);
@@ -1079,6 +1095,163 @@
 .lv-pool-card-body {
   padding: 0 14px 14px;
   border-top: 1px solid rgba(122, 28, 28, 0.08);
+}
+
+/* Bracket card — metallic gold */
+.lv-bracket-card--gold {
+  background:
+    linear-gradient(
+      135deg,
+      #BF953F 0%, #FCF6BA 20%, #B38728 35%,
+      #FBF5B7 50%, #AA771C 65%, #FCF6BA 80%, #BF953F 100%
+    );
+  border: 1px solid #AA771C;
+  box-shadow:
+    0 2px 8px rgba(170, 119, 28, 0.25),
+    inset 0 1px 0 rgba(252, 246, 186, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+.lv-bracket-card--gold::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 60%,
+    transparent 100%
+  );
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.lv-bracket-card--gold .lv-pool-card-title {
+  color: #5C3D0E;
+  text-shadow: 0 1px 0 rgba(252, 246, 186, 0.6);
+}
+.lv-bracket-card--gold .lv-pool-card-progress-text {
+  color: #6B4F0A;
+}
+.lv-bracket-card--gold .lv-pool-card-progress-bar {
+  background: rgba(90, 60, 10, 0.2);
+}
+.lv-bracket-card--gold .lv-pool-card-progress-fill {
+  background: linear-gradient(90deg, #8B6914, #D4A82A, #8B6914);
+}
+.lv-bracket-card--gold .lv-pool-card-chevron {
+  color: #6B4F0A;
+}
+.lv-bracket-card--gold.expanded {
+  border-color: #8B6914;
+  box-shadow:
+    0 4px 16px rgba(170, 119, 28, 0.3),
+    inset 0 1px 0 rgba(252, 246, 186, 0.5);
+}
+.lv-bracket-card--gold .lv-pool-card-header:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.lv-bracket-card--gold .lv-pool-card-body {
+  border-top-color: rgba(170, 119, 28, 0.25);
+}
+
+/* Bracket card — metallic silver */
+.lv-bracket-card--silver {
+  background:
+    linear-gradient(
+      135deg,
+      #C0C0C0 0%, #E8E8E8 15%, #A8A8A8 30%,
+      #F0F0F0 45%, #B8B8B8 55%, #E0E0E0 70%,
+      #A0A0A0 85%, #D0D0D0 100%
+    );
+  border: 1px solid #9A9A9A;
+  box-shadow:
+    0 2px 8px rgba(100, 100, 110, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+.lv-bracket-card--silver::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 40%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.35) 60%,
+    transparent 100%
+  );
+  animation: shimmer 4s ease-in-out infinite;
+  animation-delay: 2s;
+  pointer-events: none;
+}
+.lv-bracket-card--silver .lv-pool-card-title {
+  color: #3A3A42;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.lv-bracket-card--silver .lv-pool-card-progress-text {
+  color: #4A4A56;
+}
+.lv-bracket-card--silver .lv-pool-card-progress-bar {
+  background: rgba(60, 60, 70, 0.2);
+}
+.lv-bracket-card--silver .lv-pool-card-progress-fill {
+  background: linear-gradient(90deg, #6E6E7A, #A0A0AE, #6E6E7A);
+}
+.lv-bracket-card--silver .lv-pool-card-chevron {
+  color: #4A4A56;
+}
+.lv-bracket-card--silver.expanded {
+  border-color: #7A7A84;
+  box-shadow:
+    0 4px 16px rgba(100, 100, 110, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.lv-bracket-card--silver .lv-pool-card-header:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.lv-bracket-card--silver .lv-pool-card-body {
+  border-top-color: rgba(100, 100, 110, 0.25);
+}
+
+/* Match rows inside bracket cards get off-white background */
+.lv-bracket-card--gold .lv-match-row,
+.lv-bracket-card--silver .lv-match-row {
+  background: var(--lv-surface);
+  border-radius: var(--lv-radius-sm);
+}
+.lv-bracket-card--gold .lv-match-row:hover,
+.lv-bracket-card--silver .lv-match-row:hover {
+  background: var(--lv-parchment, #faf8f4);
+}
+
+/* Shimmer sweep animation */
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: 140%; }
+  100% { left: 140%; }
+}
+
+/* Bracket match feed inside expanded card */
+.lv-bracket-match-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.lv-bracket-match-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 /* Admin standings (reuses lv-overview-table from tournament.css) */

@@ -190,7 +190,7 @@ export default function LivePage() {
         map.set(t.team_id, {
           team_name: t.team_name,
           seed: overallSeed++,
-          record: `${t.matches_won}-${t.matches_lost}`,
+          record: `${t.sets_won}-${t.sets_lost}`,
         });
       }
     }

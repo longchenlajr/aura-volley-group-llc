@@ -77,8 +77,7 @@ export function PoolSummaryCard({
             <div className="lv-pool-card-standings-preview">
               {top2.map((t, i) => (
                 <div key={t.team_id} className="lv-pool-card-standing-line">
-                  <strong>#{i + 1} {t.team_name}</strong> ({t.matches_won}-{t.matches_lost})
-                  {" "}&middot; Sets {t.sets_won}-{t.sets_lost}
+                  <strong>#{i + 1} {t.team_name}</strong> Sets {t.sets_won}-{t.sets_lost}
                   {" "}&middot; {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
                 </div>
               ))}
@@ -103,8 +102,7 @@ export function PoolSummaryCard({
               <tr>
                 <th>Rank</th>
                 <th>Team</th>
-                <th>W-L</th>
-                <th>Sets</th>
+                <th>Set W-L</th>
                 <th>+/-</th>
               </tr>
             </thead>
@@ -156,7 +154,7 @@ function StandingsRow({
 }: {
   rank: number;
   seed: number;
-  standing: { team_id: string; team_name: string; matches_won: number; matches_lost: number; sets_won: number; sets_lost: number; point_differential: number };
+  standing: { team_id: string; team_name: string; sets_won: number; sets_lost: number; point_differential: number };
   isFirst: boolean;
   isExpanded: boolean;
   onToggle: () => void;
@@ -171,7 +169,6 @@ function StandingsRow({
       >
         <td className="lv-overview-rank">{rank}</td>
         <td className="lv-overview-name">({seed}) {t.team_name}</td>
-        <td>{t.matches_won}-{t.matches_lost}</td>
         <td>{t.sets_won}-{t.sets_lost}</td>
         <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
           {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
@@ -179,7 +176,7 @@ function StandingsRow({
       </tr>
       {isExpanded && (
         <tr className="lv-admin-standings-expand-row">
-          <td colSpan={5}>
+          <td colSpan={4}>
             <button
               className="lv-admin-swap-inline-btn"
               onClick={(e) => { e.stopPropagation(); onSwap(); }}

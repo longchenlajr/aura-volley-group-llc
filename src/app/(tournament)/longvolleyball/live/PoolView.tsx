@@ -90,8 +90,7 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
             <tr>
               <th>Rank</th>
               <th>Team</th>
-              <th>W-L</th>
-              <th>Sets</th>
+              <th>Set W-L</th>
               <th>+/-</th>
             </tr>
           </thead>
@@ -100,7 +99,6 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
               <tr key={t.team_id} className={i === 0 ? "lv-overview-row-first" : ""}>
                 <td className="lv-overview-rank">{i + 1}</td>
                 <td className="lv-overview-name">({t.overall_seed ?? t.seed_in_pool}) {t.team_name}</td>
-                <td>{t.matches_won}-{t.matches_lost}</td>
                 <td>{t.sets_won}-{t.sets_lost}</td>
                 <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
                   {t.point_differential >= 0 ? "+" : ""}{t.point_differential}

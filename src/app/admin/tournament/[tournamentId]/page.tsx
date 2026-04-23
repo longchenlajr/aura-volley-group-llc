@@ -110,6 +110,15 @@ export default function TournamentViewPage() {
     }
   }, [tournamentId, loadTeams, loadPools, loadMatches, checkBrackets]);
 
+  // Poll matches every 12s for live score updates
+  useEffect(() => {
+    if (!tournamentId || !savedMatches) return;
+    const interval = setInterval(() => {
+      loadMatches();
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [tournamentId, savedMatches, loadMatches]);
+
   // --- Derived state ---
   const withdrawnTeamIds = useMemo(() => {
     const set = new Set<string>();
@@ -358,6 +367,22 @@ export default function TournamentViewPage() {
     setScoreOverrideModal(matchId);
   }
 
+  // --- Reset scores ---
+  async function handleResetScores(matchId: string) {
+    if (!confirm("Erase all scores for this match? This cannot be undone.")) return;
+    try {
+      const res = await fetch(`/api/admin/matches/${matchId}/reset-scores`, { method: "POST" });
+      if (res.ok) {
+        await loadMatches();
+      } else {
+        const data = await res.json();
+        alert(data.error ?? "Failed to reset scores.");
+      }
+    } catch {
+      alert("Something went wrong.");
+    }
+  }
+
   // If tournament not found, redirect back
   if (!tournament) {
     return (
@@ -440,6 +465,7 @@ export default function TournamentViewPage() {
               withdrawnTeamIds={withdrawnTeamIds}
               onSwapTeam={(teamId, teamName) => setSwapModal({ teamId, teamName })}
               onOverrideScore={handleOverrideScore}
+              onResetScores={handleResetScores}
               onCopyScoreLink={handleCopyScoreLink}
               onSwapMatchOrder={swapMatchOrder}
             />

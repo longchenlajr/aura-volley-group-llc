@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { computePoolStandings } from "@/lib/standings";
 import { getMatchFormat } from "@/lib/score-format";
 import { PoolMatchTable } from "./PoolMatchTable";
@@ -14,6 +14,7 @@ interface PoolSummaryCardProps {
   withdrawnTeamIds: Set<string>;
   onSwapTeam: (teamId: string, teamName: string) => void;
   onOverrideScore: (matchId: string) => void;
+  onResetScores: (matchId: string) => void;
   onCopyScoreLink: (token: string) => void;
   onSwapMatchOrder: (matchId: string, direction: "up" | "down") => void;
 }
@@ -26,10 +27,12 @@ export function PoolSummaryCard({
   withdrawnTeamIds,
   onSwapTeam,
   onOverrideScore,
+  onResetScores,
   onCopyScoreLink,
   onSwapMatchOrder,
 }: PoolSummaryCardProps) {
   const format = useMemo(() => getMatchFormat(pool.teams.length), [pool.teams.length]);
+  const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   const standings = useMemo(() => {
     const poolTeams = pool.teams
@@ -94,45 +97,33 @@ export function PoolSummaryCard({
 
       {expanded && (
         <div className="lv-pool-card-body">
-          {/* Full standings table */}
-          <table className="lv-standings-table">
+          {/* Standings table — matches live page style */}
+          <table className="lv-overview-table lv-admin-standings">
             <thead>
               <tr>
                 <th>Rank</th>
-                <th>Seed</th>
                 <th>Team</th>
                 <th>W-L</th>
                 <th>Sets</th>
-                <th>Pt Diff</th>
-                <th></th>
+                <th>+/-</th>
               </tr>
             </thead>
             <tbody>
               {standings.map((t, i) => {
                 const poolTeam = pool.teams.find((pt) => pt.team_id === t.team_id);
-                const rowClass = i === 0 ? "lv-standings-row-1" : i === 1 ? "lv-standings-row-2" : "";
+                const overallSeed = poolTeam?.overall_seed ?? t.seed_in_pool;
+                const isExpanded = expandedTeam === t.team_id;
                 return (
-                  <tr key={t.team_id} className={rowClass}>
-                    <td style={{ fontWeight: 700 }}>{i + 1}</td>
-                    <td>#{poolTeam?.overall_seed ?? t.seed_in_pool}</td>
-                    <td className="lv-standings-team-name">{t.team_name}</td>
-                    <td>{t.matches_won}-{t.matches_lost}</td>
-                    <td>{t.sets_won}-{t.sets_lost}</td>
-                    <td style={{ color: t.point_differential >= 0 ? "var(--lv-green)" : "var(--lv-error)" }}>
-                      {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
-                    </td>
-                    <td>
-                      <button
-                        className="lv-standings-swap-btn"
-                        onClick={(e) => { e.stopPropagation(); onSwapTeam(t.team_id, t.team_name); }}
-                        aria-label={`Swap ${t.team_name}`}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 7h12m0 0l-3-3m3 3l-3 3M16 13H4m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
+                  <StandingsRow
+                    key={t.team_id}
+                    rank={i + 1}
+                    seed={overallSeed}
+                    standing={t}
+                    isFirst={i === 0}
+                    isExpanded={isExpanded}
+                    onToggle={() => setExpandedTeam(isExpanded ? null : t.team_id)}
+                    onSwap={() => onSwapTeam(t.team_id, t.team_name)}
+                  />
                 );
               })}
             </tbody>
@@ -142,12 +133,65 @@ export function PoolSummaryCard({
           <PoolMatchTable
             matches={matches}
             withdrawnTeamIds={withdrawnTeamIds}
+            overallSeeds={new Map(pool.teams.map((t) => [t.team_id, t.overall_seed]))}
             onOverrideScore={onOverrideScore}
+            onResetScores={onResetScores}
             onCopyScoreLink={onCopyScoreLink}
             onSwapMatchOrder={onSwapMatchOrder}
           />
         </div>
       )}
     </div>
+  );
+}
+
+function StandingsRow({
+  rank,
+  seed,
+  standing: t,
+  isFirst,
+  isExpanded,
+  onToggle,
+  onSwap,
+}: {
+  rank: number;
+  seed: number;
+  standing: { team_id: string; team_name: string; matches_won: number; matches_lost: number; sets_won: number; sets_lost: number; point_differential: number };
+  isFirst: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onSwap: () => void;
+}) {
+  return (
+    <>
+      <tr
+        className={`${isFirst ? "lv-overview-row-first" : ""} lv-admin-standings-row`}
+        onClick={onToggle}
+        style={{ cursor: "pointer" }}
+      >
+        <td className="lv-overview-rank">{rank}</td>
+        <td className="lv-overview-name">({seed}) {t.team_name}</td>
+        <td>{t.matches_won}-{t.matches_lost}</td>
+        <td>{t.sets_won}-{t.sets_lost}</td>
+        <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
+          {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr className="lv-admin-standings-expand-row">
+          <td colSpan={5}>
+            <button
+              className="lv-admin-swap-inline-btn"
+              onClick={(e) => { e.stopPropagation(); onSwap(); }}
+            >
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 7h12m0 0l-3-3m3 3l-3 3M16 13H4m0 0l3-3m-3 3l3 3" />
+              </svg>
+              Swap {t.team_name}
+            </button>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }

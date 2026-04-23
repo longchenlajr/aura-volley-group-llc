@@ -385,7 +385,7 @@ html:has(.lv)::-webkit-scrollbar {
   transition: max-height 250ms ease, padding 250ms ease;
 }
 .lv-mobile-menu.open {
-  max-height: 300px;
+  max-height: 400px;
   padding: 1rem 0 1.5rem;
 }
 .lv-mobile-menu-inner {
@@ -2362,6 +2362,62 @@ html:has(.lv)::-webkit-scrollbar {
 }
 
 /* ==========================================================
+   MODAL (shared — used by ScoreLinkModal on public live page)
+   ========================================================== */
+
+.lv-admin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(42, 24, 16, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: lv-fade-in 200ms ease;
+}
+.lv-admin-modal {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.lv-admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.lv-admin-modal-title {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--lv-ink);
+}
+.lv-admin-modal-close {
+  background: none;
+  border: none;
+  color: var(--lv-ink-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 180ms ease;
+}
+.lv-admin-modal-close:hover {
+  color: var(--lv-ink);
+}
+.lv-admin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* ==========================================================
    SCORE SUBMISSION PAGE
    ========================================================== */
 
@@ -2423,130 +2479,150 @@ html:has(.lv)::-webkit-scrollbar {
   color: var(--lv-ink-muted);
 }
 
-/* Set card */
-.lv-score-set {
+/* Previous confirmed sets */
+.lv-score-prior-sets {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 1.5rem;
-  padding: 1.25rem;
-  background: var(--lv-surface);
-  border: 1px solid var(--lv-border);
-  border-radius: var(--lv-radius-lg);
 }
-.lv-score-set-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.lv-score-timer {
-  font-size: 0.7rem;
-  color: var(--lv-gold);
-  font-weight: 500;
-}
-.lv-score-locked-badge {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--lv-ink-muted);
-  background: rgba(107, 78, 61, 0.1);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-.lv-score-set-complete {
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--lv-green);
-  margin-top: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-/* Teams side by side */
-.lv-score-teams {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.lv-score-team {
-  flex: 1;
-  text-align: center;
-}
-.lv-score-team-a {
-  border-left: 3px solid var(--lv-red);
-  border-radius: var(--lv-radius-sm);
-  padding-left: 8px;
-}
-.lv-score-team-b {
-  border-right: 3px solid var(--lv-gold);
-  border-radius: var(--lv-radius-sm);
-  padding-right: 8px;
-}
-.lv-score-team-name {
-  font-family: var(--lv-font-display), Georgia, serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--lv-ink);
-  display: block;
-  margin-bottom: 0.75rem;
-}
-.lv-score-vs {
-  font-family: var(--lv-font-display), Georgia, serif;
-  font-weight: 500;
-  font-size: 1rem;
-  color: var(--lv-ink-muted);
-  flex-shrink: 0;
-}
-
-/* Score input group */
-.lv-score-input-group {
+.lv-score-prior-set {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
+  padding: 6px 14px;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
 }
-.lv-score-btn {
-  width: 44px;
-  height: 36px;
+.lv-score-prior-set-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-score-prior-set-score {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--lv-ink);
+}
+
+/* Active set label */
+.lv-score-set-label {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-bottom: 0.75rem;
+}
+
+/* Score card — large tap targets */
+.lv-score-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.lv-score-card-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 0.75rem;
+}
+.lv-score-card-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--lv-ink);
+  text-align: center;
+  margin-bottom: 1rem;
+  word-break: break-word;
+}
+.lv-score-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lv-score-card-btn {
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lv-parchment);
   border: 1px solid var(--lv-border);
-  border-radius: var(--lv-radius-sm);
-  font-size: 1.25rem;
+  border-radius: var(--lv-radius-md);
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--lv-ink);
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all 100ms ease;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
-.lv-score-btn:active:not(:disabled) {
-  background: rgba(122, 28, 28, 0.08);
+.lv-score-card-btn-plus {
+  background: rgba(122, 28, 28, 0.06);
 }
-.lv-score-btn:disabled {
-  opacity: 0.3;
+.lv-score-card-btn-minus {
+  background: var(--lv-parchment);
+}
+.lv-score-card-btn:active:not(:disabled) {
+  transform: scale(0.93);
+  background: rgba(122, 28, 28, 0.12);
+}
+.lv-score-card-btn:disabled {
+  opacity: 0.25;
   cursor: default;
 }
-.lv-score-input {
-  width: 60px;
-  height: 60px;
-  text-align: center;
+.lv-score-card-value {
   font-family: var(--lv-font-display), Georgia, serif;
   font-weight: 900;
-  font-size: 28px;
+  font-size: 2.5rem;
   color: var(--lv-ink);
-  background: var(--lv-surface-input);
-  border: 2px solid var(--lv-border);
-  border-radius: var(--lv-radius-md);
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
+  min-width: 48px;
+  text-align: center;
+  line-height: 1;
 }
-.lv-score-input:focus {
-  border-color: var(--lv-red);
+.lv-score-card-divider {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+  background: var(--lv-parchment);
+  border-left: 1px solid var(--lv-border);
+  border-right: 1px solid var(--lv-border);
 }
-.lv-score-input:disabled {
-  opacity: 0.4;
+
+/* Save status */
+.lv-score-save-status {
+  text-align: center;
+  min-height: 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+}
+.lv-score-status-saving { color: var(--lv-ink-muted); }
+.lv-score-status-saved { color: var(--lv-green); }
+.lv-score-status-error { color: var(--lv-error); }
+
+/* End Set button */
+.lv-score-end-set {
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+  margin-bottom: 1rem;
+  animation: lv-fade-in 200ms ease;
 }
 
 /* Work info */
@@ -2554,17 +2630,10 @@ html:has(.lv)::-webkit-scrollbar {
   text-align: center;
   font-size: 0.8rem;
   color: var(--lv-ink-muted);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Submit button */
-.lv-score-submit {
-  width: 100%;
-  height: 48px;
-  font-size: 15px;
-}
-
-/* Results overlay */
+/* Confirmation overlay */
 .lv-score-overlay {
   position: fixed;
   inset: 0;
@@ -2586,51 +2655,14 @@ html:has(.lv)::-webkit-scrollbar {
   width: 100%;
   text-align: center;
 }
-
-/* Match results card (also used inside overlay) */
-.lv-score-results {
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  background: var(--lv-surface);
-  border: 1px solid var(--lv-border);
-  border-radius: var(--lv-radius-lg);
-  text-align: center;
-  animation: lv-fade-in 200ms ease;
-}
-.lv-score-results-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lv-gold);
-  margin-bottom: 0.75rem;
-}
-.lv-score-results-matchup {
+.lv-score-modal-title {
   font-family: var(--lv-font-display), Georgia, serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   color: var(--lv-ink);
-  margin-bottom: 0.5rem;
-}
-.lv-score-results-record {
-  font-family: var(--lv-font-display), Georgia, serif;
-  font-weight: 900;
-  font-size: 1.75rem;
-  color: var(--lv-ink);
-  margin-bottom: 0.25rem;
-}
-.lv-score-results-sets {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
   margin-bottom: 1rem;
 }
-.lv-score-results-set {
-  font-size: 0.9rem;
-  color: var(--lv-ink-muted);
-  font-weight: 500;
-}
-.lv-score-results-diff {
+.lv-score-modal-prior-sets {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -2639,13 +2671,108 @@ html:has(.lv)::-webkit-scrollbar {
   background: var(--lv-parchment);
   border-radius: var(--lv-radius-md);
 }
-.lv-score-results-diff-row {
+.lv-score-modal-set-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+}
+.lv-score-modal-final {
+  margin-bottom: 1.5rem;
+}
+.lv-score-modal-final-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+.lv-score-modal-final-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--lv-ink);
+}
+.lv-score-modal-final-score strong {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+}
+.lv-score-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.lv-score-modal-actions .lv-btn {
+  flex: 1;
+  max-width: 160px;
+}
+
+/* Match complete card */
+.lv-score-complete-card {
+  padding: 2rem;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-lg);
+  text-align: center;
+}
+.lv-score-complete-matchup {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.5rem;
+}
+.lv-score-complete-record {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.75rem;
+  color: var(--lv-ink);
+  margin-bottom: 0.25rem;
+}
+.lv-score-complete-sets {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.lv-score-complete-set {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  font-weight: 500;
+  background: var(--lv-parchment);
+  padding: 4px 10px;
+  border-radius: var(--lv-radius-sm);
+}
+.lv-score-complete-set-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--lv-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.lv-score-complete-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--lv-parchment);
+  border-radius: var(--lv-radius-md);
+}
+.lv-score-complete-diff-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
   color: var(--lv-ink);
 }
-.lv-score-results-winner {
+.lv-score-complete-winner {
   font-family: var(--lv-font-display), Georgia, serif;
   font-weight: 700;
   font-size: 1rem;
@@ -2653,16 +2780,16 @@ html:has(.lv)::-webkit-scrollbar {
 }
 
 @media (max-width: 480px) {
-  .lv-score-teams {
-    gap: 8px;
+  .lv-score-card-name {
+    font-size: 0.8rem;
   }
-  .lv-score-team-name {
-    font-size: 0.85rem;
+  .lv-score-card-value {
+    font-size: 2rem;
+    min-width: 36px;
   }
-  .lv-score-input {
-    width: 52px;
-    height: 52px;
-    font-size: 24px;
+  .lv-score-card-btn {
+    width: 44px;
+    height: 44px;
   }
 }
 

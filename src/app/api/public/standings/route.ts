@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   // Get pool teams
   const { data: poolTeams } = await sb
     .from("pool_teams")
-    .select("pool_id, team_id, seed_in_pool, teams(team_name)")
+    .select("pool_id, team_id, seed_in_pool, teams(team_name, seed)")
     .in("pool_id", poolIds)
     .order("seed_in_pool");
 
@@ -60,8 +60,9 @@ export async function GET(req: NextRequest) {
       .filter((pt) => pt.pool_id === pool.id)
       .map((pt) => ({
         team_id: pt.team_id,
-        team_name: (pt.teams as unknown as { team_name: string })?.team_name ?? "Unknown",
+        team_name: (pt.teams as unknown as { team_name: string; seed: number | null })?.team_name ?? "Unknown",
         seed_in_pool: pt.seed_in_pool,
+        overall_seed: (pt.teams as unknown as { team_name: string; seed: number | null })?.seed ?? null,
       }));
 
     const poolMatches = (matches ?? [])

@@ -213,17 +213,6 @@ export function BracketView({
           </div>
           <div className="lv-bk-caption">
             {court != null && <span>Ct {court}</span>}
-            {workTeam && <span>Work: {workTeam}</span>}
-            {matchId && workTeam && (
-              <SubmitScoresButton
-                matchId={matchId}
-                matchType="bracket"
-                workTeamName={workTeam}
-                status={status}
-                hasWorkTeam={true}
-                onOpenModal={handleOpenModal}
-              />
-            )}
           </div>
         </div>,
       );
@@ -248,6 +237,92 @@ export function BracketView({
       }
     }
   }
+
+  // --- Match feed: same card layout as pool matches ---
+  // Build a lookup to generate placeholder names for TBD teams
+  // e.g. "W(R1M1)" = winner of Round 1 Match 1, "L(R1M1)" = loser
+  function placeholderTeamName(
+    teamName: string,
+    teamId: string | null,
+    roundNum: number,
+  ): string {
+    if (teamName && teamName !== "TBD") return teamName;
+    if (!teamId && roundNum > 1) {
+      // Find which prior match feeds this team
+      // We can't easily resolve this without slot data, so use generic label
+      return "TBD";
+    }
+    return teamName || "TBD";
+  }
+
+  // Build feeder match labels: for each later-round match, find which R(n-1) matches feed it
+  // Local match numbering within this bracket (by match_order)
+  const localMatchNum = new Map<string, number>();
+  [...matches].sort((a, b) => a.match_order - b.match_order).forEach((m, i) => {
+    localMatchNum.set(m.match_id, i + 1);
+  });
+
+  // Helper: short label for a match like "M1C2"
+  function matchTag(m: BracketMatch): string {
+    return `M${localMatchNum.get(m.match_id) ?? "?"}C${m.court_number}`;
+  }
+
+  // Build placeholder labels for TBD teams and work teams
+  const matchFeederLabels = new Map<string, { teamALabel: string; teamBLabel: string; workLabel: string | null }>();
+  for (const m of matches) {
+    let teamALabel = m.team_a && m.team_a !== "TBD" ? m.team_a : null;
+    let teamBLabel = m.team_b && m.team_b !== "TBD" ? m.team_b : null;
+    let workLabel: string | null = m.work_team;
+
+    if (!teamALabel || !teamBLabel) {
+      const feederPos1 = m.match_position * 2 - 1;
+      const feederPos2 = m.match_position * 2;
+      const feederA = matches.find((f) => f.round_number === m.round_number - 1 && f.match_position === feederPos1);
+      const feederB = matches.find((f) => f.round_number === m.round_number - 1 && f.match_position === feederPos2);
+
+      if (!teamALabel) {
+        if (feederA) {
+          teamALabel = `W(${matchTag(feederA)})`;
+        } else {
+          const slot = slots.find((s) => s.round_number === m.round_number && s.slot_position === m.match_position * 2 - 1);
+          teamALabel = slot?.team_name ?? "TBD";
+        }
+      }
+      if (!teamBLabel) {
+        if (feederB) {
+          teamBLabel = `W(${matchTag(feederB)})`;
+        } else {
+          const slot = slots.find((s) => s.round_number === m.round_number && s.slot_position === m.match_position * 2);
+          teamBLabel = slot?.team_name ?? "TBD";
+        }
+      }
+
+      if (!workLabel && m.round_number > 1) {
+        const priorOnCourt = matches.find(
+          (f) => f.court_number === m.court_number && f.match_order < m.match_order
+            && f.round_number < m.round_number,
+        );
+        if (priorOnCourt && priorOnCourt.status !== "complete") {
+          workLabel = `L(${matchTag(priorOnCourt)})`;
+        }
+      }
+    }
+
+    matchFeederLabels.set(m.match_id, {
+      teamALabel: teamALabel ?? "TBD",
+      teamBLabel: teamBLabel ?? "TBD",
+      workLabel,
+    });
+  }
+
+  const sortedMatches = (() => {
+    const live = matches.filter((m) => m.status === "in_progress").sort((a, b) => a.match_order - b.match_order);
+    const scheduled = matches.filter((m) => m.status === "scheduled").sort((a, b) => a.match_order - b.match_order);
+    const complete = matches.filter((m) => m.status === "complete").sort((a, b) => b.match_order - a.match_order);
+    const top = live.length > 0 ? live : scheduled.slice(0, 1);
+    const restScheduled = live.length > 0 ? scheduled : scheduled.slice(1);
+    return [...top, ...complete, ...restScheduled];
+  })();
 
   return (
     <div className="lv-bracket">
@@ -292,6 +367,78 @@ export function BracketView({
           </div>
         </div>
       </div>
+
+      {/* Match feed — same card layout as pool matches */}
+      {sortedMatches.length > 0 && (
+        <div className="lv-pool-view-matches" style={{ marginTop: "1.5rem" }}>
+          <h3 className="lv-live-section-title">Matches</h3>
+          {sortedMatches.map((m) => {
+            const labels = matchFeederLabels.get(m.match_id);
+            const teamADisplay = labels?.teamALabel ?? m.team_a;
+            const teamBDisplay = labels?.teamBLabel ?? m.team_b;
+            const workDisplay = labels?.workLabel ?? m.work_team;
+
+            const isComplete = m.status === "complete" && m.score_a != null && m.score_b != null;
+            let outcomeLabel = "";
+            let outcomeType = "";
+            if (isComplete) {
+              const winner = m.score_a! > m.score_b! ? teamADisplay : teamBDisplay;
+              const diff = Math.abs(m.score_a! - m.score_b!);
+              outcomeLabel = `${winner} win +${diff}`;
+              outcomeType = "win";
+            }
+
+            return (
+              <div
+                key={m.match_id}
+                className={`lv-match-card ${m.status === "in_progress" ? "lv-match-card--live" : ""} ${m.status === "complete" ? "lv-match-card--complete" : ""}`}
+              >
+                <div className="lv-match-card-top">
+                  <span className="lv-match-card-num">
+                    {getRoundLabel(m.round_number, totalRounds)} &middot; Match {localMatchNum.get(m.match_id) ?? m.match_order} &middot; Ct {m.court_number}
+                  </span>
+                  {m.status === "in_progress" && <span className="lv-status-tag lv-status-tag--live" style={{ fontSize: "8px" }}>Live</span>}
+                  {m.status === "complete" && <span className="lv-match-card-final">Final</span>}
+                  {m.status === "scheduled" && <span className="lv-match-card-scheduled">Upcoming</span>}
+                </div>
+
+                <div className="lv-match-card-teams">
+                  <span className="lv-match-card-team">{teamADisplay}</span>
+                  <span className="lv-match-card-vs">vs</span>
+                  <span className="lv-match-card-team">{teamBDisplay}</span>
+                </div>
+
+                {m.score_a != null && m.score_b != null && (
+                  <div className="lv-match-card-scores">
+                    <span className="lv-match-card-set">
+                      {m.score_a}&ndash;{m.score_b}
+                    </span>
+                  </div>
+                )}
+
+                {outcomeLabel && (
+                  <div className={`lv-match-card-outcome lv-match-card-outcome--${outcomeType}`}>
+                    {outcomeLabel}
+                  </div>
+                )}
+
+                {workDisplay && (
+                  <div className="lv-match-card-work">Scorekeeper: {workDisplay}</div>
+                )}
+
+                <SubmitScoresButton
+                  matchId={m.match_id}
+                  matchType="bracket"
+                  workTeamName={m.work_team ?? ""}
+                  status={m.status}
+                  hasWorkTeam={!!m.work_team}
+                  onOpenModal={handleOpenModal}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Score link verification modal */}
       {scoreLinkMatch && (

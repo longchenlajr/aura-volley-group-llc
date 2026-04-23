@@ -3,13 +3,13 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { isSetComplete } from "@/lib/score-format";
 import { getRoundLabel } from "@/lib/bracket-generation";
 
-// Rate limiter
+// Rate limiter (120/min for live per-point scoring)
 const rateMap = new Map<string, { count: number; resetAt: number }>();
 function checkRate(token: string): boolean {
   const now = Date.now();
   const e = rateMap.get(token);
   if (!e || now > e.resetAt) { rateMap.set(token, { count: 1, resetAt: now + 60000 }); return true; }
-  if (e.count >= 10) return false;
+  if (e.count >= 120) return false;
   e.count++;
   return true;
 }
@@ -122,21 +122,7 @@ export async function POST(
     .single();
 
   const pps = bracket?.points_per_set ?? 15;
-
-  // Check 10-min edit window
-  const { data: existing } = await sb
-    .from("bracket_match_sets")
-    .select("submitted_at")
-    .eq("bracket_match_id", match.id)
-    .eq("set_number", 1)
-    .single();
-
-  if (existing?.submitted_at) {
-    const elapsed = Date.now() - new Date(existing.submitted_at).getTime();
-    if (elapsed > 10 * 60 * 1000) {
-      return NextResponse.json({ error: "Score locked. Contact admin." }, { status: 403 });
-    }
-  }
+  const now = new Date().toISOString();
 
   // Upsert score
   const { error: upsertErr } = await sb
@@ -148,7 +134,7 @@ export async function POST(
       team_b_score,
       submitted_by: "work_team",
       submitted_by_team_id: match.work_team_id,
-      submitted_at: new Date().toISOString(),
+      submitted_at: now,
     }, { onConflict: "bracket_match_id,set_number" });
 
   if (upsertErr) return NextResponse.json({ error: upsertErr.message }, { status: 500 });
@@ -159,7 +145,7 @@ export async function POST(
   if (complete) {
     await sb.from("bracket_matches").update({
       status: "complete",
-      end_time: new Date().toISOString(),
+      end_time: now,
     }).eq("id", match.id);
 
     // Propagate winner + assign work team via RPCs
@@ -170,7 +156,11 @@ export async function POST(
       console.error("Bracket propagation error:", err);
     }
   } else {
-    await sb.from("bracket_matches").update({ status: "in_progress" }).eq("id", match.id);
+    // Set to in_progress, set start_time if not already set
+    const { data: current } = await sb.from("bracket_matches").select("start_time").eq("id", match.id).single();
+    const updates: Record<string, unknown> = { status: "in_progress" };
+    if (!current?.start_time) updates.start_time = now;
+    await sb.from("bracket_matches").update(updates).eq("id", match.id);
   }
 
   return NextResponse.json({ ok: true, complete });

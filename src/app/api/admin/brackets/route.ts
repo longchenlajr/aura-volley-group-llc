@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { computePoolStandings } from "@/lib/standings";
 import { computeOverallStandings } from "@/lib/tournament-standings";
-import { generateBracket } from "@/lib/bracket-generation";
+import { generateBracket, countR1Games } from "@/lib/bracket-generation";
 import { getMatchFormat } from "@/lib/score-format";
 import { generateMatchToken, tokenExpiryForTournament } from "@/lib/tokens";
 import { getTournament } from "@/lib/tournaments";
@@ -177,11 +177,26 @@ export async function POST(req: NextRequest) {
   const goldTeams = overallStandings.filter((t) => t.overall_rank <= gold_cutoff);
   const silverTeams = overallStandings.filter((t) => t.overall_rank > gold_cutoff);
 
-  const courts = court_count || pools.length;
+  const totalCourts = court_count || pools.length;
+
+  // Split courts between gold and silver brackets
+  // Odd court goes to the bracket with more R1 games
+  const goldR1 = countR1Games(goldTeams.length);
+  const silverR1 = countR1Games(silverTeams.length);
+  const halfCourts = Math.floor(totalCourts / 2);
+  const extraCourt = totalCourts % 2 === 1 ? 1 : 0;
+  const goldGetsExtra = goldR1 >= silverR1;
+
+  const goldCourtCount = halfCourts + (goldGetsExtra ? extraCourt : 0);
+  const silverCourtCount = halfCourts + (goldGetsExtra ? 0 : extraCourt);
+
+  // Gold gets courts 1..goldCourtCount, silver gets the rest
+  const goldCourts = Array.from({ length: goldCourtCount }, (_, i) => i + 1);
+  const silverCourts = Array.from({ length: silverCourtCount }, (_, i) => goldCourtCount + i + 1);
 
   // Generate brackets
-  const goldBracket = generateBracket(goldTeams, "gold", gold_points_per_set, courts);
-  const silverBracket = generateBracket(silverTeams, "silver", silver_points_per_set, courts, goldBracket.matches.length);
+  const goldBracket = generateBracket(goldTeams, "gold", gold_points_per_set, goldCourts);
+  const silverBracket = generateBracket(silverTeams, "silver", silver_points_per_set, silverCourts, goldBracket.matches.length);
 
   // Persist gold bracket
   for (const bracket of [goldBracket, silverBracket]) {
@@ -249,6 +264,7 @@ export async function POST(req: NextRequest) {
         slot_b_id: slotIdMap.get(`${m.round_number}:${m.slot_b_position}`) ?? "",
         team_a_id: m.team_a_id,
         team_b_id: m.team_b_id,
+        work_team_id: m.work_team_id,
         court_number: m.court_number,
         match_order: m.match_order,
       }));

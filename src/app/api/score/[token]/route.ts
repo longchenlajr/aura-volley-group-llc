@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { isSetComplete, isMatchComplete, getMatchFormat } from "@/lib/score-format";
 
-// Rate limiter per token
+// Rate limiter per token (120/min for live per-point scoring)
 const tokenRateMap = new Map<string, { count: number; resetAt: number }>();
 function checkTokenRate(token: string): boolean {
   const now = Date.now();
@@ -11,7 +11,7 @@ function checkTokenRate(token: string): boolean {
     tokenRateMap.set(token, { count: 1, resetAt: now + 60000 });
     return true;
   }
-  if (entry.count >= 10) return false;
+  if (entry.count >= 120) return false;
   entry.count++;
   return true;
 }
@@ -150,6 +150,7 @@ export async function POST(
   const format = getMatchFormat(poolTeamCount ?? 4);
 
   // Validate and upsert each set
+  const now = new Date().toISOString();
   for (const set of sets) {
     if (set.set_number < 1 || set.set_number > format.sets) {
       return NextResponse.json({ error: `Invalid set number: ${set.set_number}` }, { status: 400 });
@@ -157,31 +158,13 @@ export async function POST(
     if (set.team_a_score < 0 || set.team_b_score < 0) {
       return NextResponse.json({ error: "Scores must be non-negative" }, { status: 400 });
     }
-    if (set.team_a_score === 0 && set.team_b_score === 0) {
-      continue; // Skip empty sets
-    }
     if (set.team_a_score > 99 || set.team_b_score > 99) {
       return NextResponse.json({ error: "Score exceeds maximum" }, { status: 400 });
     }
 
-    // Check 10-minute edit window for this set
-    const { data: existing } = await sb
-      .from("match_sets")
-      .select("submitted_at")
-      .eq("match_id", match.id)
-      .eq("set_number", set.set_number)
-      .single();
+    // Upsert set score (live scoring — no edit window for active sets)
+    if (set.team_a_score === 0 && set.team_b_score === 0) continue;
 
-    if (existing?.submitted_at) {
-      const elapsed = Date.now() - new Date(existing.submitted_at).getTime();
-      if (elapsed > 10 * 60 * 1000) {
-        return NextResponse.json({
-          error: `Set ${set.set_number} is locked. Score was submitted more than 10 minutes ago. Contact an admin.`,
-        }, { status: 403 });
-      }
-    }
-
-    // Upsert set score
     const { error } = await sb
       .from("match_sets")
       .upsert({
@@ -191,7 +174,7 @@ export async function POST(
         team_b_score: set.team_b_score,
         submitted_by: "work_team",
         submitted_by_team_id: match.work_team_id,
-        submitted_at: new Date().toISOString(),
+        submitted_at: now,
       }, { onConflict: "match_id,set_number" });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -207,11 +190,16 @@ export async function POST(
   const complete = isMatchComplete(allSets ?? [], format);
   const newStatus = complete ? "complete" : "in_progress";
 
-  await sb.from("matches").update({
-    status: newStatus,
-    ...(complete ? { end_time: new Date().toISOString() } : {}),
-    ...(!match.work_team_id ? {} : { start_time: new Date().toISOString() }),
-  }).eq("id", match.id);
+  // Set start_time on first score, end_time on completion
+  const updates: Record<string, unknown> = { status: newStatus };
+  if (newStatus === "in_progress") {
+    // Only set start_time if not already set
+    const { data: current } = await sb.from("matches").select("start_time").eq("id", match.id).single();
+    if (!current?.start_time) updates.start_time = now;
+  }
+  if (complete) updates.end_time = now;
+
+  await sb.from("matches").update(updates).eq("id", match.id);
 
   return NextResponse.json({ ok: true, status: newStatus, complete });
 }

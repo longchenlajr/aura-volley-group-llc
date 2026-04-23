@@ -4,6 +4,7 @@ export interface TeamStanding {
   team_id: string;
   team_name: string;
   seed_in_pool: number;
+  overall_seed: number | null;
   matches_played: number;
   matches_won: number;
   matches_lost: number;
@@ -33,6 +34,7 @@ interface TeamInput {
   team_id: string;
   team_name: string;
   seed_in_pool: number;
+  overall_seed?: number | null;
 }
 
 export function computePoolStandings(
@@ -47,6 +49,7 @@ export function computePoolStandings(
       team_id: t.team_id,
       team_name: t.team_name,
       seed_in_pool: t.seed_in_pool,
+      overall_seed: t.overall_seed ?? null,
       matches_played: 0,
       matches_won: 0,
       matches_lost: 0,

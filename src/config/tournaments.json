@@ -1,22 +1,13 @@
 {
   "tournaments": [
     {
-      "id": "doubles-04-01-2026",
-      "name": "Doubles @ Hamilton",
-      "date": "2026-04-01T09:00:00-04:00",
-      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "id": "dev-doubles-today",
+      "name": "DEV Doubles",
+      "date": "2026-04-23T09:00:00-04:00",
+      "location": "Dev Court",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
-    },
-    {
-      "id": "doubles-04-21-2026",
-      "name": "Doubles @ Hamilton",
-      "date": "2026-04-21T09:00:00-04:00",
-      "location": "515 S. Ott Street, Allentown, PA 18104",
-      "format": "doubles",
-      "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": false
     },
     {
       "id": "doubles-04-26-2026",

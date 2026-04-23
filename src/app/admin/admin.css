@@ -346,7 +346,7 @@
   border: none;
   cursor: pointer;
   color: var(--lv-ink-muted);
-  padding: 4px;
+  padding: 6px;
   transition: color 180ms ease;
 }
 .lv-admin-action-btn:hover {
@@ -424,57 +424,7 @@
   border-color: var(--lv-red);
 }
 
-/* Modal */
-.lv-admin-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(42, 24, 16, 0.4);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-.lv-admin-modal {
-  background: var(--lv-surface);
-  border: 1px solid var(--lv-border);
-  border-radius: var(--lv-radius-lg);
-  padding: 2rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-.lv-admin-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-.lv-admin-modal-title {
-  font-family: var(--lv-font-display), Georgia, serif;
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: var(--lv-ink);
-}
-.lv-admin-modal-close {
-  background: none;
-  border: none;
-  color: var(--lv-ink-muted);
-  cursor: pointer;
-  padding: 4px;
-  transition: color 180ms ease;
-}
-.lv-admin-modal-close:hover {
-  color: var(--lv-ink);
-}
-.lv-admin-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
+/* Modal styles inherited from tournament.css */
 
 /* === POOL CREATION === */
 .lv-admin-actions {
@@ -1131,51 +1081,41 @@
   border-top: 1px solid rgba(122, 28, 28, 0.08);
 }
 
-/* Standings table (expanded) */
-.lv-standings-table {
-  width: 100%;
-  border-collapse: collapse;
+/* Admin standings (reuses lv-overview-table from tournament.css) */
+.lv-admin-standings {
   margin-top: 12px;
   margin-bottom: 12px;
 }
-.lv-standings-table th {
-  text-align: left;
-  padding: 6px 8px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lv-gold);
-  border-bottom: 1px solid var(--lv-border);
+.lv-admin-standings-row {
+  cursor: pointer;
+  transition: background 120ms ease;
 }
-.lv-standings-table td {
-  padding: 6px 8px;
-  font-size: 0.8rem;
-  color: var(--lv-ink-muted);
+.lv-admin-standings-row:hover {
+  background: rgba(122, 28, 28, 0.03);
+}
+.lv-admin-standings-expand-row td {
+  padding: 0 6px 8px;
   border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
 }
-.lv-standings-row-1 {
-  border-left: 3px solid var(--lv-gold);
-}
-.lv-standings-row-2 {
-  border-left: 3px solid var(--lv-red);
-}
-.lv-standings-team-name {
-  font-weight: 600;
-  color: var(--lv-ink);
-}
-.lv-standings-swap-btn {
+.lv-admin-swap-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: none;
-  border: none;
-  cursor: pointer;
+  border: 1px solid rgba(122, 28, 28, 0.15);
+  border-radius: var(--lv-radius-sm);
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
   color: var(--lv-ink-muted);
-  padding: 2px;
-  opacity: 0.4;
-  transition: opacity 180ms ease, color 180ms ease;
+  cursor: pointer;
+  transition: all 160ms ease;
 }
-.lv-standings-swap-btn:hover {
-  opacity: 1;
+.lv-admin-swap-inline-btn:hover {
   color: var(--lv-red);
+  border-color: rgba(122, 28, 28, 0.3);
+  background: rgba(122, 28, 28, 0.03);
 }
 
 /* --- MATCH TABLE (within pool card) --- */
@@ -1184,13 +1124,7 @@
   flex-direction: column;
   gap: 4px;
 }
-
-/* Desktop match row */
 .lv-match-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
   border-radius: var(--lv-radius-sm);
   font-size: 0.8rem;
   transition: background 120ms ease;
@@ -1198,11 +1132,12 @@
 .lv-match-row:hover {
   background: rgba(122, 28, 28, 0.03);
 }
-.lv-match-row--live {
-  border-left: 3px solid var(--lv-red);
-}
 .lv-match-row--complete {
   opacity: 0.7;
+}
+.lv-match-seed {
+  color: var(--lv-ink-muted);
+  font-size: 0.7rem;
 }
 .lv-match-num {
   font-weight: 700;
@@ -1218,14 +1153,12 @@
   font-weight: 500;
   min-width: 0;
 }
-.lv-match-teams .withdrawn-tag {
+.lv-match-teams .withdrawn-tag,
+.lv-match-mobile-teams .withdrawn-tag {
   font-size: 0.65rem;
   color: var(--lv-ink-muted);
   font-weight: 400;
   font-style: italic;
-}
-.lv-match-winner {
-  font-weight: 700;
 }
 .lv-match-work {
   font-size: 0.7rem;
@@ -1285,21 +1218,50 @@
   flex-shrink: 0;
 }
 
-/* Mobile match cards */
+/* Desktop match layout */
+.lv-match-desktop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+}
+.lv-match-row--live .lv-match-desktop {
+  border-left: 3px solid var(--lv-red);
+}
+.lv-match-card-mobile {
+  display: none;
+}
+
+/* Admin actions row inside mobile card */
+.lv-match-card-admin-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+/* Mobile: swap to card layout matching live match cards */
 @media (max-width: 640px) {
-  .lv-match-row {
-    flex-wrap: wrap;
-    gap: 3px 8px;
-    padding: 8px;
-    border: 1px solid rgba(122, 28, 28, 0.08);
-    border-radius: var(--lv-radius-sm);
-    margin-bottom: 2px;
+  .lv-match-desktop {
+    display: none;
   }
-  .lv-match-row--live {
+  .lv-match-card-mobile {
+    display: block;
+    padding: 1rem;
+    border: 1px solid rgba(122, 28, 28, 0.1);
+    border-radius: var(--lv-radius-md);
+  }
+  .lv-match-row--live .lv-match-card-mobile {
+    border-color: rgba(122, 28, 28, 0.3);
     border-left: 3px solid var(--lv-red);
   }
-  .lv-match-actions {
-    margin-left: auto;
+  .lv-match-row--complete .lv-match-card-mobile {
+    border-left: 3px solid var(--lv-green);
+  }
+  .lv-match-row {
+    margin-bottom: 8px;
+  }
+  .lv-match-row--complete {
+    opacity: 0.8;
   }
 }
 

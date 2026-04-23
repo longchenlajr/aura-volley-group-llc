@@ -43,7 +43,9 @@ export default function LivePage() {
 
   // Live polling — only create URLs when actually in Live status
   const standingsUrl = selected && isLive ? `/api/public/standings?tournament=${selected.id}` : null;
+  const matchesUrl = selected && isLive ? `/api/public/matches?tournament=${selected.id}` : null;
   const { data: standingsData, fetching: standingsFetching } = useLivePolling<StandingsData>(standingsUrl, 12000, isLive);
+  const { data: liveMatchesData } = useLivePolling<{ matches: PublicMatch[] }>(matchesUrl, 12000, isLive);
 
   // Non-polling state
   const [upcomingPools, setUpcomingPools] = useState<PublicPool[] | null>(null);
@@ -92,6 +94,11 @@ export default function LivePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
+  // Use polled matches for live, otherwise use the one-shot fetch
+  const effectiveMatches = (isLive && liveMatchesData?.matches?.length)
+    ? liveMatchesData.matches
+    : allPublicMatches;
+
   // Derived data
   const activeStandings = isLive ? standingsData : isArchive ? archiveStandings : null;
 
@@ -115,8 +122,8 @@ export default function LivePage() {
   // Match counts per pool
   const matchesByPool = useMemo(() => {
     const map = new Map<string, { total: number; complete: number }>();
-    if (!allPublicMatches) return map;
-    for (const m of allPublicMatches) {
+    if (!effectiveMatches) return map;
+    for (const m of effectiveMatches) {
       const key = m.pool_label;
       if (!map.has(key)) map.set(key, { total: 0, complete: 0 });
       const entry = map.get(key)!;
@@ -124,7 +131,7 @@ export default function LivePage() {
       if (m.status === "complete") entry.complete++;
     }
     return map;
-  }, [allPublicMatches]);
+  }, [effectiveMatches]);
 
   const poolLabelToId = useMemo(() => {
     const map = new Map<string, string>();
@@ -147,9 +154,9 @@ export default function LivePage() {
   }, [activeTab, activeStandings]);
 
   const selectedPoolMatches = useMemo(() => {
-    if (!allPublicMatches || !selectedPoolStandings) return [];
+    if (!effectiveMatches || !selectedPoolStandings) return [];
     const label = selectedPoolStandings.pool_label;
-    return allPublicMatches
+    return effectiveMatches
       .filter((m) => m.pool_label === label)
       .map((m) => ({
         match_id: m.match_id,
@@ -161,7 +168,7 @@ export default function LivePage() {
         work_team: m.work_team,
         sets: m.sets ?? [],
       }));
-  }, [allPublicMatches, selectedPoolStandings]);
+  }, [effectiveMatches, selectedPoolStandings]);
 
   // Team records for bracket display (seed + W-L from pool play)
   const teamRecords = useMemo(() => {

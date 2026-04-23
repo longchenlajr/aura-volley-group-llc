@@ -2,7 +2,7 @@ import { AdminShell } from "./AdminShell";
 import "./admin.css";
 
 export const metadata = {
-  title: { default: "Admin", template: "%s | Admin" },
+  title: { default: "Admin | Long Volleyball", template: "%s | Admin | Long Volleyball" },
 };
 
 export default function AdminLayout({

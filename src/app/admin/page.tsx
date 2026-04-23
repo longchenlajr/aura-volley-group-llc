@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getTournaments, type Tournament } from "@/lib/tournaments";
+import { getTournaments, getTournamentStatus, type Tournament } from "@/lib/tournaments";
+import { StatusTag } from "../(tournament)/StatusTag";
 import { DividerOrnament } from "../(tournament)/ornaments";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [teamCounts, setTeamCounts] = useState<Record<string, number | null>>({});
 
   useEffect(() => {
     const all = getTournaments().sort(
@@ -17,6 +19,13 @@ export default function AdminDashboard() {
     // If only one tournament, go straight to it
     if (all.length === 1) {
       router.replace(`/admin/tournament/${all[0].id}`);
+    }
+    // Fetch team counts for each tournament
+    for (const t of all) {
+      fetch(`/api/public/team-count?tournament=${t.id}`)
+        .then((r) => r.json())
+        .then((d) => setTeamCounts((prev) => ({ ...prev, [t.id]: d.count ?? 0 })))
+        .catch(() => setTeamCounts((prev) => ({ ...prev, [t.id]: null })));
     }
   }, [router]);
 
@@ -32,39 +41,43 @@ export default function AdminDashboard() {
           <p className="lv-admin-empty-sub">Add a tournament to the config to get started.</p>
         </div>
       ) : (
-        <div className="lv-date-list" role="listbox">
-          {tournaments.map((t) => {
-            const d = new Date(t.date);
-            const label = d.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            });
-            const fmt =
-              t.format === "doubles"
-                ? "Doubles (2v2)"
-                : t.format === "triples"
-                  ? "Triples (3v3)"
-                  : `${t.format} (${t.teamSize}v${t.teamSize})`;
+        <div className="lv-admin-dash-table-wrap">
+          <table className="lv-admin-dash-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Format</th>
+                <th># Registered</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tournaments.map((t) => {
+                const d = new Date(t.date);
+                const label = d.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                });
+                const fmtLabel = `${t.teamSize}s`;
+                const count = teamCounts[t.id];
 
-            return (
-              <button
-                key={t.id}
-                type="button"
-                role="option"
-                aria-selected={false}
-                className="lv-date-list-item"
-                onClick={() => router.push(`/admin/tournament/${t.id}`)}
-              >
-                <span className="lv-date-list-date">{label}</span>
-                <span className="lv-date-list-format">{fmt}</span>
-                <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)" }}>
-                  {t.location}
-                </span>
-              </button>
-            );
-          })}
+                return (
+                  <tr
+                    key={t.id}
+                    className="lv-admin-dash-row"
+                    onClick={() => router.push(`/admin/tournament/${t.id}`)}
+                  >
+                    <td>{label}</td>
+                    <td><StatusTag status={getTournamentStatus(t.date)} /></td>
+                    <td><span className="lv-admin-badge lv-admin-badge-format">{fmtLabel}</span></td>
+                    <td><span className="lv-admin-badge lv-admin-badge-count">{count != null ? count : "—"}</span></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

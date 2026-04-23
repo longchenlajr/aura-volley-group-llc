@@ -9,6 +9,7 @@ import { inter, fraunces } from "@/lib/fonts";
 const NAV_LINKS = [
   { href: "/longvolleyball", label: "Tournaments" },
   { href: "/longvolleyball/live", label: "Live" },
+  { href: "/longvolleyball/rules", label: "Rules" },
   { href: "/longvolleyball/gallery", label: "Gallery" },
   { href: "/longvolleyball/records", label: "Records" },
 ];

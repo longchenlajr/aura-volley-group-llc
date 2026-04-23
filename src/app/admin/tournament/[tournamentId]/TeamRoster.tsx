@@ -13,6 +13,17 @@ interface TeamRosterProps {
   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
 }
 
+function formatRegisteredDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export function TeamRoster({
   teams,
   poolsExist,
@@ -24,11 +35,21 @@ export function TeamRoster({
 }: TeamRosterProps) {
   const [expanded, setExpanded] = useState(!poolsExist);
   const [showWithdrawn, setShowWithdrawn] = useState(false);
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
 
   const activeTeams = teams.filter((t) => !t.withdrawn_at);
   const withdrawnTeams = teams.filter((t) => !!t.withdrawn_at);
   const checkedInCount = activeTeams.filter((t) => t.checked_in).length;
   const displayTeams = showWithdrawn ? teams : activeTeams;
+
+  function toggleTeamExpand(teamId: string) {
+    setExpandedTeams((prev) => {
+      const next = new Set(prev);
+      if (next.has(teamId)) next.delete(teamId);
+      else next.add(teamId);
+      return next;
+    });
+  }
 
   return (
     <div className="lv-roster-section">
@@ -71,8 +92,6 @@ export function TeamRoster({
                 <tr>
                   <th>Team name</th>
                   <th>Captain</th>
-                  <th>Email</th>
-                  <th>Phone</th>
                   <th>Players</th>
                   <th>Seed</th>
                   <th>Checked in</th>
@@ -82,72 +101,24 @@ export function TeamRoster({
               <tbody>
                 {displayTeams.map((t) => {
                   const captain = t.players.find((p) => p.is_captain);
+                  const teammates = t.players.filter((p) => !p.is_captain);
                   const isWithdrawn = !!t.withdrawn_at;
+                  const isTeamExpanded = expandedTeams.has(t.id);
                   return (
-                    <tr key={t.id} style={isWithdrawn ? { opacity: 0.5 } : undefined}>
-                      <td className="lv-admin-team-name">
-                        {t.team_name}
-                        {isWithdrawn && (
-                          <span style={{ fontWeight: 400, fontSize: "0.7rem", color: "var(--lv-ink-muted)", fontStyle: "italic", marginLeft: 6 }}>
-                            (withdrawn)
-                          </span>
-                        )}
-                      </td>
-                      <td>{captain?.name ?? "—"}</td>
-                      <td>{t.contact_email}</td>
-                      <td>{t.contact_phone}</td>
-                      <td>{t.players.length}</td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        {isWithdrawn ? (
-                          <span style={{ color: "var(--lv-ink-muted)" }}>{t.seed ?? "—"}</span>
-                        ) : (
-                          <input
-                            type="number"
-                            className="lv-admin-seed"
-                            value={t.seed ?? ""}
-                            min={1}
-                            onChange={(e) => {
-                              const val = e.target.value ? parseInt(e.target.value, 10) : null;
-                              setTeams((prev) => prev.map((team) => team.id === t.id ? { ...team, seed: val } : team));
-                            }}
-                            onBlur={(e) => {
-                              const val = e.target.value ? parseInt(e.target.value, 10) : null;
-                              onPatchTeam(t.id, { seed: val });
-                            }}
-                          />
-                        )}
-                      </td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        {isWithdrawn ? (
-                          <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)" }}>—</span>
-                        ) : (
-                          <button
-                            className={`lv-toggle ${t.checked_in ? "on" : ""}`}
-                            onClick={() => onPatchTeam(t.id, { checked_in: !t.checked_in })}
-                            aria-label={t.checked_in ? "Checked in" : "Not checked in"}
-                          />
-                        )}
-                      </td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        {!isWithdrawn && (
-                          <button
-                            className="lv-admin-action-btn lv-admin-action-btn-danger"
-                            onClick={() => {
-                              if (poolsExist) {
-                                onWithdrawTeam(t);
-                              } else {
-                                onDeleteTeam(t);
-                              }
-                            }}
-                            aria-label={poolsExist ? "Withdraw team" : "Remove team"}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
-                            </svg>
-                          </button>
-                        )}
-                      </td>
-                    </tr>
+                    <TeamTableRows
+                      key={t.id}
+                      team={t}
+                      captain={captain}
+                      teammates={teammates}
+                      isWithdrawn={isWithdrawn}
+                      isTeamExpanded={isTeamExpanded}
+                      onToggleExpand={() => toggleTeamExpand(t.id)}
+                      poolsExist={poolsExist}
+                      onWithdrawTeam={onWithdrawTeam}
+                      onDeleteTeam={onDeleteTeam}
+                      onPatchTeam={onPatchTeam}
+                      setTeams={setTeams}
+                    />
                   );
                 })}
               </tbody>
@@ -158,19 +129,57 @@ export function TeamRoster({
           <div className="lv-roster-cards">
             {displayTeams.map((t) => {
               const captain = t.players.find((p) => p.is_captain);
+              const teammates = t.players.filter((p) => !p.is_captain);
               const isWithdrawn = !!t.withdrawn_at;
+              const isTeamExpanded = expandedTeams.has(t.id);
               return (
                 <div key={t.id} className="lv-roster-card" style={isWithdrawn ? { opacity: 0.5 } : undefined}>
-                  <div className="lv-roster-card-name">
-                    {t.team_name}
-                    {isWithdrawn && <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)", fontWeight: 400, fontStyle: "italic" }}> (withdrawn)</span>}
+                  <div className="lv-roster-card-top" onClick={() => toggleTeamExpand(t.id)}>
+                    <div style={{ flex: 1 }}>
+                      <div className="lv-roster-card-name">
+                        {t.team_name}
+                        {isWithdrawn && <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)", fontWeight: 400, fontStyle: "italic" }}> (withdrawn)</span>}
+                      </div>
+                      <div className="lv-roster-card-players">
+                        <div className="lv-roster-player-line">
+                          <span className="lv-roster-player-name">
+                            {captain?.name ?? "—"} <span className="lv-roster-captain-badge">Capt</span>
+                          </span>
+                          {isTeamExpanded && (
+                            <span className="lv-roster-player-contact">
+                              {captain?.email && <span>{captain.email}</span>}
+                              {t.contact_phone && <span>{t.contact_phone}</span>}
+                            </span>
+                          )}
+                        </div>
+                        {teammates.map((p) => (
+                          <div key={p.id} className="lv-roster-player-line">
+                            <span className="lv-roster-player-name">{p.name}</span>
+                            {isTeamExpanded && p.email && (
+                              <span className="lv-roster-player-contact">
+                                <span>{p.email}</span>
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {isTeamExpanded && (
+                        <div className="lv-roster-registered-at">
+                          Registered {formatRegisteredDate(t.created_at)}
+                        </div>
+                      )}
+                    </div>
+                    <svg
+                      className={`lv-admin-expand-icon ${isTeamExpanded ? "open" : ""}`}
+                      width="12" height="12" viewBox="0 0 20 20"
+                      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      aria-hidden="true"
+                      style={{ flexShrink: 0, marginLeft: 8, color: "var(--lv-ink-muted)" }}
+                    >
+                      <path d="M6 8l4 4 4-4" />
+                    </svg>
                   </div>
-                  <div className="lv-roster-card-captain">
-                    {captain?.name ?? "—"} &middot; {t.contact_email} &middot; {t.contact_phone}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--lv-ink-muted)" }}>
-                    {t.players.length} player{t.players.length !== 1 ? "s" : ""}
-                  </div>
+
                   {!isWithdrawn && (
                     <div className="lv-roster-card-row">
                       <div className="lv-admin-card-row">
@@ -231,5 +240,148 @@ export function TeamRoster({
         </div>
       )}
     </div>
+  );
+}
+
+/* ── Desktop table row + expandable detail ── */
+
+function TeamTableRows({
+  team: t,
+  captain,
+  teammates,
+  isWithdrawn,
+  isTeamExpanded,
+  onToggleExpand,
+  poolsExist,
+  onWithdrawTeam,
+  onDeleteTeam,
+  onPatchTeam,
+  setTeams,
+}: {
+  team: Team;
+  captain: Team["players"][number] | undefined;
+  teammates: Team["players"];
+  isWithdrawn: boolean;
+  isTeamExpanded: boolean;
+  onToggleExpand: () => void;
+  poolsExist: boolean;
+  onWithdrawTeam: (team: Team) => void;
+  onDeleteTeam: (team: Team) => void;
+  onPatchTeam: (id: string, updates: Record<string, unknown>) => void;
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+}) {
+  return (
+    <>
+      <tr
+        style={{ ...(isWithdrawn ? { opacity: 0.5 } : undefined), cursor: "pointer" }}
+        onClick={onToggleExpand}
+        className={isTeamExpanded ? "lv-roster-row-expanded" : ""}
+      >
+        <td className="lv-admin-team-name">
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <svg
+              className={`lv-admin-expand-icon ${isTeamExpanded ? "open" : ""}`}
+              width="12" height="12" viewBox="0 0 20 20"
+              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true"
+              style={{ flexShrink: 0, color: "var(--lv-ink-muted)" }}
+            >
+              <path d="M6 8l4 4 4-4" />
+            </svg>
+            {t.team_name}
+            {isWithdrawn && (
+              <span style={{ fontWeight: 400, fontSize: "0.7rem", color: "var(--lv-ink-muted)", fontStyle: "italic" }}>
+                (withdrawn)
+              </span>
+            )}
+          </div>
+        </td>
+        <td>
+          <div className="lv-roster-player-line">
+            <span className="lv-roster-player-name">{captain?.name ?? "—"} <span className="lv-roster-captain-badge">Capt</span></span>
+            {isTeamExpanded && (
+              <span className="lv-roster-player-contact">
+                {captain?.email && <span>{captain.email}</span>}
+                {t.contact_phone && <span>{t.contact_phone}</span>}
+              </span>
+            )}
+          </div>
+        </td>
+        <td>
+          {teammates.length > 0 ? (
+            <div className="lv-roster-players-cell">
+              {teammates.map((p) => (
+                <div key={p.id} className="lv-roster-player-line">
+                  <span className="lv-roster-player-name">{p.name}</span>
+                  {isTeamExpanded && p.email && (
+                    <span className="lv-roster-player-contact">
+                      <span>{p.email}</span>
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : "—"}
+        </td>
+        <td onClick={(e) => e.stopPropagation()}>
+          {isWithdrawn ? (
+            <span style={{ color: "var(--lv-ink-muted)" }}>{t.seed ?? "—"}</span>
+          ) : (
+            <input
+              type="number"
+              className="lv-admin-seed"
+              value={t.seed ?? ""}
+              min={1}
+              onChange={(e) => {
+                const val = e.target.value ? parseInt(e.target.value, 10) : null;
+                setTeams((prev) => prev.map((team) => team.id === t.id ? { ...team, seed: val } : team));
+              }}
+              onBlur={(e) => {
+                const val = e.target.value ? parseInt(e.target.value, 10) : null;
+                onPatchTeam(t.id, { seed: val });
+              }}
+            />
+          )}
+        </td>
+        <td onClick={(e) => e.stopPropagation()}>
+          {isWithdrawn ? (
+            <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)" }}>—</span>
+          ) : (
+            <button
+              className={`lv-toggle ${t.checked_in ? "on" : ""}`}
+              onClick={() => onPatchTeam(t.id, { checked_in: !t.checked_in })}
+              aria-label={t.checked_in ? "Checked in" : "Not checked in"}
+            />
+          )}
+        </td>
+        <td onClick={(e) => e.stopPropagation()}>
+          {!isWithdrawn && (
+            <button
+              className="lv-admin-action-btn lv-admin-action-btn-danger"
+              onClick={() => {
+                if (poolsExist) onWithdrawTeam(t);
+                else onDeleteTeam(t);
+              }}
+              aria-label={poolsExist ? "Withdraw team" : "Remove team"}
+            >
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
+              </svg>
+            </button>
+          )}
+        </td>
+      </tr>
+
+      {/* Expanded registered-at row */}
+      {isTeamExpanded && (
+        <tr className="lv-roster-detail-row">
+          <td colSpan={6}>
+            <div className="lv-roster-registered-at">
+              Registered {formatRegisteredDate(t.created_at)}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }

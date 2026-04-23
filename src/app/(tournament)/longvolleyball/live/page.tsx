@@ -48,7 +48,6 @@ export default function LivePage() {
   // Non-polling state
   const [upcomingPools, setUpcomingPools] = useState<PublicPool[] | null>(null);
   const [upcomingMatches, setUpcomingMatches] = useState<PublicMatch[] | null>(null);
-  const [teamCount, setTeamCount] = useState<number | null>(null);
   const [archiveStandings, setArchiveStandings] = useState<StandingsData | null>(null);
   const [allPublicMatches, setAllPublicMatches] = useState<PublicMatch[] | null>(null);
   const [bracketData, setBracketData] = useState<BracketData[] | null>(null);
@@ -63,7 +62,6 @@ export default function LivePage() {
       setBracketData(null);
       setUpcomingPools(null);
       setUpcomingMatches(null);
-      setTeamCount(null);
       setArchiveStandings(null);
       setActiveTab(null);
       return;
@@ -86,7 +84,6 @@ export default function LivePage() {
     if (tournament.status === "upcoming") {
       fetch(`/api/public/pools?tournament=${selectedId}`).then((r) => r.json()).then((d) => setUpcomingPools(d.pools?.length > 0 ? d.pools : null)).catch(() => setUpcomingPools(null));
       fetch(`/api/public/matches?tournament=${selectedId}`).then((r) => r.json()).then((d) => setUpcomingMatches(d.matches?.length > 0 ? d.matches : null)).catch(() => setUpcomingMatches(null));
-      fetch(`/api/public/team-count?tournament=${selectedId}`).then((r) => r.json()).then((d) => setTeamCount(d.count ?? 0)).catch(() => setTeamCount(null));
     }
     if (tournament.status === "archive") {
       fetch(`/api/public/standings?tournament=${selectedId}`).then((r) => r.json()).then((d) => setArchiveStandings(d)).catch(() => setArchiveStandings(null));
@@ -435,11 +432,6 @@ export default function LivePage() {
                 <h2 className="lv-live-placeholder-heading">
                   This tournament hasn&rsquo;t started yet.
                 </h2>
-                {teamCount !== null && teamCount > 0 && (
-                  <p className="lv-live-placeholder-text">
-                    {teamCount} team{teamCount !== 1 ? "s" : ""} registered.
-                  </p>
-                )}
                 <p className="lv-live-placeholder-text">
                   Pool assignments will appear here once registration closes and
                   teams are seeded.

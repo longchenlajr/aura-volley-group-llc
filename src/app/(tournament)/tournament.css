@@ -1828,6 +1828,52 @@ html:has(.lv)::-webkit-scrollbar {
 }
 
 /* ==========================================================
+   RULES — TOURNAMENT GUIDELINES
+   ========================================================== */
+
+.lv-rules-page {
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+.lv-rules-section {
+  margin-bottom: 2rem;
+}
+.lv-rules-heading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--lv-ink);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--lv-border);
+}
+.lv-rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.lv-rules-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  line-height: 1.5;
+}
+.lv-rules-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  background: var(--lv-red);
+  border-radius: 50%;
+}
+
+/* ==========================================================
    STATUS TAGS + LIVE PAGE
    ========================================================== */
 

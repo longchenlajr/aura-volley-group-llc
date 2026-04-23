@@ -10,6 +10,7 @@ import "./tournament.css";
 const NAV_LINKS = [
   { href: "/longvolleyball", label: "Tournaments" },
   { href: "/longvolleyball/live", label: "Live" },
+  { href: "/longvolleyball/rules", label: "Rules" },
   { href: "/longvolleyball/gallery", label: "Gallery" },
   { href: "/longvolleyball/records", label: "Records" },
 ];

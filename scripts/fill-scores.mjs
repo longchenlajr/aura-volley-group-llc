@@ -71,12 +71,12 @@ if (pointsOverride && pointsOverride !== 11 && pointsOverride !== 15) {
 // ── Match format from pool size (mirrors src/lib/score-format.ts) ──
 function getMatchFormat(poolSize) {
   switch (poolSize) {
-    case 3: return { sets: 2, pointsPerSet: 15 };
-    case 4: return { sets: 2, pointsPerSet: 15 };
-    case 5: return { sets: 2, pointsPerSet: 11 };
-    case 6: return { sets: 1, pointsPerSet: 15 };
-    case 7: return { sets: 1, pointsPerSet: 11 };
-    default: return { sets: 1, pointsPerSet: 15 };
+    case 3: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
+    case 4: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
+    case 5: return { sets: 2, pointsPerSet: 11, pointsCap: 13 };
+    case 6: return { sets: 1, pointsPerSet: 15, pointsCap: 17 };
+    case 7: return { sets: 1, pointsPerSet: 11, pointsCap: 13 };
+    default: return { sets: 1, pointsPerSet: 15, pointsCap: 17 };
   }
 }
 
@@ -85,19 +85,46 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/** Generate a realistic completed set score for the given target points. */
-function generateSetScore(pointsPerSet) {
-  // ~20% chance of a deuce/overtime scenario
+/**
+ * Generate a realistic completed set score.
+ * Pool play: pointsCap limits max score (win by 1 at cap, e.g. 13-12).
+ * Playoffs: no cap, pure win-by-2.
+ */
+function generateSetScore(pointsPerSet, pointsCap) {
+  // ~20% chance of overtime
   const isOvertime = Math.random() < 0.2;
 
   if (isOvertime) {
-    // Deuce: both reach pointsPerSet-1, then someone pulls ahead by 2
-    const extra = randomInt(0, 2); // 0-2 extra rallies after deuce
-    const winnerScore = pointsPerSet + 1 + extra;
-    const loserScore = winnerScore - 2;
-    return Math.random() < 0.5
-      ? { team_a_score: winnerScore, team_b_score: loserScore }
-      : { team_a_score: loserScore, team_b_score: winnerScore };
+    if (pointsCap) {
+      // Pool play: overtime goes up to the cap, win by 1 at cap
+      // e.g. to-11 cap-13: could be 12-10, 13-11, or 13-12
+      const scenario = Math.random();
+      let winnerScore, loserScore;
+      if (scenario < 0.4) {
+        // Win by 2 just past target (e.g. 12-10)
+        winnerScore = pointsPerSet + 1;
+        loserScore = winnerScore - 2;
+      } else if (scenario < 0.7) {
+        // Win by 2 at cap-1 (e.g. 13-11 when cap is 13... actually that's win by 2 at cap)
+        winnerScore = pointsCap;
+        loserScore = pointsCap - 2;
+      } else {
+        // Win by 1 at cap (e.g. 13-12)
+        winnerScore = pointsCap;
+        loserScore = pointsCap - 1;
+      }
+      return Math.random() < 0.5
+        ? { team_a_score: winnerScore, team_b_score: loserScore }
+        : { team_a_score: loserScore, team_b_score: winnerScore };
+    } else {
+      // Playoffs: no cap, win by 2 with no limit
+      const extra = randomInt(0, 2);
+      const winnerScore = pointsPerSet + 1 + extra;
+      const loserScore = winnerScore - 2;
+      return Math.random() < 0.5
+        ? { team_a_score: winnerScore, team_b_score: loserScore }
+        : { team_a_score: loserScore, team_b_score: winnerScore };
+    }
   }
 
   // Clean win: winner hits exactly pointsPerSet
@@ -188,7 +215,7 @@ async function main() {
     for (const match of poolMatches) {
       const setRows = [];
       for (let s = 1; s <= format.sets; s++) {
-        const score = generateSetScore(format.pointsPerSet);
+        const score = generateSetScore(format.pointsPerSet, format.pointsCap);
         setRows.push({
           match_id: match.id,
           set_number: s,

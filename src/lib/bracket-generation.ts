@@ -196,22 +196,16 @@ export function generateBracket(
   }
 
   // Process R2+ matches
-  // Courts consolidate: R2 uses ceil(courts/2), R3 uses ceil(that/2), etc.
+  // Courts consolidate: only use as many courts as there are real matches in each round
   let activeCourts = [...courts];
   for (let round = 2; round <= totalRounds; round++) {
-    // Consolidate courts for this round
-    if (round >= 3) {
-      activeCourts = activeCourts.slice(0, Math.max(1, Math.ceil(activeCourts.length / 2)));
-    }
-
     const roundSlots = slots.filter((s) => s.round_number === round);
-    const matchCount = roundSlots.length / 2;
 
-    let courtIdx = 0;
-    for (let i = 0; i < matchCount; i++) {
+    // Count real matches (non-bye) first to determine court usage
+    const realMatches: Array<{ index: number; slotA: GeneratedSlot; slotB: GeneratedSlot }> = [];
+    for (let i = 0; i < roundSlots.length / 2; i++) {
       const slotA = roundSlots[i * 2];
       const slotB = roundSlots[i * 2 + 1];
-
       if (slotA.is_bye && slotB.is_bye) continue;
       if (slotA.is_bye || slotB.is_bye) {
         // Bye in later round — auto-advance
@@ -222,9 +216,17 @@ export function generateBracket(
         if (nextSlot && advancer) nextSlot.team_id = advancer;
         continue;
       }
+      realMatches.push({ index: i, slotA, slotB });
+    }
 
-      const court = activeCourts[courtIdx % activeCourts.length];
-      courtIdx++;
+    // Consolidate: use min(activeCourts, realMatchCount) courts
+    if (realMatches.length < activeCourts.length) {
+      activeCourts = activeCourts.slice(0, Math.max(1, realMatches.length));
+    }
+
+    for (let mi = 0; mi < realMatches.length; mi++) {
+      const { index: i, slotA, slotB } = realMatches[mi];
+      const court = activeCourts[mi % activeCourts.length];
 
       // R2+ work teams are assigned dynamically after the match completes
       // (loser of previous game on same court — handled by assign_bracket_work_team RPC)

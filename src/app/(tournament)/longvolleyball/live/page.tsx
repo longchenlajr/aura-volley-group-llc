@@ -42,16 +42,30 @@ export default function LivePage() {
   const isArchive = selected?.status === "archive";
 
   // Live polling — only create URLs when actually in Live status
-  const standingsUrl = selected && isLive ? `/api/public/standings?tournament=${selected.id}` : null;
-  const matchesUrl = selected && isLive ? `/api/public/matches?tournament=${selected.id}` : null;
-  const { data: standingsData, fetching: standingsFetching } = useLivePolling<StandingsData>(standingsUrl, 12000, isLive);
-  const { data: liveMatchesData } = useLivePolling<{ matches: PublicMatch[] }>(matchesUrl, 12000, isLive);
+  const standingsUrl =
+    selected && isLive
+      ? `/api/public/standings?tournament=${selected.id}`
+      : null;
+  const matchesUrl =
+    selected && isLive ? `/api/public/matches?tournament=${selected.id}` : null;
+  const { data: standingsData, fetching: standingsFetching } =
+    useLivePolling<StandingsData>(standingsUrl, 12000, isLive);
+  const { data: liveMatchesData } = useLivePolling<{ matches: PublicMatch[] }>(
+    matchesUrl,
+    12000,
+    isLive,
+  );
 
   // Non-polling state
   const [upcomingPools, setUpcomingPools] = useState<PublicPool[] | null>(null);
-  const [upcomingMatches, setUpcomingMatches] = useState<PublicMatch[] | null>(null);
-  const [archiveStandings, setArchiveStandings] = useState<StandingsData | null>(null);
-  const [allPublicMatches, setAllPublicMatches] = useState<PublicMatch[] | null>(null);
+  const [upcomingMatches, setUpcomingMatches] = useState<PublicMatch[] | null>(
+    null,
+  );
+  const [archiveStandings, setArchiveStandings] =
+    useState<StandingsData | null>(null);
+  const [allPublicMatches, setAllPublicMatches] = useState<
+    PublicMatch[] | null
+  >(null);
   const [bracketData, setBracketData] = useState<BracketData[] | null>(null);
 
   // Tab state
@@ -75,7 +89,9 @@ export default function LivePage() {
     // Always fetch matches + brackets
     fetch(`/api/public/matches?tournament=${selectedId}`)
       .then((r) => r.json())
-      .then((d) => setAllPublicMatches(d.matches?.length > 0 ? d.matches : null))
+      .then((d) =>
+        setAllPublicMatches(d.matches?.length > 0 ? d.matches : null),
+      )
       .catch(() => setAllPublicMatches(null));
 
     fetch(`/api/public/brackets?tournament=${selectedId}`)
@@ -84,23 +100,49 @@ export default function LivePage() {
       .catch(() => setBracketData(null));
 
     if (tournament.status === "upcoming") {
-      fetch(`/api/public/pools?tournament=${selectedId}`).then((r) => r.json()).then((d) => setUpcomingPools(d.pools?.length > 0 ? d.pools : null)).catch(() => setUpcomingPools(null));
-      fetch(`/api/public/matches?tournament=${selectedId}`).then((r) => r.json()).then((d) => setUpcomingMatches(d.matches?.length > 0 ? d.matches : null)).catch(() => setUpcomingMatches(null));
+      fetch(`/api/public/pools?tournament=${selectedId}`)
+        .then((r) => r.json())
+        .then((d) => setUpcomingPools(d.pools?.length > 0 ? d.pools : null))
+        .catch(() => setUpcomingPools(null));
+      fetch(`/api/public/matches?tournament=${selectedId}`)
+        .then((r) => r.json())
+        .then((d) =>
+          setUpcomingMatches(d.matches?.length > 0 ? d.matches : null),
+        )
+        .catch(() => setUpcomingMatches(null));
     }
     if (tournament.status === "archive") {
-      fetch(`/api/public/standings?tournament=${selectedId}`).then((r) => r.json()).then((d) => setArchiveStandings(d)).catch(() => setArchiveStandings(null));
+      fetch(`/api/public/standings?tournament=${selectedId}`)
+        .then((r) => r.json())
+        .then((d) => setArchiveStandings(d))
+        .catch(() => setArchiveStandings(null));
     }
     setActiveTab(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setHasDefaultedTab(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
+  // Default to gold bracket tab when brackets first load
+  const [hasDefaultedTab, setHasDefaultedTab] = useState(false);
+  useEffect(() => {
+    if (bracketData && bracketData.length > 0 && !hasDefaultedTab) {
+      setActiveTab("bracket-gold");
+      setHasDefaultedTab(true);
+    }
+  }, [bracketData, hasDefaultedTab]);
+
   // Use polled matches for live, otherwise use the one-shot fetch
-  const effectiveMatches = (isLive && liveMatchesData?.matches?.length)
-    ? liveMatchesData.matches
-    : allPublicMatches;
+  const effectiveMatches =
+    isLive && liveMatchesData?.matches?.length
+      ? liveMatchesData.matches
+      : allPublicMatches;
 
   // Derived data
-  const activeStandings = isLive ? standingsData : isArchive ? archiveStandings : null;
+  const activeStandings = isLive
+    ? standingsData
+    : isArchive
+      ? archiveStandings
+      : null;
 
   const poolTabs = useMemo(() => {
     return (activeStandings?.pools ?? []).map((p) => ({
@@ -150,7 +192,10 @@ export default function LivePage() {
 
   // Selected pool standings + matches
   const selectedPoolStandings = useMemo(() => {
-    return (activeStandings?.pools ?? []).find((p) => p.pool_id === activeTab) ?? null;
+    return (
+      (activeStandings?.pools ?? []).find((p) => p.pool_id === activeTab) ??
+      null
+    );
   }, [activeTab, activeStandings]);
 
   const selectedPoolMatches = useMemo(() => {
@@ -172,18 +217,25 @@ export default function LivePage() {
 
   // Team records for bracket display (seed + W-L from pool play)
   const teamRecords = useMemo(() => {
-    const map = new Map<string, { team_name: string; seed: number; record: string }>();
+    const map = new Map<
+      string,
+      { team_name: string; seed: number; record: string }
+    >();
     if (!activeStandings?.pools) return map;
     let overallSeed = 1;
     // Collect all teams by pool rank tiers
-    const maxTeamsPerPool = Math.max(...activeStandings.pools.map((p) => p.standings.length), 0);
+    const maxTeamsPerPool = Math.max(
+      ...activeStandings.pools.map((p) => p.standings.length),
+      0,
+    );
     for (let rank = 0; rank < maxTeamsPerPool; rank++) {
       const tier = activeStandings.pools
         .map((p) => p.standings[rank])
         .filter(Boolean)
         .sort((a, b) => {
           if (a.sets_won !== b.sets_won) return b.sets_won - a.sets_won;
-          if (a.point_differential !== b.point_differential) return b.point_differential - a.point_differential;
+          if (a.point_differential !== b.point_differential)
+            return b.point_differential - a.point_differential;
           return b.points_for - a.points_for;
         });
       for (const t of tier) {
@@ -230,8 +282,12 @@ export default function LivePage() {
         <PoolView
           pool={selectedPoolStandings}
           matches={selectedPoolMatches}
-          totalMatches={matchesByPool.get(selectedPoolStandings.pool_label)?.total ?? 0}
-          completeMatches={matchesByPool.get(selectedPoolStandings.pool_label)?.complete ?? 0}
+          totalMatches={
+            matchesByPool.get(selectedPoolStandings.pool_label)?.total ?? 0
+          }
+          completeMatches={
+            matchesByPool.get(selectedPoolStandings.pool_label)?.complete ?? 0
+          }
           teamSeeds={teamRecords}
         />
       );
@@ -326,15 +382,6 @@ export default function LivePage() {
         {/* === LIVE VIEW === */}
         {selected && isLive && (
           <>
-            <div className="lv-live-refresh">
-              <span
-                className={`lv-live-refresh-dot ${standingsFetching ? "fetching" : ""}`}
-              />
-              <span className="lv-live-refresh-label">
-                Live · updates every 12s
-              </span>
-            </div>
-
             {(poolTabs.length > 0 || bracketTabs.length > 0) && (
               <PoolTabs
                 pools={poolTabs}
@@ -483,16 +530,25 @@ export default function LivePage() {
 
                   if (goldBracket) {
                     // Champion = winner of the final match (highest round)
-                    const getChampion = (bracket: typeof goldBracket | null | undefined) => {
+                    const getChampion = (
+                      bracket: typeof goldBracket | null | undefined,
+                    ) => {
                       if (!bracket) return null;
                       const finalRound = Math.max(
                         ...bracket.matches.map((m) => m.round_number),
                         0,
                       );
                       const finalMatch = bracket.matches.find(
-                        (m) => m.round_number === finalRound && m.status === "complete",
+                        (m) =>
+                          m.round_number === finalRound &&
+                          m.status === "complete",
                       );
-                      if (!finalMatch || finalMatch.score_a == null || finalMatch.score_b == null) return null;
+                      if (
+                        !finalMatch ||
+                        finalMatch.score_a == null ||
+                        finalMatch.score_b == null
+                      )
+                        return null;
                       return finalMatch.score_a > finalMatch.score_b
                         ? finalMatch.team_a
                         : finalMatch.team_b;

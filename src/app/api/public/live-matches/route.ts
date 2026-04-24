@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
         current_sets: sets.map((s) => ({
           team_a_score: s.team_a_score,
           team_b_score: s.team_b_score,
-          is_complete: isSetComplete(s.team_a_score, s.team_b_score, format.pointsPerSet),
+          is_complete: isSetComplete(s.team_a_score, s.team_b_score, format.pointsPerSet, format.pointsCap),
         })),
         format: { sets: format.sets, points_per_set: format.pointsPerSet },
       };

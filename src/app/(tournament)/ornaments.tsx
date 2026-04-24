@@ -271,6 +271,41 @@ export function SeasonIcon({ variant, className, style }: SeasonIconProps) {
   );
 }
 
+export function LaurelWreath({ className, style }: SvgProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      {/* Left branch */}
+      <path
+        d="M7 20c0-3 1-5 2-7M5 17c1-2 3-3 4-3M4 14c1-1.5 3-2 4-1.5M4 11c1-1 3-1 4 0M5 8c1-0.5 2.5 0 3.5 1M7 5.5c0.8 0 2 0.5 2.5 1.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Right branch */}
+      <path
+        d="M17 20c0-3-1-5-2-7M19 17c-1-2-3-3-4-3M20 14c-1-1.5-3-2-4-1.5M20 11c-1-1-3-1-4 0M19 8c-1-0.5-2.5 0-3.5 1M17 5.5c-0.8 0-2 0.5-2.5 1.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Star at crown */}
+      <path
+        d="M12 2l1 2.5h2.5l-2 1.5.8 2.5L12 7l-2.3 1.5.8-2.5-2-1.5H11z"
+        fill="currentColor"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
 export function GoldDotSpinner({ className, style }: SvgProps) {
   return (
     <svg

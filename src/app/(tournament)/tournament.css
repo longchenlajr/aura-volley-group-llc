@@ -3102,183 +3102,383 @@ html:has(.lv)::-webkit-scrollbar {
 }
 
 /* ==========================================================
-   BRACKET VIEW — CSS Grid bracket with connector lines
+   BRACKET VIEW — NCAA Tournament-Style
+   Absolute-positioned cards, SVG connectors, horizontal scroll
    ========================================================== */
 
 .lv-bracket {
   margin-bottom: 2rem;
 }
+
+/* ── Bracket header ── */
 .lv-bracket-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 1rem;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+  padding: 0 20px;
 }
 .lv-bracket-type {
   font-family: var(--lv-font-display), Georgia, serif;
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--lv-ink);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--lv-red);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
-.lv-bracket-type--gold { color: #8B6914; }
-.lv-bracket-type--silver { color: #6E6E7A; }
+.lv-bracket-type--gold { color: #6B4F0A; }
+.lv-bracket-type--silver { color: #3A3A42; }
 .lv-bracket-format {
   font-size: 0.75rem;
+  font-weight: 600;
   color: var(--lv-ink-muted);
 }
 
-/* Scrollable wrapper — horizontal scroll only, no vertical clipping */
-.lv-bk-scroll {
+/* ── Bracket scroll container ── */
+.bk-scroll {
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px;
   scrollbar-width: thin;
+  padding-bottom: 8px;
 }
-.lv-bk-inner {
+@media (max-width: 1023px) {
+  .bk-scroll {
+    scrollbar-width: none;
+  }
+  .bk-scroll::-webkit-scrollbar { display: none; }
+}
+
+/* ── Bracket area — absolute positioning container ── */
+.bk-area {
+  position: relative;
   min-width: max-content;
 }
 
-/* Round labels row (shares grid-template-columns with bracket grid) */
-.lv-bk-round-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lv-gold);
-  padding: 0 6px;
-  margin-bottom: 8px;
+/* ── SVG connector overlay ── */
+.bk-connectors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }
 
-/* Matchup box */
-.lv-bk-matchup {
-  position: relative;
-  background: var(--lv-surface);
-  border: 1px solid var(--lv-border);
-  border-radius: var(--lv-radius-sm);
-  margin: 0 6px;
-  overflow: visible;
+/* ── Round headers ── */
+.bk-round-header {
+  position: absolute;
+  top: 0;
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-red);
+  padding: 0 0 4px;
+  border-bottom: 1px solid var(--lv-red);
+  line-height: 1;
 }
-.lv-bk-matchup--bye {
-  background: transparent;
-  border-style: dashed;
-  border-color: rgba(122, 28, 28, 0.1);
+
+/* Bracket identity star */
+.bk-bracket-star {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  vertical-align: -1px;
+  margin-right: 4px;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.bk-bracket-star--gold { background: #8B6914; }
+.bk-bracket-star--silver { background: #6B7280; }
+
+/* ── Match card (200×64 desktop, 180×60 mobile) ── */
+.bk-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--lv-surface);
+  border: 1px solid rgba(42, 24, 16, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 1;
+}
+.bk-card--bye {
+  background: var(--lv-parchment);
+  border: 1px dashed rgba(42, 24, 16, 0.2);
   opacity: 0.55;
 }
-.lv-bk-matchup--live {
-  border-color: rgba(122, 28, 28, 0.4);
-  box-shadow: 0 0 0 1px rgba(122, 28, 28, 0.12);
+.bk-card--live {
+  border: 1px solid var(--lv-red);
 }
-.lv-bk-matchup--done {
-  border-color: rgba(46, 84, 54, 0.25);
+.bk-card--done {
+  border: 1px solid var(--lv-green);
+}
+.bk-card--champion-gold {
+  border: 2px solid #8B6914;
+}
+.bk-card--champion-silver {
+  border: 2px solid #6B7280;
 }
 
-/* Entry line — horizontal from left connector to matchup */
-.lv-bk-has-entry::before {
-  content: "";
+/* LIVE dot */
+.bk-live-dot {
   position: absolute;
-  left: -6px;
-  top: 50%;
+  top: 4px;
+  right: 4px;
   width: 6px;
-  height: 1px;
-  background: var(--lv-border);
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lv-red);
+  z-index: 2;
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bk-live-dot { animation: none; }
 }
 
-/* Exit line — horizontal from matchup to right connector */
-.lv-bk-has-exit::after {
-  content: "";
-  position: absolute;
-  right: -6px;
-  top: 50%;
-  width: 6px;
-  height: 1px;
-  background: var(--lv-border);
-}
-
-/* Team slot inside matchup */
-.lv-bk-slot {
+/* ── Team row (32px each on desktop, 30px mobile) ── */
+.bk-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 5px 8px;
-  font-size: 0.72rem;
-  color: var(--lv-ink-muted);
-  min-height: 28px;
-}
-.lv-bk-slot:first-child {
-  border-bottom: 1px solid rgba(122, 28, 28, 0.06);
-}
-.lv-bk-slot--winner {
+  height: 50%;
+  font-size: 13px;
   color: var(--lv-ink);
-  font-weight: 700;
-  background: rgba(46, 84, 54, 0.04);
+  line-height: 1;
 }
-.lv-bk-slot--bye {
-  font-style: italic;
+.bk-row--top {
+  border-bottom: 1px solid rgba(42, 24, 16, 0.1);
+}
+.bk-row--loser {
   opacity: 0.4;
 }
-.lv-bk-slot-name {
+.bk-row--loser .bk-name {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.bk-seed {
+  width: 24px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--lv-ink-muted);
+  flex-shrink: 0;
+}
+.bk-name {
   flex: 1;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 6px;
+  padding-right: 4px;
+  min-width: 0;
 }
-.lv-bk-slot-score {
+.bk-score {
+  width: 28px;
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.bk-bye-text {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--lv-ink-muted);
+  font-style: italic;
+}
+
+/* Focus state */
+.bk-card:focus-visible {
+  outline: 2px solid var(--lv-ink);
+  outline-offset: 2px;
+}
+
+/* Court label beneath cards */
+.bk-court-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--lv-ink-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Champion node — card after finals ── */
+.bk-champion-header {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  line-height: 1;
+}
+.bk-champion-header--gold { color: #8B6914; }
+.bk-champion-header--silver { color: #6B7280; }
+
+.bk-champion-node {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 1;
+}
+.bk-champion-node--gold {
+  background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 30%, #B38728 50%, #FBF5B7 70%, #BF953F 100%);
+  border: 2px solid #8B6914;
+}
+.bk-champion-node--silver {
+  background: linear-gradient(135deg, #B8B8B8 0%, #E8E8E8 30%, #A0A0A0 50%, #F0F0F0 70%, #B8B8B8 100%);
+  border: 2px solid #6B7280;
+}
+.bk-champion-node-team {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 13px;
+  color: var(--lv-ink);
+}
+.bk-champion-node--gold .bk-champion-node-team { color: #3D2B00; }
+.bk-champion-node--silver .bk-champion-node-team { color: #1A1A22; }
+.bk-champion-node-team .bk-name {
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* ── Mobile round tabs ── */
+.bk-tabs-wrap {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .bk-tabs-wrap {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--lv-parchment);
+    margin-bottom: 0.75rem;
+  }
+}
+.bk-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--lv-red);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bk-tabs::-webkit-scrollbar { display: none; }
+.bk-tab {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: var(--lv-ink);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: var(--lv-font-body), system-ui, sans-serif;
+}
+.bk-tab--active {
+  color: var(--lv-cream);
+  background: var(--lv-red);
+  border-bottom-color: var(--lv-red);
+}
+
+/* ── Champion / Runner-up title card ── */
+.lv-bracket-champion-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lv-radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+.lv-bracket-champion-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 40%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.35) 60%, transparent 100%);
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lv-bracket-champion-card::before { animation: none; opacity: 0; }
+}
+.lv-bracket-champion-card--gold {
+  background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 20%, #B38728 35%, #FBF5B7 50%, #AA771C 65%, #FCF6BA 80%, #BF953F 100%);
+  border: 2px solid #8B6914;
+  box-shadow: 0 4px 20px rgba(170, 119, 28, 0.35);
+}
+.lv-bracket-champion-card--silver {
+  background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 15%, #A8A8A8 30%, #F0F0F0 45%, #B8B8B8 55%, #E0E0E0 70%, #A0A0A0 85%, #D0D0D0 100%);
+  border: 2px solid #7A7A84;
+  box-shadow: 0 4px 20px rgba(100, 100, 110, 0.35);
+}
+.lv-bracket-champion-card--gold .lv-champion-label { color: #5C3D0E; }
+.lv-bracket-champion-card--silver .lv-champion-label { color: #3A3A42; }
+.lv-champion-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.lv-champion-name {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #1A1008;
+  line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+}
+.lv-champion-divider {
+  width: 40px;
+  height: 2px;
+  background: rgba(0,0,0,0.15);
+  margin: 0.75rem auto;
+}
+.lv-runnerup-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(26, 16, 8, 0.5);
+  margin-bottom: 2px;
+}
+.lv-runnerup-name {
   font-family: var(--lv-font-display), Georgia, serif;
   font-weight: 700;
-  font-size: 0.82rem;
-  min-width: 18px;
-  text-align: right;
-}
-/* Caption beneath matchup — absolutely positioned so it doesn't
-   shift the matchup center away from the connector lines */
-.lv-bk-caption {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 3px 2px 0;
-  font-size: 0.55rem;
-  color: var(--lv-ink-muted);
-  opacity: 0.45;
+  font-size: 1rem;
+  color: rgba(26, 16, 8, 0.7);
 }
 
-/* Connector column — draws bracket lines between rounds
-   4 children each flex:1 dividing the connector height into quarters.
-   Top-arm and bot-arm use borders to draw the bracket shape:
-
-       ──────────  y=25%  (spacer border-bottom → feeder A exit)
-                │         (top-arm border-right)
-                │         (bot-arm border-right)
-       ──────────  y=75%  (spacer border-top → feeder B exit)
-
-   The next-round matchup's ::before connects at the midpoint (y=50%).
-*/
-.lv-bk-connector {
-  display: flex;
-  flex-direction: column;
-}
-.lv-bk-conn-spacer {
-  flex: 1;
-}
-/* Top spacer bottom border — horizontal line at feeder A level */
-.lv-bk-conn-spacer:first-child {
-  border-bottom: 1px solid var(--lv-border);
-}
-/* Bottom spacer top border — horizontal line at feeder B level */
-.lv-bk-conn-spacer:last-child {
-  border-top: 1px solid var(--lv-border);
-}
-/* Top arm — vertical right line from y=25% to y=50% */
-.lv-bk-conn-top {
-  flex: 1;
-  border-right: 1px solid var(--lv-border);
-}
-/* Bottom arm — vertical right line from y=50% to y=75% */
-.lv-bk-conn-bot {
-  flex: 1;
-  border-right: 1px solid var(--lv-border);
+/* ── Mobile card dimensions ── */
+@media (max-width: 1023px) {
+  .bk-row {
+    font-size: 12px;
+  }
+  .bk-name {
+    font-size: 12px;
+  }
+  .bk-seed {
+    width: 20px;
+    font-size: 11px;
+  }
+  .bk-score {
+    width: 24px;
+    font-size: 12px;
+  }
 }

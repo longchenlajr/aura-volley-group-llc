@@ -70,7 +70,7 @@ export default function ScoreSubmissionPage() {
       // Determine which sets are confirmed and active set
       // A set is confirmed if it's complete AND a later set has scores
       for (let i = 0; i < scores.length - 1; i++) {
-        const setComplete = isSetComplete(scores[i].a, scores[i].b, data.format.pointsPerSet);
+        const setComplete = isSetComplete(scores[i].a, scores[i].b, data.format.pointsPerSet, data.format.pointsCap);
         const nextHasScores = scores[i + 1].a > 0 || scores[i + 1].b > 0;
         if (setComplete && nextHasScores) {
           confirmed.add(i + 1);
@@ -220,7 +220,7 @@ export default function ScoreSubmissionPage() {
   // ── Derived state ──
 
   const currentScore = setScores[activeSet - 1] ?? { a: 0, b: 0 };
-  const setIsComplete = isSetComplete(currentScore.a, currentScore.b, format.pointsPerSet);
+  const setIsComplete = isSetComplete(currentScore.a, currentScore.b, format.pointsPerSet, format.pointsCap);
   const isLastSet = activeSet === format.sets;
 
   // For final summary

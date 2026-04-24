@@ -1,6 +1,8 @@
 export interface MatchFormat {
   sets: number;
   pointsPerSet: number;
+  /** Pool play cap (e.g. 13 for games to 11, 17 for games to 15). At the cap, win by 1 is allowed. Omit for no cap (playoffs). */
+  pointsCap?: number;
 }
 
 export interface MatchSet {
@@ -12,30 +14,42 @@ export interface MatchSet {
 
 /**
  * Determine match format from pool size.
- * Side-out scoring, win-by-2 in all sets.
+ * Pool play: win-by-2 with a point cap (cap = pointsPerSet + 2).
+ * At the cap, win by 1 is allowed (e.g. 13-12 in a game to 11).
  */
 export function getMatchFormat(poolSize: number): MatchFormat {
   switch (poolSize) {
-    case 3: return { sets: 2, pointsPerSet: 15 };
-    case 4: return { sets: 2, pointsPerSet: 15 };
-    case 5: return { sets: 2, pointsPerSet: 11 };
-    case 6: return { sets: 1, pointsPerSet: 15 };
-    case 7: return { sets: 1, pointsPerSet: 11 };
-    default: return { sets: 1, pointsPerSet: 15 };
+    case 3: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
+    case 4: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
+    case 5: return { sets: 2, pointsPerSet: 11, pointsCap: 13 };
+    case 6: return { sets: 1, pointsPerSet: 15, pointsCap: 17 };
+    case 7: return { sets: 1, pointsPerSet: 11, pointsCap: 13 };
+    default: return { sets: 1, pointsPerSet: 15, pointsCap: 17 };
   }
 }
 
 /**
- * Check if a single set is complete (side-out scoring, win-by-2).
+ * Check if a single set is complete.
+ * - Win-by-2 up to the cap.
+ * - At the cap, win by 1 is allowed (e.g. 13-12 in a game to 11 with cap 13).
+ * - If no cap (playoffs), pure win-by-2 with no limit.
  */
 export function isSetComplete(
   teamAScore: number,
   teamBScore: number,
   pointsPerSet: number,
+  pointsCap?: number,
 ): boolean {
   const maxScore = Math.max(teamAScore, teamBScore);
   const diff = Math.abs(teamAScore - teamBScore);
-  return maxScore >= pointsPerSet && diff >= 2;
+
+  if (maxScore < pointsPerSet) return false;
+
+  // At or above the cap: win by 1 is enough
+  if (pointsCap != null && maxScore >= pointsCap && diff >= 1) return true;
+
+  // Below the cap (or no cap): must win by 2
+  return diff >= 2;
 }
 
 /**
@@ -48,7 +62,7 @@ export function isMatchComplete(sets: MatchSet[], format: MatchFormat): boolean 
   for (let i = 1; i <= format.sets; i++) {
     const set = sets.find((s) => s.set_number === i);
     if (!set) return false;
-    if (!isSetComplete(set.team_a_score, set.team_b_score, format.pointsPerSet)) return false;
+    if (!isSetComplete(set.team_a_score, set.team_b_score, format.pointsPerSet, format.pointsCap)) return false;
   }
 
   return true;
@@ -113,8 +127,9 @@ export function formatSetScores(sets: MatchSet[], format: MatchFormat): string {
  * Format description of match format.
  */
 export function formatMatchFormat(format: MatchFormat): string {
-  if (format.sets === 1) return `1 set to ${format.pointsPerSet}`;
-  return `Best of ${format.sets} sets to ${format.pointsPerSet}`;
+  const cap = format.pointsCap ? `, cap ${format.pointsCap}` : "";
+  if (format.sets === 1) return `1 set to ${format.pointsPerSet}${cap}`;
+  return `Best of ${format.sets} sets to ${format.pointsPerSet}${cap}`;
 }
 
 /**

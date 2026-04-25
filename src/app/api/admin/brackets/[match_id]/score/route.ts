@@ -22,10 +22,10 @@ export async function PUT(
   const sb = getSupabaseAdmin();
   const now = new Date().toISOString();
 
-  // Get bracket points_per_set
+  // Get bracket match with current state
   const { data: match } = await sb
     .from("bracket_matches")
-    .select("id, bracket_id")
+    .select("id, bracket_id, status, team_a_id, team_b_id, winner_slot_id")
     .eq("id", match_id)
     .single();
 
@@ -38,6 +38,34 @@ export async function PUT(
     .single();
 
   const pps = bracket?.points_per_set ?? 15;
+
+  // If match was previously complete, check if the winner would change.
+  // If so, undo the previous propagation before re-propagating.
+  if (match.status === "complete" && match.winner_slot_id) {
+    const prevComplete = isSetComplete(team_a_score, team_b_score, pps);
+    if (prevComplete) {
+      // Determine new winner — check if it differs from old winner
+      const { data: existingSet } = await sb
+        .from("bracket_match_sets")
+        .select("team_a_score, team_b_score")
+        .eq("bracket_match_id", match_id)
+        .eq("set_number", 1)
+        .single();
+
+      if (existingSet) {
+        const oldWinnerIsA = existingSet.team_a_score > existingSet.team_b_score;
+        const newWinnerIsA = team_a_score > team_b_score;
+        if (oldWinnerIsA !== newWinnerIsA) {
+          // Winner is flipping — undo previous propagation first
+          try {
+            await sb.rpc("undo_bracket_match", { target_match_id: match_id });
+          } catch (err) {
+            console.error("Bracket undo error:", err);
+          }
+        }
+      }
+    }
+  }
 
   // Upsert score
   const { error: upsertErr } = await sb

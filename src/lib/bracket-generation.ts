@@ -119,21 +119,42 @@ export function generateBracket(
   const realR1Games = r1Matchups.filter((m) => !m.isBye);
 
   // --- Map R1 games to courts ---
-  // Pair games that feed into the same R2 match on the same court.
+  // Initial assignment: pair games that feed into the same R2 match on the same court.
   // R2 match at position P is fed by R1 matchups at positions (P*2-1) and (P*2).
-  // So court assignment: games at positions [1,2] share a court, [3,4] share a court, etc.
-  // This keeps a side of the bracket on one court.
+  // Court index = floor((matchup_position - 1) / 2) mod courtCount.
+  // This keeps a side of the bracket on one court when the bracket is full.
 
   const courtCount = courts.length;
 
-  // Group real R1 games by which court they should be on
-  // Court index = floor((matchup_position - 1) / 2) mod courtCount
   const gamesPerCourt = new Map<number, typeof realR1Games>();
   for (const game of realR1Games) {
     const courtIdx = Math.floor((game.position - 1) / 2) % courtCount;
     const court = courts[courtIdx];
     if (!gamesPerCourt.has(court)) gamesPerCourt.set(court, []);
     gamesPerCourt.get(court)!.push(game);
+  }
+
+  // Redistribute: when byes cause games to cluster on fewer courts than
+  // available, spread them evenly so courts are used in parallel.
+  // E.g. 2 play-in games with 2 courts should go on different courts.
+  if (courtCount > 1 && realR1Games.length > 1) {
+    const usedCourts = courts.filter((c) => (gamesPerCourt.get(c)?.length ?? 0) > 0);
+    const emptyCourts = courts.filter((c) => !(gamesPerCourt.get(c)?.length));
+    if (emptyCourts.length > 0) {
+      // Collect all games in bracket-position order, then deal them round-robin
+      const allGames: typeof realR1Games = [];
+      for (const court of courts) {
+        allGames.push(...(gamesPerCourt.get(court) ?? []));
+      }
+      allGames.sort((a, b) => a.position - b.position);
+
+      // Clear and redistribute
+      for (const court of courts) gamesPerCourt.set(court, []);
+      for (let i = 0; i < allGames.length; i++) {
+        const court = courts[i % courtCount];
+        gamesPerCourt.get(court)!.push(allGames[i]);
+      }
+    }
   }
 
   // --- Determine bye teams and which R1 game feeds into them ---
@@ -154,24 +175,16 @@ export function generateBracket(
   }
 
   // --- Build match list with court, order, and work team ---
-  const matches: GeneratedBracketMatch[] = [];
-  let matchOrder = matchOrderOffset + 1;
-
-  // Process R1 games court by court
+  // First, resolve work teams for each R1 game (keyed by game position)
+  const r1WorkTeams = new Map<number, string | null>();
   for (const court of courts) {
     const courtGames = gamesPerCourt.get(court) ?? [];
     for (let gi = 0; gi < courtGames.length; gi++) {
       const game = courtGames[gi];
-
-      // Work team for this game:
-      // 1. If a bye team feeds into this game's R2 opponent, that bye team works
       const byeWorker = byeTeamWorkAssignments.get(game.position);
-
-      // 2. Otherwise: lower seed of the next game on this court
       let workTeamId: string | null = byeWorker ?? null;
       if (!workTeamId && gi + 1 < courtGames.length) {
         const nextGame = courtGames[gi + 1];
-        // Lower seed = higher overall_rank number
         const nextTeamA = nextGame.slotA.team_id ? teams.find((t) => t.team_id === nextGame.slotA.team_id) : null;
         const nextTeamB = nextGame.slotB.team_id ? teams.find((t) => t.team_id === nextGame.slotB.team_id) : null;
         if (nextTeamA && nextTeamB) {
@@ -180,7 +193,29 @@ export function generateBracket(
             : nextTeamB.team_id;
         }
       }
+      r1WorkTeams.set(game.position, workTeamId);
+    }
+  }
 
+  // Build per-court game queues (preserving within-court order)
+  const courtQueues = new Map<number, typeof realR1Games>();
+  for (const court of courts) {
+    courtQueues.set(court, [...(gamesPerCourt.get(court) ?? [])]);
+  }
+
+  // Interleave R1 games across courts: round-robin one game from each court
+  // so consecutive match_orders use different courts (parallel play).
+  const matches: GeneratedBracketMatch[] = [];
+  let matchOrder = matchOrderOffset + 1;
+
+  const activeCourtsR1 = courts.filter((c) => (courtQueues.get(c)?.length ?? 0) > 0);
+  let placed = 0;
+  const totalR1 = realR1Games.length;
+  while (placed < totalR1) {
+    for (const court of activeCourtsR1) {
+      const queue = courtQueues.get(court)!;
+      if (queue.length === 0) continue;
+      const game = queue.shift()!;
       matches.push({
         round_number: 1,
         match_position: game.position,
@@ -190,13 +225,15 @@ export function generateBracket(
         match_order: matchOrder++,
         team_a_id: game.slotA.team_id,
         team_b_id: game.slotB.team_id,
-        work_team_id: workTeamId,
+        work_team_id: r1WorkTeams.get(game.position) ?? null,
       });
+      placed++;
     }
   }
 
   // Process R2+ matches
-  // Courts consolidate: only use as many courts as there are real matches in each round
+  // Courts consolidate: only use as many courts as there are real matches in each round.
+  // Interleave across courts so match_order reflects parallel play.
   let activeCourts = [...courts];
   for (let round = 2; round <= totalRounds; round++) {
     const roundSlots = slots.filter((s) => s.round_number === round);
@@ -224,23 +261,42 @@ export function generateBracket(
       activeCourts = activeCourts.slice(0, Math.max(1, realMatches.length));
     }
 
-    for (let mi = 0; mi < realMatches.length; mi++) {
-      const { index: i, slotA, slotB } = realMatches[mi];
-      const court = activeCourts[mi % activeCourts.length];
+    // Assign courts to matches, then interleave by court
+    const roundMatchesWithCourt = realMatches.map((rm, mi) => ({
+      ...rm,
+      court: activeCourts[mi % activeCourts.length],
+    }));
 
-      // R2+ work teams are assigned dynamically after the match completes
-      // (loser of previous game on same court — handled by assign_bracket_work_team RPC)
-      matches.push({
-        round_number: round,
-        match_position: i + 1,
-        slot_a_position: slotA.slot_position,
-        slot_b_position: slotB.slot_position,
-        court_number: court,
-        match_order: matchOrder++,
-        team_a_id: slotA.team_id,
-        team_b_id: slotB.team_id,
-        work_team_id: null,
-      });
+    // Group by court, then round-robin across courts
+    const roundCourtQueues = new Map<number, typeof roundMatchesWithCourt>();
+    for (const rm of roundMatchesWithCourt) {
+      if (!roundCourtQueues.has(rm.court)) roundCourtQueues.set(rm.court, []);
+      roundCourtQueues.get(rm.court)!.push(rm);
+    }
+    const roundActiveCourts = activeCourts.filter(
+      (c) => (roundCourtQueues.get(c)?.length ?? 0) > 0,
+    );
+
+    let roundPlaced = 0;
+    while (roundPlaced < realMatches.length) {
+      for (const court of roundActiveCourts) {
+        const queue = roundCourtQueues.get(court)!;
+        if (queue.length === 0) continue;
+        const rm = queue.shift()!;
+
+        matches.push({
+          round_number: round,
+          match_position: rm.index + 1,
+          slot_a_position: rm.slotA.slot_position,
+          slot_b_position: rm.slotB.slot_position,
+          court_number: rm.court,
+          match_order: matchOrder++,
+          team_a_id: rm.slotA.team_id,
+          team_b_id: rm.slotB.team_id,
+          work_team_id: null,
+        });
+        roundPlaced++;
+      }
     }
   }
 

@@ -61,6 +61,7 @@ async function processDir(dirName) {
 
     try {
       await sharp(srcPath)
+        .rotate() // auto-rotate based on EXIF orientation
         .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
         .webp({ quality: QUALITY })
         .toFile(outPath);

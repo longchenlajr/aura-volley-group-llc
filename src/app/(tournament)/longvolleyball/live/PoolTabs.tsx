@@ -11,11 +11,20 @@ interface PoolTabsProps {
   brackets: Array<{ id: string; label: string; type: "gold" | "silver" }>;
   activeTab: string | null; // null = overview
   onSelect: (tabId: string | null) => void;
+  showResults?: boolean;
 }
 
-export function PoolTabs({ pools, brackets, activeTab, onSelect }: PoolTabsProps) {
+export function PoolTabs({ pools, brackets, activeTab, onSelect, showResults }: PoolTabsProps) {
   return (
     <div className="lv-pool-tabs">
+      {showResults && (
+        <button
+          className={`lv-pool-tab ${activeTab === "results" ? "active" : ""}`}
+          onClick={() => onSelect("results")}
+        >
+          Results
+        </button>
+      )}
       {brackets.map((b) => (
         <button
           key={b.id}

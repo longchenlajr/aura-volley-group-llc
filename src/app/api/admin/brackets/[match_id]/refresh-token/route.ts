@@ -13,10 +13,11 @@ export async function POST(
 
   const { match_id } = await params;
   const newToken = generateMatchToken();
+  const newExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
   const { error } = await getSupabaseAdmin()
     .from("bracket_match_tokens")
-    .update({ token: newToken })
+    .update({ token: newToken, expires_at: newExpiry })
     .eq("bracket_match_id", match_id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

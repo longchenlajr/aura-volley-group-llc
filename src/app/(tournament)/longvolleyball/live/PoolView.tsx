@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import type { PoolStandings } from "@/lib/standings";
 import { ScoreLinkModal } from "./ScoreLinkModal";
 import { SubmitScoresButton } from "./SubmitScoresButton";
@@ -22,12 +22,15 @@ interface TeamSeed {
   record: string;
 }
 
+type RosterMap = Record<string, Array<{ name: string; is_captain: boolean }>>;
+
 interface Props {
   pool: PoolStandings;
   matches: MatchDisplay[];
   totalMatches: number;
   completeMatches: number;
   teamSeeds: Map<string, TeamSeed>;
+  rosters?: RosterMap;
 }
 
 function computeOutcome(m: MatchDisplay): { label: string; type: "win" | "split" | "pending" } {
@@ -51,7 +54,8 @@ function computeOutcome(m: MatchDisplay): { label: string; type: "win" | "split"
   return { label: `${winner} win +${diff}`, type: "win" };
 }
 
-export function PoolView({ pool, matches, totalMatches, completeMatches, teamSeeds }: Props) {
+export function PoolView({ pool, matches, totalMatches, completeMatches, teamSeeds, rosters = {} }: Props) {
+  const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [scoreLinkMatch, setScoreLinkMatch] = useState<{
     matchId: string;
     matchType: "pool" | "bracket";
@@ -95,16 +99,36 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
             </tr>
           </thead>
           <tbody>
-            {pool.standings.map((t, i) => (
-              <tr key={t.team_id} className={i === 0 ? "lv-overview-row-first" : ""}>
-                <td className="lv-overview-rank">{i + 1}</td>
-                <td className="lv-overview-name">({t.overall_seed ?? t.seed_in_pool}) {t.team_name}</td>
-                <td>{t.sets_won}-{t.sets_lost}</td>
-                <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
-                  {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
-                </td>
-              </tr>
-            ))}
+            {pool.standings.map((t, i) => {
+              const isExpanded = expandedTeam === t.team_id;
+              const players = rosters[t.team_id];
+              return (
+                <React.Fragment key={t.team_id}>
+                  <tr
+                    className={`${i === 0 ? "lv-overview-row-first" : ""} lv-overview-row-click ${t.withdrawn ? "lv-overview-row-withdrawn" : ""}`}
+                    onClick={() => setExpandedTeam(isExpanded ? null : t.team_id)}
+                  >
+                    <td className="lv-overview-rank">{i + 1}</td>
+                    <td className="lv-overview-name">{t.team_name}</td>
+                    <td>{t.sets_won}-{t.sets_lost}</td>
+                    <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
+                      {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
+                    </td>
+                  </tr>
+                  {isExpanded && players && (
+                    <tr className="lv-overview-expand-row">
+                      <td colSpan={4}>
+                        <div className="lv-overview-players">
+                          {players.map((p, idx) => (
+                            <div key={idx} className="lv-overview-player">{p.name}</div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>

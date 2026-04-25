@@ -7,6 +7,7 @@ interface TeamRosterProps {
   teams: Team[];
   poolsExist: boolean;
   onAddTeam: () => void;
+  onEditTeam: (team: Team) => void;
   onWithdrawTeam: (team: Team) => void;
   onDeleteTeam: (team: Team) => void;
   onPatchTeam: (id: string, updates: Record<string, unknown>) => void;
@@ -28,6 +29,7 @@ export function TeamRoster({
   teams,
   poolsExist,
   onAddTeam,
+  onEditTeam,
   onWithdrawTeam,
   onDeleteTeam,
   onPatchTeam,
@@ -114,6 +116,7 @@ export function TeamRoster({
                       isTeamExpanded={isTeamExpanded}
                       onToggleExpand={() => toggleTeamExpand(t.id)}
                       poolsExist={poolsExist}
+                      onEditTeam={onEditTeam}
                       onWithdrawTeam={onWithdrawTeam}
                       onDeleteTeam={onDeleteTeam}
                       onPatchTeam={onPatchTeam}
@@ -210,15 +213,26 @@ export function TeamRoster({
                     </div>
                   )}
                   {!isWithdrawn && (
-                    <button
-                      className="lv-admin-action-btn lv-admin-action-btn-danger lv-roster-card-delete"
-                      onClick={() => poolsExist ? onWithdrawTeam(t) : onDeleteTeam(t)}
-                      aria-label={poolsExist ? "Withdraw team" : "Remove team"}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
-                      </svg>
-                    </button>
+                    <div className="lv-roster-card-actions">
+                      <button
+                        className="lv-admin-action-btn"
+                        onClick={() => onEditTeam(t)}
+                        aria-label="Edit team"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M13.586 3.586a2 2 0 012.828 2.828l-8.793 8.793L4 16l.793-3.621 8.793-8.793z" />
+                        </svg>
+                      </button>
+                      <button
+                        className="lv-admin-action-btn lv-admin-action-btn-danger"
+                        onClick={() => poolsExist ? onWithdrawTeam(t) : onDeleteTeam(t)}
+                        aria-label={poolsExist ? "Withdraw team" : "Remove team"}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
+                        </svg>
+                      </button>
+                    </div>
                   )}
                 </div>
               );
@@ -253,6 +267,7 @@ function TeamTableRows({
   isTeamExpanded,
   onToggleExpand,
   poolsExist,
+  onEditTeam,
   onWithdrawTeam,
   onDeleteTeam,
   onPatchTeam,
@@ -265,6 +280,7 @@ function TeamTableRows({
   isTeamExpanded: boolean;
   onToggleExpand: () => void;
   poolsExist: boolean;
+  onEditTeam: (team: Team) => void;
   onWithdrawTeam: (team: Team) => void;
   onDeleteTeam: (team: Team) => void;
   onPatchTeam: (id: string, updates: Record<string, unknown>) => void;
@@ -356,18 +372,29 @@ function TeamTableRows({
         </td>
         <td onClick={(e) => e.stopPropagation()}>
           {!isWithdrawn && (
-            <button
-              className="lv-admin-action-btn lv-admin-action-btn-danger"
-              onClick={() => {
-                if (poolsExist) onWithdrawTeam(t);
-                else onDeleteTeam(t);
-              }}
-              aria-label={poolsExist ? "Withdraw team" : "Remove team"}
-            >
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
-              </svg>
-            </button>
+            <div style={{ display: "flex", gap: 2 }}>
+              <button
+                className="lv-admin-action-btn"
+                onClick={() => onEditTeam(t)}
+                aria-label="Edit team"
+              >
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13.586 3.586a2 2 0 012.828 2.828l-8.793 8.793L4 16l.793-3.621 8.793-8.793z" />
+                </svg>
+              </button>
+              <button
+                className="lv-admin-action-btn lv-admin-action-btn-danger"
+                onClick={() => {
+                  if (poolsExist) onWithdrawTeam(t);
+                  else onDeleteTeam(t);
+                }}
+                aria-label={poolsExist ? "Withdraw team" : "Remove team"}
+              >
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2m2 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12" />
+                </svg>
+              </button>
+            </div>
           )}
         </td>
       </tr>

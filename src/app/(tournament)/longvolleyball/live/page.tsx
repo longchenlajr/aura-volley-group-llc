@@ -12,6 +12,7 @@ import { PoolTabs } from "./PoolTabs";
 import { TournamentOverview } from "./TournamentOverview";
 import { PoolView } from "./PoolView";
 import { BracketView } from "./BracketView";
+import { ResultsView } from "./ResultsView";
 
 interface StandingsData { pools: PoolStandings[] }
 interface PublicPool { pool_label: string; court_number: number; teams: Array<{ team_name: string; seed_in_pool: number }> }
@@ -67,6 +68,7 @@ export default function LivePage() {
     PublicMatch[] | null
   >(null);
   const [bracketData, setBracketData] = useState<BracketData[] | null>(null);
+  const [rosters, setRosters] = useState<Record<string, Array<{ name: string; is_captain: boolean }>>>({});
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string | null>(null);
@@ -79,6 +81,7 @@ export default function LivePage() {
       setUpcomingPools(null);
       setUpcomingMatches(null);
       setArchiveStandings(null);
+      setRosters({});
       setActiveTab(null);
       return;
     }
@@ -98,6 +101,11 @@ export default function LivePage() {
       .then((r) => r.json())
       .then((d) => setBracketData(d.brackets?.length > 0 ? d.brackets : null))
       .catch(() => setBracketData(null));
+
+    fetch(`/api/public/rosters?tournament=${selectedId}`)
+      .then((r) => r.json())
+      .then((d) => setRosters(d.rosters ?? {}))
+      .catch(() => setRosters({}));
 
     if (tournament.status === "upcoming") {
       fetch(`/api/public/pools?tournament=${selectedId}`)
@@ -122,14 +130,27 @@ export default function LivePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
-  // Default to gold bracket tab when brackets first load
+  // Check if all brackets have a declared winner
+  const bracketsComplete = useMemo(() => {
+    if (!bracketData || bracketData.length === 0) return false;
+    return bracketData.every((b) => {
+      const totalRounds = Math.max(...b.matches.map((m) => m.round_number), 0);
+      if (totalRounds === 0) return false;
+      const finalMatch = b.matches.find(
+        (m) => m.round_number === totalRounds && m.status === "complete",
+      );
+      return !!(finalMatch && finalMatch.score_a != null && finalMatch.score_b != null);
+    });
+  }, [bracketData]);
+
+  // Default tab when brackets first load: "results" if all brackets complete, "bracket-gold" otherwise
   const [hasDefaultedTab, setHasDefaultedTab] = useState(false);
   useEffect(() => {
     if (bracketData && bracketData.length > 0 && !hasDefaultedTab) {
-      setActiveTab("bracket-gold");
+      setActiveTab(bracketsComplete ? "results" : "bracket-gold");
       setHasDefaultedTab(true);
     }
-  }, [bracketData, hasDefaultedTab]);
+  }, [bracketData, hasDefaultedTab, bracketsComplete]);
 
   // Use polled matches for live, otherwise use the one-shot fetch
   const effectiveMatches =
@@ -251,6 +272,17 @@ export default function LivePage() {
 
   // Render content based on active tab
   function renderTabContent() {
+    if (activeTab === "results" && bracketData) {
+      return (
+        <ResultsView
+          bracketData={bracketData}
+          standingsData={activeStandings}
+          teamRecords={teamRecords}
+          rosters={rosters}
+        />
+      );
+    }
+
     if (activeTab?.startsWith("bracket-")) {
       const type = activeTab.replace("bracket-", "") as "gold" | "silver";
       const bracket = bracketData?.find((b) => b.bracket_type === type);
@@ -289,6 +321,7 @@ export default function LivePage() {
             matchesByPool.get(selectedPoolStandings.pool_label)?.complete ?? 0
           }
           teamSeeds={teamRecords}
+          rosters={rosters}
         />
       );
     }
@@ -325,7 +358,7 @@ export default function LivePage() {
           </div>
         </div>
 
-        {/* Date selector */}
+        {/* Date selector — expanded until selection, then collapses */}
         <div className="lv-field" style={{ marginBottom: "1.5rem" }}>
           <span className="lv-field-label">Tournament Date</span>
           {selected ? (
@@ -337,8 +370,8 @@ export default function LivePage() {
               <StatusTag status={selected.status} />
               <span className="lv-date-list-date">
                 {new Date(selected.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
+                  weekday: "short",
+                  month: "short",
                   day: "numeric",
                   year: "numeric",
                 })}
@@ -349,17 +382,22 @@ export default function LivePage() {
             <div className="lv-date-list" role="listbox">
               {tournaments.map((t) => {
                 const label = new Date(t.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
+                  weekday: "short",
+                  month: "short",
                   day: "numeric",
                   year: "numeric",
                 });
+                const fmtLower = t.format.toLowerCase();
                 const fmt =
-                  t.format === "doubles"
+                  fmtLower === "doubles"
                     ? "Doubles (2v2)"
-                    : t.format === "triples"
+                    : fmtLower === "triples"
                       ? "Triples (3v3)"
-                      : `${t.format} (${t.teamSize}v${t.teamSize})`;
+                      : fmtLower === "quads"
+                        ? "Quads (4v4)"
+                        : fmtLower === "sixes"
+                          ? "Sixes (6v6)"
+                          : `${t.format} (${t.teamSize}v${t.teamSize})`;
                 return (
                   <button
                     key={t.id}
@@ -388,6 +426,7 @@ export default function LivePage() {
                 brackets={bracketTabs}
                 activeTab={activeTab}
                 onSelect={setActiveTab}
+                showResults={bracketsComplete}
               />
             )}
 
@@ -519,101 +558,13 @@ export default function LivePage() {
           <>
             {archiveStandings?.pools?.length ? (
               <>
-                {/* Champion banner */}
-                {(() => {
-                  const goldBracket = bracketData?.find(
-                    (b) => b.bracket_type === "gold",
-                  );
-                  const silverBracket = bracketData?.find(
-                    (b) => b.bracket_type === "silver",
-                  );
-
-                  if (goldBracket) {
-                    // Champion = winner of the final match (highest round)
-                    const getChampion = (
-                      bracket: typeof goldBracket | null | undefined,
-                    ) => {
-                      if (!bracket) return null;
-                      const finalRound = Math.max(
-                        ...bracket.matches.map((m) => m.round_number),
-                        0,
-                      );
-                      const finalMatch = bracket.matches.find(
-                        (m) =>
-                          m.round_number === finalRound &&
-                          m.status === "complete",
-                      );
-                      if (
-                        !finalMatch ||
-                        finalMatch.score_a == null ||
-                        finalMatch.score_b == null
-                      )
-                        return null;
-                      return finalMatch.score_a > finalMatch.score_b
-                        ? finalMatch.team_a
-                        : finalMatch.team_b;
-                    };
-
-                    const goldChamp = getChampion(goldBracket);
-                    const silverChamp = getChampion(silverBracket ?? null);
-
-                    return (
-                      <>
-                        {goldChamp && (
-                          <div className="lv-live-champion">
-                            <span className="lv-live-champion-label">
-                              Gold Bracket Champion
-                            </span>
-                            <span className="lv-live-champion-name">
-                              {goldChamp}
-                            </span>
-                          </div>
-                        )}
-                        {silverChamp && (
-                          <div
-                            className="lv-live-champion"
-                            style={{
-                              background: "var(--lv-bg-dark-elevated)",
-                              borderColor: "rgba(107, 78, 61, 0.3)",
-                            }}
-                          >
-                            <span
-                              className="lv-live-champion-label"
-                              style={{ color: "var(--lv-cream-muted)" }}
-                            >
-                              Silver Bracket Champion
-                            </span>
-                            <span
-                              className="lv-live-champion-name"
-                              style={{ fontSize: "1.25rem" }}
-                            >
-                              {silverChamp}
-                            </span>
-                          </div>
-                        )}
-                      </>
-                    );
-                  }
-
-                  const topTeam = archiveStandings.pools[0]?.standings[0];
-                  return topTeam ? (
-                    <div className="lv-live-champion">
-                      <span className="lv-live-champion-label">
-                        Tournament Champion
-                      </span>
-                      <span className="lv-live-champion-name">
-                        {topTeam.team_name}
-                      </span>
-                    </div>
-                  ) : null;
-                })()}
-
                 {(poolTabs.length > 0 || bracketTabs.length > 0) && (
                   <PoolTabs
                     pools={poolTabs}
                     brackets={bracketTabs}
                     activeTab={activeTab}
                     onSelect={setActiveTab}
+                    showResults={bracketsComplete}
                   />
                 )}
 

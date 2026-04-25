@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Tournament, TournamentStatus } from "@/lib/tournaments";
 import { ArrowRight, DividerOrnament } from "./ornaments";
@@ -17,10 +18,11 @@ function getEntryFee(teamSize: number): string {
 }
 
 function formatLabel(format: string): string {
-  if (format === "doubles") return "Doubles (2v2)";
-  if (format === "triples") return "Triples (3v3)";
-  if (format === "quads") return "Quads (4v4)";
-  if (format === "sixes") return "Sixes (6v6)";
+  const f = format.toLowerCase();
+  if (f === "doubles") return "Doubles (2v2)";
+  if (f === "triples") return "Triples (3v3)";
+  if (f === "quads") return "Quads (4v4)";
+  if (f === "sixes") return "Sixes (6v6)";
   return format;
 }
 
@@ -40,7 +42,11 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
   return (
     <div className="lv-picker">
       {/* Date strip */}
-      <div className="lv-date-strip" role="listbox" aria-label="Select tournament date">
+      <div
+        className="lv-date-strip"
+        role="listbox"
+        aria-label="Select tournament date"
+      >
         {sorted.map((t) => {
           const d = new Date(t.date);
           const month = MONTHS[d.getMonth()];
@@ -49,12 +55,14 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
           const isSelected = t.id === selectedId;
           const status = t.status;
 
+          const isAwesome = t.name.toLowerCase().includes("awesome");
+
           return (
             <button
               key={t.id}
               role="option"
               aria-selected={isSelected}
-              className={`lv-date-chip ${isSelected ? "selected" : ""} ${showStatus && status === "live" ? "lv-date-chip--live" : ""}`}
+              className={`lv-date-chip ${isSelected ? "selected" : ""} ${showStatus && status === "live" ? "lv-date-chip--live" : ""} ${isAwesome ? "lv-date-chip--event" : ""}`}
               onClick={() => setSelectedId(isSelected ? null : t.id)}
             >
               {showStatus && status && (
@@ -65,71 +73,135 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
               <span className="lv-date-chip-month">{month}</span>
               <span className="lv-date-chip-day">{day}</span>
               <span className="lv-date-chip-dayname">{dayName}</span>
+              {isAwesome && (
+                <span className="lv-date-chip-event-tag">AWESOME! Fest</span>
+              )}
             </button>
           );
         })}
       </div>
 
       {/* Dossier card — appears when date is selected */}
-      {selected && (
-        <div className="lv-dossier" key={selected.id} style={{ position: "relative" }}>
-          <DecorativeAsset src="corner-flourish.png" className="lv-dossier-flourish lv-dossier-flourish-tl" width={50} height={50} />
-          <DecorativeAsset src="corner-flourish.png" className="lv-dossier-flourish lv-dossier-flourish-br" width={50} height={50} />
-          <div className="lv-dossier-inner">
-            {/* Left — big date */}
-            <div className="lv-dossier-date">
-              <span className="lv-dossier-date-day">
-                {new Date(selected.date).getDate()}
-              </span>
-              <span className="lv-dossier-date-month">
-                {MONTHS[new Date(selected.date).getMonth()]} {new Date(selected.date).getFullYear()}
-              </span>
-              <span className="lv-dossier-date-dayname">
-                {DAYS[new Date(selected.date).getDay()]}
-              </span>
-            </div>
-
-            {/* Right — data rows */}
-            <div className="lv-dossier-data">
-              <div className="lv-dossier-row">
-                <span className="lv-dossier-label">Format</span>
-                <span className="lv-dossier-value">{formatLabel(selected.format)}</span>
-              </div>
-              <div className="lv-dossier-row">
-                <span className="lv-dossier-label">Location</span>
-                <span className="lv-dossier-value">{selected.location}</span>
-              </div>
-              <div className="lv-dossier-row">
-                <span className="lv-dossier-label">Entry</span>
-                <span className="lv-dossier-value">{getEntryFee(selected.teamSize)}</span>
-              </div>
-              <div className="lv-dossier-row">
-                <span className="lv-dossier-label">Status</span>
-                <span className={`lv-dossier-value ${selected.registrationOpen ? "lv-dossier-open" : "lv-dossier-closed"}`}>
-                  {selected.registrationOpen ? "Registration Open" : "Registration Closed"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <DividerOrnament style={{ width: 120, color: "rgba(155, 107, 30, 0.25)", margin: "1.25rem auto" }} />
-
-          {/* CTA */}
-          <div className="lv-dossier-cta">
-            {selected.registrationOpen ? (
-              <Link
-                href={`/longvolleyball/register?tournament=${selected.id}`}
-                className="lv-btn lv-btn-primary"
+      {selected &&
+        (() => {
+          const isAwesomeFest = selected.name.toLowerCase().includes("awesome");
+          return (
+            <div
+              className="lv-dossier"
+              key={selected.id}
+              style={{ position: "relative" }}
+            >
+              <DecorativeAsset
+                src="corner-flourish.png"
+                className="lv-dossier-flourish lv-dossier-flourish-tl"
+                width={50}
+                height={50}
+              />
+              <DecorativeAsset
+                src="corner-flourish.png"
+                className="lv-dossier-flourish lv-dossier-flourish-br"
+                width={50}
+                height={50}
+              />
+              <div
+                className={`lv-dossier-inner ${isAwesomeFest ? "lv-dossier-inner--event" : ""}`}
               >
-                Register for this date
-                <ArrowRight className="lv-btn-arrow" style={{ width: 16, height: 16 }} />
-              </Link>
-            ) : (
-              <span className="lv-dossier-closed-msg">Registration is not open yet</span>
-            )}
-          </div>
-        </div>
-      )}
+                {/* Left — big date */}
+                <div className="lv-dossier-date">
+                  {isAwesomeFest && (
+                    <Image
+                      src="/longvolleyball/awesomefest.avif"
+                      alt="AWESOME Fest"
+                      width={64}
+                      height={64}
+                      className="lv-dossier-event-logo lv-dossier-event-logo--mobile"
+                    />
+                  )}
+                  <span className="lv-dossier-date-day">
+                    {new Date(selected.date).getDate()}
+                  </span>
+                  <span className="lv-dossier-date-month">
+                    {MONTHS[new Date(selected.date).getMonth()]}{" "}
+                    {new Date(selected.date).getFullYear()}
+                  </span>
+                  <span className="lv-dossier-date-dayname">
+                    {DAYS[new Date(selected.date).getDay()]}
+                  </span>
+                </div>
+
+                {/* Middle — data rows */}
+                <div className="lv-dossier-data">
+                  <div className="lv-dossier-row">
+                    <span className="lv-dossier-label">Format</span>
+                    <span className="lv-dossier-value">
+                      {formatLabel(selected.format)}
+                    </span>
+                  </div>
+                  <div className="lv-dossier-row">
+                    <span className="lv-dossier-label">Location</span>
+                    <span className="lv-dossier-value">
+                      {selected.location}
+                    </span>
+                  </div>
+                  <div className="lv-dossier-row">
+                    <span className="lv-dossier-label">Entry</span>
+                    <span className="lv-dossier-value">
+                      {getEntryFee(selected.teamSize)}
+                    </span>
+                  </div>
+                  <div className="lv-dossier-row">
+                    <span className="lv-dossier-label">Status</span>
+                    <span
+                      className={`lv-dossier-value ${selected.registrationOpen ? "lv-dossier-open" : "lv-dossier-closed"}`}
+                    >
+                      {selected.registrationOpen
+                        ? "Registration Open"
+                        : "Registration Closed"}
+                    </span>
+                  </div>
+                </div>
+                {isAwesomeFest && (
+                  <div className="lv-dossier-event-logo lv-dossier-event-logo--desktop">
+                    <Image
+                      src="/longvolleyball/awesomefest.avif"
+                      alt="AWESOME Fest"
+                      width={160}
+                      height={160}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <DividerOrnament
+                style={{
+                  width: 120,
+                  color: "rgba(155, 107, 30, 0.25)",
+                  margin: "1.25rem auto",
+                }}
+              />
+
+              {/* CTA */}
+              <div className="lv-dossier-cta">
+                {selected.registrationOpen ? (
+                  <Link
+                    href={`/longvolleyball/register?tournament=${selected.id}`}
+                    className="lv-btn lv-btn-primary"
+                  >
+                    Register for this date
+                    <ArrowRight
+                      className="lv-btn-arrow"
+                      style={{ width: 16, height: 16 }}
+                    />
+                  </Link>
+                ) : (
+                  <span className="lv-dossier-closed-msg">
+                    Registration is not open yet
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
     </div>
   );
 }

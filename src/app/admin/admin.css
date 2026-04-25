@@ -88,10 +88,12 @@
 .lv-admin-badge-format {
   color: #fff;
   background: var(--lv-red);
+  width: 28px;
 }
 .lv-admin-badge-count {
   color: #fff;
   background: rgba(155, 107, 30, 0.85);
+  width: 28px;
 }
 
 /* Dashboard tournament table */
@@ -134,6 +136,22 @@
 }
 .lv-admin-dash-row:last-child td {
   border-bottom: none;
+}
+
+/* Dashboard mobile: collapse Format + # Registered into status cell */
+.lv-dash-mobile-badges {
+  display: none;
+}
+@media (max-width: 640px) {
+  .lv-dash-hide-mobile {
+    display: none;
+  }
+  .lv-dash-mobile-badges {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
 }
 
 /* Tabs */
@@ -1550,6 +1568,13 @@
   position: absolute;
   top: 10px;
   right: 10px;
+}
+.lv-roster-card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 2px;
 }
 
 /* Roster expandable rows */

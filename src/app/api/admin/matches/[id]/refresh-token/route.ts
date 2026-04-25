@@ -13,10 +13,12 @@ export async function POST(
 
   const { id } = await params;
   const newToken = generateMatchToken();
+  // Set new expiry to 24 hours from now so refreshed tokens don't immediately expire
+  const newExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
   const { error } = await getSupabaseAdmin()
     .from("match_tokens")
-    .update({ token: newToken })
+    .update({ token: newToken, expires_at: newExpiry })
     .eq("match_id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

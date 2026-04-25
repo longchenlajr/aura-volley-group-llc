@@ -3,16 +3,7 @@
     {
       "id": "dev-doubles-today",
       "name": "DEV Doubles",
-      "date": "2026-04-24T09:00:00-04:00",
-      "location": "Dev Court",
-      "format": "doubles",
-      "teamSize": 2,
-      "registrationOpen": false
-    },
-    {
-      "id": "dev-doubles-yesterday",
-      "name": "DEV Doubles",
-      "date": "2026-04-23T09:00:00-04:00",
+      "date": "2026-04-25T09:00:00-04:00",
       "location": "Dev Court",
       "format": "doubles",
       "teamSize": 2,
@@ -61,6 +52,42 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "triples",
       "teamSize": 3,
+      "registrationOpen": true
+    },
+    {
+      "id": "doubles-07-4-2026",
+      "name": "Doubles @ Hamilton",
+      "date": "2026-07-04T09:00:00-04:00",
+      "location": "515 S. Ott Street, Allentown, PA 18104",
+      "format": "doubles",
+      "teamSize": 2,
+      "registrationOpen": true
+    },
+    {
+      "id": "awesomefest-triples-07-24-2026",
+      "name": "AWESOME! Fest Triples @ Cedar Beach",
+      "date": "2026-07-24T09:00:00-04:00",
+      "location": "2600 Parkway Blvd, Allentown, PA 18104",
+      "format": "Triples",
+      "teamSize": 3,
+      "registrationOpen": true
+    },
+    {
+      "id": "awesomefest-quads-07-25-2026",
+      "name": "AWESOME! Fest Quads @ Cedar Beach",
+      "date": "2026-07-25T09:00:00-04:00",
+      "location": "2600 Parkway Blvd, Allentown, PA 18104",
+      "format": "Quads",
+      "teamSize": 4,
+      "registrationOpen": true
+    },
+    {
+      "id": "awesomefest-sixes-07-26-2026",
+      "name": "AWESOME! Fest Sixes @ Cedar Beach",
+      "date": "2026-07-26T09:00:00-04:00",
+      "location": "2600 Parkway Blvd, Allentown, PA 18104",
+      "format": "sixes",
+      "teamSize": 6,
       "registrationOpen": true
     },
     {

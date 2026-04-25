@@ -5,6 +5,7 @@ export interface TeamStanding {
   team_name: string;
   seed_in_pool: number;
   overall_seed: number | null;
+  withdrawn: boolean;
   matches_played: number;
   matches_won: number;
   matches_lost: number;
@@ -35,6 +36,7 @@ interface TeamInput {
   team_name: string;
   seed_in_pool: number;
   overall_seed?: number | null;
+  withdrawn?: boolean;
 }
 
 export function computePoolStandings(
@@ -50,6 +52,7 @@ export function computePoolStandings(
       team_name: t.team_name,
       seed_in_pool: t.seed_in_pool,
       overall_seed: t.overall_seed ?? null,
+      withdrawn: t.withdrawn ?? false,
       matches_played: 0,
       matches_won: 0,
       matches_lost: 0,
@@ -111,6 +114,9 @@ export function computePoolStandings(
   // Sort with tiebreaker chain
   const standings = Array.from(standingsMap.values());
   standings.sort((x, y) => {
+    // 0. Withdrawn teams always sort to bottom
+    if (x.withdrawn !== y.withdrawn) return x.withdrawn ? 1 : -1;
+
     // 1. Sets won (descending)
     if (x.sets_won !== y.sets_won) return y.sets_won - x.sets_won;
 

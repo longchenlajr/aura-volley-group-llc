@@ -11,6 +11,15 @@ import {
   GoldDotSpinner,
 } from "../../ornaments";
 
+function formatDisplayLabel(format: string, teamSize: number): string {
+  const f = format.toLowerCase();
+  if (f === "doubles") return "Doubles (2v2)";
+  if (f === "triples") return "Triples (3v3)";
+  if (f === "quads") return "Quads (4v4)";
+  if (f === "sixes") return "Sixes (6v6)";
+  return `${format} (${teamSize}v${teamSize})`;
+}
+
 export default function RegisterPage() {
   return (
     <Suspense>
@@ -201,7 +210,7 @@ function RegisterForm() {
         <CornerFlourish className="lv-reg-flourish lv-reg-flourish-br" rotate={180} />
 
         <form onSubmit={handleSubmit} className="lv-form">
-          {/* Tournament date list — collapses to selected item when chosen */}
+          {/* Tournament date list — expanded until selection, then collapses */}
           <div className="lv-field">
             <span className="lv-field-label">Tournament Date</span>
             {selected ? (
@@ -212,18 +221,14 @@ function RegisterForm() {
               >
                 <span className="lv-date-list-date">
                   {new Date(selected.date).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
+                    weekday: "short",
+                    month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}
                 </span>
                 <span className="lv-date-list-format">
-                  {selected.format === "doubles"
-                    ? "Doubles (2v2)"
-                    : selected.format === "triples"
-                      ? "Triples (3v3)"
-                      : `${selected.format} (${selected.teamSize}v${selected.teamSize})`}
+                  {formatDisplayLabel(selected.format, selected.teamSize)}
                 </span>
                 <span className="lv-date-list-change">Change</span>
               </button>
@@ -234,16 +239,12 @@ function RegisterForm() {
                   .map((t) => {
                     const d = new Date(t.date);
                     const label = d.toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "long",
+                      weekday: "short",
+                      month: "short",
                       day: "numeric",
                       year: "numeric",
                     });
-                    const formatLabel = t.format === "doubles"
-                      ? "Doubles (2v2)"
-                      : t.format === "triples"
-                        ? "Triples (3v3)"
-                        : `${t.format} (${t.teamSize}v${t.teamSize})`;
+                    const formatLabel = formatDisplayLabel(t.format, t.teamSize);
 
                     return (
                       <button

@@ -997,8 +997,6 @@ html:has(.lv)::-webkit-scrollbar {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 320px;
-  overflow-y: auto;
   border: 1px solid rgba(107, 78, 61, 0.15);
   border-radius: var(--lv-radius-md);
   padding: 4px;
@@ -1021,7 +1019,8 @@ html:has(.lv)::-webkit-scrollbar {
   background: rgba(122, 28, 28, 0.04);
   border-color: rgba(122, 28, 28, 0.12);
 }
-.lv-date-list-item.selected {
+.lv-date-list-item.selected,
+.lv-date-list-item--selected {
   background: var(--lv-red);
   border-color: var(--lv-red-deep);
 }
@@ -1030,7 +1029,8 @@ html:has(.lv)::-webkit-scrollbar {
   font-weight: 500;
   color: var(--lv-ink);
 }
-.lv-date-list-item.selected .lv-date-list-date {
+.lv-date-list-item.selected .lv-date-list-date,
+.lv-date-list-item--selected .lv-date-list-date {
   color: var(--lv-cream);
 }
 .lv-date-list-format {
@@ -1040,8 +1040,18 @@ html:has(.lv)::-webkit-scrollbar {
   white-space: nowrap;
   margin-left: auto;
 }
-.lv-date-list-item.selected .lv-date-list-format {
+.lv-date-list-item.selected .lv-date-list-format,
+.lv-date-list-item--selected .lv-date-list-format {
   color: rgba(245, 230, 200, 0.7);
+}
+.lv-date-list-item--selected .lv-status-tag {
+  color: var(--lv-cream);
+  border-color: rgba(245, 230, 200, 0.4);
+  background: transparent;
+}
+.lv-date-list-item--selected .lv-status-tag--live {
+  background: rgba(245, 230, 200, 0.15);
+  border-color: rgba(245, 230, 200, 0.5);
 }
 
 /* Collapsed selected date (single row) */
@@ -1380,11 +1390,15 @@ html:has(.lv)::-webkit-scrollbar {
 
 /* --- DATE STRIP --- */
 .lv-date-strip {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   padding: 4px 0;
+}
+@media (max-width: 640px) {
+  .lv-date-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .lv-date-chip {
@@ -1393,7 +1407,7 @@ html:has(.lv)::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-width: 72px;
+  width: 100%;
   padding: 12px 8px;
   border: 1px solid rgba(107, 78, 61, 0.2);
   border-radius: var(--lv-radius-md);
@@ -1409,6 +1423,27 @@ html:has(.lv)::-webkit-scrollbar {
   background: var(--lv-red);
   border-color: var(--lv-red-deep);
   box-shadow: 0 0 0 3px rgba(122, 28, 28, 0.15);
+}
+
+/* Event-tagged date chips */
+.lv-date-chip--event {
+  border-color: var(--lv-gold);
+  box-shadow: 0 0 0 1px rgba(155, 107, 30, 0.25);
+}
+.lv-date-chip--event.selected {
+  border-color: var(--lv-red-deep);
+}
+.lv-date-chip-event-tag {
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-top: 2px;
+  line-height: 1;
+}
+.lv-date-chip.selected .lv-date-chip-event-tag {
+  color: rgba(245, 230, 200, 0.7);
 }
 
 .lv-date-chip-month {
@@ -1574,8 +1609,45 @@ html:has(.lv)::-webkit-scrollbar {
     align-self: start;
     text-align: left;
   }
-  .lv-date-chip { min-width: 60px; padding: 10px 6px; }
+  .lv-date-chip { padding: 10px 6px; }
   .lv-date-chip-day { font-size: 1.25rem; }
+}
+
+/* --- Dossier event logo (AWESOME Fest etc.) --- */
+.lv-dossier-inner--event {
+  grid-template-columns: 120px 1fr auto;
+}
+.lv-dossier-event-logo--desktop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1.5rem;
+  border-left: 1px solid rgba(155, 107, 30, 0.15);
+}
+.lv-dossier-event-logo--desktop img {
+  border-radius: var(--lv-radius-sm);
+  opacity: 0.9;
+}
+.lv-dossier-event-logo--mobile {
+  display: none !important;
+}
+@media (max-width: 640px) {
+  .lv-dossier-inner--event {
+    grid-template-columns: 1fr;
+  }
+  .lv-dossier-event-logo--desktop {
+    display: none;
+  }
+  .lv-dossier-event-logo--mobile {
+    display: block !important;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: var(--lv-radius-sm);
+  }
+  .lv-dossier-inner--event .lv-dossier-date {
+    position: relative;
+  }
 }
 
 /* ==========================================================
@@ -1872,6 +1944,136 @@ html:has(.lv)::-webkit-scrollbar {
   background: var(--lv-red);
   border-radius: 50%;
 }
+.lv-rules-intro {
+  font-size: 0.9rem;
+  color: var(--lv-ink-muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.lv-rules-subheading {
+  font-family: var(--lv-font-display), Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Open-hand contact callout */
+.lv-rules-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+}
+.lv-rules-callout-section {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(122, 28, 28, 0.06);
+}
+.lv-rules-callout-section:last-child {
+  border-bottom: none;
+}
+.lv-rules-callout-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lv-red);
+  margin-bottom: 0.25rem;
+}
+.lv-rules-callout-section p {
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Grass / Beach variant cards */
+.lv-rules-variants {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 540px) {
+  .lv-rules-variants {
+    grid-template-columns: 1fr;
+  }
+}
+.lv-rules-variant-card {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  padding: 1rem;
+}
+.lv-rules-variant-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+.lv-rules-variant-badge--grass {
+  color: #fff;
+  background: var(--lv-green);
+}
+.lv-rules-variant-badge--beach {
+  color: #fff;
+  background: var(--lv-gold);
+}
+
+/* Pool play format table */
+.lv-rules-table-wrap {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: var(--lv-radius-md);
+  overflow: hidden;
+}
+.lv-rules-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.lv-rules-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  background: var(--lv-parchment);
+  border-bottom: 1px solid var(--lv-border);
+  white-space: nowrap;
+}
+.lv-rules-table td {
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--lv-ink-muted);
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
+  white-space: nowrap;
+}
+.lv-rules-table td:first-child {
+  font-weight: 600;
+  color: var(--lv-ink);
+}
+.lv-rules-table tbody tr:last-child td {
+  border-bottom: none;
+}
+@media (max-width: 480px) {
+  .lv-rules-table th,
+  .lv-rules-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+}
 
 /* ==========================================================
    STATUS TAGS + LIVE PAGE
@@ -1888,7 +2090,7 @@ html:has(.lv)::-webkit-scrollbar {
   border-radius: 999px;
   line-height: 1.4;
   white-space: nowrap;
-  min-width: 62px;
+  width: 72px;
   text-align: center;
   flex-shrink: 0;
 }
@@ -2957,6 +3159,32 @@ html:has(.lv)::-webkit-scrollbar {
 }
 .lv-overview-diff-pos { color: var(--lv-green) !important; }
 .lv-overview-diff-neg { color: var(--lv-error) !important; }
+.lv-overview-row-withdrawn td {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+.lv-overview-row-click {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.lv-overview-row-click:hover {
+  background: rgba(122, 28, 28, 0.03);
+}
+.lv-overview-expand-row td {
+  padding: 0 6px 8px !important;
+  border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
+}
+.lv-overview-players {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+}
+.lv-overview-player {
+  font-size: 0.75rem;
+  color: var(--lv-ink-muted);
+  white-space: nowrap;
+}
 .lv-overview-pool-progress {
   margin-top: 0.75rem;
   font-size: 0.7rem;

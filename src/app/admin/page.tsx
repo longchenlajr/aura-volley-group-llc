@@ -47,8 +47,8 @@ export default function AdminDashboard() {
               <tr>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Format</th>
-                <th># Registered</th>
+                <th className="lv-dash-hide-mobile">Format</th>
+                <th className="lv-dash-hide-mobile"># Registered</th>
               </tr>
             </thead>
             <tbody>
@@ -70,9 +70,15 @@ export default function AdminDashboard() {
                     onClick={() => router.push(`/admin/tournament/${t.id}`)}
                   >
                     <td>{label}</td>
-                    <td><StatusTag status={getTournamentStatus(t.date)} /></td>
-                    <td><span className="lv-admin-badge lv-admin-badge-format">{fmtLabel}</span></td>
-                    <td><span className="lv-admin-badge lv-admin-badge-count">{count != null ? count : "—"}</span></td>
+                    <td>
+                      <StatusTag status={getTournamentStatus(t.date)} />
+                      <span className="lv-dash-mobile-badges">
+                        <span className="lv-admin-badge lv-admin-badge-format">{fmtLabel}</span>
+                        <span className="lv-admin-badge lv-admin-badge-count">{count != null ? count : "—"}</span>
+                      </span>
+                    </td>
+                    <td className="lv-dash-hide-mobile"><span className="lv-admin-badge lv-admin-badge-format">{fmtLabel}</span></td>
+                    <td className="lv-dash-hide-mobile"><span className="lv-admin-badge lv-admin-badge-count">{count != null ? count : "—"}</span></td>
                   </tr>
                 );
               })}

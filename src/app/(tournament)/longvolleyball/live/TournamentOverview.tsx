@@ -54,9 +54,9 @@ export function TournamentOverview({ standingsData, onSelectPool, totalMatchesBy
               </thead>
               <tbody>
                 {pool.standings.map((t, i) => (
-                  <tr key={t.team_id} className={i === 0 ? "lv-overview-row-first" : ""}>
+                  <tr key={t.team_id} className={`${i === 0 ? "lv-overview-row-first" : ""} ${t.withdrawn ? "lv-overview-row-withdrawn" : ""}`}>
                     <td className="lv-overview-rank">{i + 1}</td>
-                    <td className="lv-overview-name">({t.overall_seed ?? t.seed_in_pool}) {t.team_name}</td>
+                    <td className="lv-overview-name">{t.team_name}</td>
                     <td>{t.sets_won}-{t.sets_lost}</td>
                     <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
                       {t.point_differential >= 0 ? "+" : ""}{t.point_differential}

@@ -38,6 +38,7 @@ export default function TournamentViewPage() {
 
   // Modals
   const [addTeamModal, setAddTeamModal] = useState(false);
+  const [editTeamModal, setEditTeamModal] = useState<Team | null>(null);
   const [poolModal, setPoolModal] = useState(false);
   const [regenerateConfirm, setRegenerateConfirm] = useState(false);
   const [swapModal, setSwapModal] = useState<{ teamId: string; teamName: string } | null>(null);
@@ -212,15 +213,11 @@ export default function TournamentViewPage() {
   // --- Pool generation ---
   function handleCreatePools() {
     const checkedIn = teams.filter((t) => t.checked_in && !t.withdrawn_at);
-    const unseeded = checkedIn.filter((t) => t.seed == null);
 
-    if (unseeded.length > 0) {
-      setUnseededWarning(unseeded.map((t) => `${t.team_name} — needs a seed number`));
-      return;
-    }
-
+    // Check for duplicate seeds among seeded teams
+    const seeded = checkedIn.filter((t) => t.seed != null);
     const seedMap = new Map<number, string[]>();
-    for (const t of checkedIn) {
+    for (const t of seeded) {
       const s = t.seed!;
       if (!seedMap.has(s)) seedMap.set(s, []);
       seedMap.get(s)!.push(t.team_name);
@@ -246,8 +243,8 @@ export default function TournamentViewPage() {
 
   async function persistPools(netCount: number) {
     const checkedIn = teams
-      .filter((t) => t.checked_in && t.seed != null && !t.withdrawn_at)
-      .map((t) => ({ id: t.id, team_name: t.team_name, seed: t.seed! }));
+      .filter((t) => t.checked_in && !t.withdrawn_at)
+      .map((t) => ({ id: t.id, team_name: t.team_name, seed: t.seed }));
 
     const result = runPoolGeneration({ teams: checkedIn, netCount });
 
@@ -407,7 +404,6 @@ export default function TournamentViewPage() {
         <span style={{ cursor: "pointer", textDecoration: "underline", textDecorationColor: "var(--lv-border)" }} onClick={() => router.push("/admin")}>
           &larr; All tournaments
         </span>
-        <span className="lv-admin-pill">{teams.filter((t) => !t.withdrawn_at).length} registered</span>
       </div>
 
       {/* Toolbar */}
@@ -439,6 +435,7 @@ export default function TournamentViewPage() {
           teams={teams}
           poolsExist={false}
           onAddTeam={() => setAddTeamModal(true)}
+          onEditTeam={(t) => setEditTeamModal(t)}
           onWithdrawTeam={(t) => setWithdrawModal(t)}
           onDeleteTeam={handleDeleteTeam}
           onPatchTeam={patchTeam}
@@ -541,6 +538,7 @@ export default function TournamentViewPage() {
           teams={teams}
           poolsExist={true}
           onAddTeam={() => setAddTeamModal(true)}
+          onEditTeam={(t) => setEditTeamModal(t)}
           onWithdrawTeam={(t) => setWithdrawModal(t)}
           onDeleteTeam={handleDeleteTeam}
           onPatchTeam={patchTeam}
@@ -572,6 +570,10 @@ export default function TournamentViewPage() {
       {/* Add team modal */}
       {addTeamModal && tournament && (
         <AddTeamModal tournament={tournament} onClose={() => setAddTeamModal(false)} onAdded={() => { setAddTeamModal(false); loadTeams(); }} />
+      )}
+
+      {editTeamModal && (
+        <EditTeamModal team={editTeamModal} onClose={() => setEditTeamModal(null)} onSaved={() => { setEditTeamModal(null); loadTeams(); }} />
       )}
 
       {/* Net count modal */}
@@ -623,6 +625,7 @@ export default function TournamentViewPage() {
           tournamentId={tournamentId}
           poolCount={savedPools.length}
           courtCount={savedPools.length}
+          withdrawnTeamIds={withdrawnTeamIds}
           onClose={() => setPlayoffSetup(false)}
           onGenerated={() => { setPlayoffSetup(false); checkBrackets(); }}
         />
@@ -806,6 +809,77 @@ function AddTeamModal({ tournament, onClose, onAdded }: { tournament: Tournament
   );
 }
 
+/* ---- EDIT TEAM MODAL ---- */
+function EditTeamModal({ team, onClose, onSaved }: { team: Team; onClose: () => void; onSaved: () => void }) {
+  const [teamName, setTeamName] = useState(team.team_name);
+  const [contactPhone, setContactPhone] = useState(team.contact_phone);
+  const [players, setPlayers] = useState(
+    team.players.map((p) => ({ id: p.id, name: p.name, email: p.email ?? "", is_captain: p.is_captain }))
+  );
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  function updatePlayer(idx: number, field: "name" | "email", value: string) {
+    setPlayers((prev) => prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    const captain = players.find((p) => p.is_captain);
+    const res = await fetch(`/api/admin/teams/${team.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        team_name: teamName,
+        contact_phone: contactPhone,
+        contact_email: captain?.email || team.contact_email,
+        players: players.map((p) => ({ id: p.id, name: p.name, email: p.email || null })),
+      }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Update failed");
+      setSubmitting(false);
+    } else {
+      onSaved();
+    }
+  }
+
+  return (
+    <div className="lv-admin-overlay" onClick={onClose}>
+      <div className="lv-admin-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="lv-admin-modal-header">
+          <h2 className="lv-admin-modal-title">Update team</h2>
+          <button className="lv-admin-modal-close" onClick={onClose} aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="lv-form">
+          <div className="lv-field"><label className="lv-field-label">Team name</label><input className="lv-input" type="text" value={teamName} onChange={(e) => setTeamName(e.target.value)} required /></div>
+          {players.map((p, idx) => {
+            const isCaptain = p.is_captain;
+            return (
+              <fieldset key={p.id} className="lv-player-group">
+                <legend className="lv-player-legend">{isCaptain ? "Captain" : `Player ${idx + 1}`}</legend>
+                <div className="lv-field"><label className="lv-field-label">Name</label><input className="lv-input" type="text" value={p.name} onChange={(e) => updatePlayer(idx, "name", e.target.value)} required /></div>
+                <div className="lv-field"><label className="lv-field-label">Email{isCaptain ? "" : " (optional)"}</label><input className="lv-input" type="email" value={p.email} onChange={(e) => updatePlayer(idx, "email", e.target.value)} required={isCaptain} /></div>
+                {isCaptain && (<div className="lv-field"><label className="lv-field-label">Phone</label><input className="lv-input" type="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} required /></div>)}
+              </fieldset>
+            );
+          })}
+          {error && <p className="lv-error">{error}</p>}
+          <div className="lv-admin-modal-footer">
+            <button type="button" className="lv-btn lv-btn-ghost" onClick={onClose}>Cancel</button>
+            <button type="submit" className="lv-btn lv-btn-primary" disabled={submitting}>{submitting ? "Saving..." : "Update team"}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 /* ---- NET COUNT MODAL ---- */
 function NetCountModal({ checkedInCount, onClose, onConfirm, isRegenerate }: {
   checkedInCount: number; onClose: () => void; onConfirm: (nets: number) => void; isRegenerate?: boolean;
@@ -882,11 +956,11 @@ function SwapModal({ teamName, teamId, pools, onClose, onSwap }: {
           Tap a team to swap positions with <strong>{teamName}</strong>.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "60vh", overflowY: "auto" }}>
-          {pools.filter((p) => p.pool.id !== sourcePool?.pool.id).map(({ pool, teams: poolTeams }) => (
+          {pools.map(({ pool, teams: poolTeams }) => (
             <div key={pool.id} className="lv-admin-pool-card" style={{ margin: 0 }}>
-              <div className="lv-admin-pool-court">Pool {pool.pool_label}</div>
+              <div className="lv-admin-pool-court">Pool {pool.pool_label}{pool.id === sourcePool?.pool.id ? " (current)" : ""}</div>
               <div className="lv-admin-pool-teams">
-                {poolTeams.map((t) => (
+                {poolTeams.filter((t) => t.team_id !== teamId).map((t) => (
                   <button
                     key={t.team_id}
                     className="lv-admin-pool-team lv-admin-pool-team-swappable"
@@ -910,8 +984,8 @@ function SwapModal({ teamName, teamId, pools, onClose, onSwap }: {
 }
 
 /* ---- PLAYOFF SETUP MODAL ---- */
-function PlayoffSetupModal({ tournamentId, poolCount, courtCount, onClose, onGenerated }: {
-  tournamentId: string; poolCount: number; courtCount: number; onClose: () => void; onGenerated: () => void;
+function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamIds, onClose, onGenerated }: {
+  tournamentId: string; poolCount: number; courtCount: number; withdrawnTeamIds: Set<string>; onClose: () => void; onGenerated: () => void;
 }) {
   const [standings, setStandings] = useState<OverallTeamStanding[]>([]);
   const [cutoff, setCutoff] = useState(0);
@@ -926,14 +1000,16 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, onClose, onGen
       .then((r) => r.json())
       .then((data) => {
         if (data.pools) {
-          const overall = computeOverallStandings(data.pools);
+          const overall = computeOverallStandings(data.pools)
+            .filter((t) => !withdrawnTeamIds.has(t.team_id))
+            .map((t, i) => ({ ...t, overall_rank: i + 1 }));
           setStandings(overall);
           setCutoff(getDefaultGoldCutoff(overall, poolCount));
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [tournamentId, poolCount]);
+  }, [tournamentId, poolCount, withdrawnTeamIds]);
 
   const goldTeams = standings.filter((t) => t.overall_rank <= cutoff);
   const silverTeams = standings.filter((t) => t.overall_rank > cutoff);

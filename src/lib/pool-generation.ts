@@ -1,5 +1,5 @@
 export interface PoolGenerationInput {
-  teams: Array<{ id: string; team_name: string; seed: number }>;
+  teams: Array<{ id: string; team_name: string; seed: number | null }>;
   netCount: number;
 }
 
@@ -30,19 +30,14 @@ export function generatePools(
     return { error: "Need at least 6 teams to form pools (minimum 3 teams × 2 pools)." };
   }
 
-  // Check all teams have seeds
-  const unseeded = teams.filter((t) => t.seed == null);
-  if (unseeded.length > 0) {
-    return { error: `${unseeded.length} team(s) are missing seed numbers.` };
-  }
-
-  // Check for duplicate seeds
+  // Check for duplicate seeds (among seeded teams)
+  const seeded = teams.filter((t) => t.seed != null);
   const seedSet = new Set<number>();
-  for (const t of teams) {
-    if (seedSet.has(t.seed)) {
+  for (const t of seeded) {
+    if (seedSet.has(t.seed!)) {
       return { error: `Duplicate seed #${t.seed} found.` };
     }
-    seedSet.add(t.seed);
+    seedSet.add(t.seed!);
   }
 
   // --- Calculate pool sizes ---
@@ -66,8 +61,15 @@ export function generatePools(
     };
   }
 
-  // --- Sort teams by seed ---
-  const sorted = [...teams].sort((a, b) => a.seed - b.seed);
+  // --- Sort teams: seeded first (by seed), then unseeded (shuffled randomly) ---
+  const sortedSeeded = [...seeded].sort((a, b) => a.seed! - b.seed!);
+  const unseeded = teams.filter((t) => t.seed == null);
+  // Fisher-Yates shuffle for unseeded teams
+  for (let i = unseeded.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [unseeded[i], unseeded[j]] = [unseeded[j], unseeded[i]];
+  }
+  const sorted = [...sortedSeeded, ...unseeded];
 
   // --- Serpentine draft ---
   // First `remainder` pools get (base + 1) teams, rest get `base`

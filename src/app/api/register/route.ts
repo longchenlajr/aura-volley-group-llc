@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { getUpcomingTournaments, getTournament } from "@/lib/tournaments";
+import { getUpcomingTournaments, getTournament, getTournamentStatus } from "@/lib/tournaments";
 import { auth } from "@/auth";
 import { Resend } from "resend";
 
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
-  if (new Date(tournament.date) < new Date()) {
+  if (getTournamentStatus(tournament.date) === "archive") {
     return NextResponse.json(
       { error: "This tournament has already passed." },
       { status: 400 },

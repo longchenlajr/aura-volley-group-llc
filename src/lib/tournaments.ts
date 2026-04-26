@@ -26,8 +26,10 @@ export function getTournament(id: string): Tournament | null {
 }
 
 export function getUpcomingTournaments(): Tournament[] {
-  const now = new Date();
-  return tournaments.filter((t) => new Date(t.date) > now);
+  return tournaments.filter((t) => {
+    const status = getTournamentStatus(t.date);
+    return status === "upcoming" || status === "live";
+  });
 }
 
 export type TournamentStatus = "upcoming" | "live" | "archive";

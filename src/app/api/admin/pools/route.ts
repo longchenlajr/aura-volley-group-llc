@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       .map((pt) => ({
         team_id: pt.team_id,
         team_name: (pt.teams as unknown as { team_name: string })?.team_name ?? "Unknown",
-        overall_seed: (pt.teams as unknown as { seed: number })?.seed ?? 0,
+        overall_seed: (pt.teams as unknown as { seed: number | null })?.seed ?? null,
         seed_in_pool: pt.seed_in_pool,
       })),
   }));

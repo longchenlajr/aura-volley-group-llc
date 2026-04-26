@@ -153,7 +153,7 @@ function StandingsRow({
   onSwap,
 }: {
   rank: number;
-  seed: number;
+  seed: number | null;
   standing: { team_id: string; team_name: string; sets_won: number; sets_lost: number; point_differential: number };
   isFirst: boolean;
   isExpanded: boolean;
@@ -168,7 +168,7 @@ function StandingsRow({
         style={{ cursor: "pointer" }}
       >
         <td className="lv-overview-rank">{rank}</td>
-        <td className="lv-overview-name">({seed}) {t.team_name}</td>
+        <td className="lv-overview-name">{seed ? `(${seed}) ` : ""}{t.team_name}</td>
         <td>{t.sets_won}-{t.sets_lost}</td>
         <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
           {t.point_differential >= 0 ? "+" : ""}{t.point_differential}

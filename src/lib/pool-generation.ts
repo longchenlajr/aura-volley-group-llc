@@ -30,8 +30,8 @@ export function generatePools(
     return { error: "Need at least 6 teams to form pools (minimum 3 teams × 2 pools)." };
   }
 
-  // Check for duplicate seeds (among seeded teams)
-  const seeded = teams.filter((t) => t.seed != null);
+  // Check for duplicate seeds (among seeded teams — seed 0 or null means unseeded)
+  const seeded = teams.filter((t) => t.seed != null && t.seed > 0);
   const seedSet = new Set<number>();
   for (const t of seeded) {
     if (seedSet.has(t.seed!)) {
@@ -63,7 +63,7 @@ export function generatePools(
 
   // --- Sort teams: seeded first (by seed), then unseeded (shuffled randomly) ---
   const sortedSeeded = [...seeded].sort((a, b) => a.seed! - b.seed!);
-  const unseeded = teams.filter((t) => t.seed == null);
+  const unseeded = teams.filter((t) => t.seed == null || t.seed <= 0);
   // Fisher-Yates shuffle for unseeded teams
   for (let i = unseeded.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

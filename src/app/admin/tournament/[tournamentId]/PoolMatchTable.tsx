@@ -5,7 +5,7 @@ import type { MatchData } from "./types";
 interface PoolMatchTableProps {
   matches: MatchData[];
   withdrawnTeamIds: Set<string>;
-  overallSeeds: Map<string, number>;
+  overallSeeds: Map<string, number | null>;
   onOverrideScore: (matchId: string) => void;
   onResetScores: (matchId: string) => void;
   onCopyScoreLink: (token: string) => void;

@@ -19,7 +19,7 @@ export interface PoolWithTeams {
   teams: Array<{
     team_id: string;
     team_name: string;
-    overall_seed: number;
+    overall_seed: number | null;
     seed_in_pool: number;
   }>;
 }

@@ -214,8 +214,8 @@ export default function TournamentViewPage() {
   function handleCreatePools() {
     const checkedIn = teams.filter((t) => t.checked_in && !t.withdrawn_at);
 
-    // Check for duplicate seeds among seeded teams
-    const seeded = checkedIn.filter((t) => t.seed != null);
+    // Check for duplicate seeds among seeded teams (seed 0 or null = unseeded)
+    const seeded = checkedIn.filter((t) => t.seed != null && t.seed > 0);
     const seedMap = new Map<number, string[]>();
     for (const t of seeded) {
       const s = t.seed!;
@@ -967,7 +967,7 @@ function SwapModal({ teamName, teamId, pools, onClose, onSwap }: {
                     disabled={swapping}
                     onClick={async () => { setSwapping(true); await onSwap(t.team_id); setSwapping(false); }}
                   >
-                    <span className="lv-admin-pool-seed">#{t.overall_seed}</span>
+                    {t.overall_seed != null && <span className="lv-admin-pool-seed">#{t.overall_seed}</span>}
                     <span className="lv-admin-pool-name">{t.team_name}</span>
                     <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: "auto", opacity: 0.4 }}>
                       <path d="M4 7h12m0 0l-3-3m3 3l-3 3M16 13H4m0 0l3-3m-3 3l3 3" />

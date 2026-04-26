@@ -76,12 +76,12 @@ export async function GET(req: NextRequest) {
     team_a: {
       id: (m.team_a as unknown as { id: string })?.id,
       team_name: (m.team_a as unknown as { team_name: string })?.team_name ?? "Unknown",
-      seed_in_pool: seedMap.get(m.team_a_id) ?? 0,
+      seed_in_pool: seedMap.get(m.team_a_id) ?? 1,
     },
     team_b: {
       id: (m.team_b as unknown as { id: string })?.id,
       team_name: (m.team_b as unknown as { team_name: string })?.team_name ?? "Unknown",
-      seed_in_pool: seedMap.get(m.team_b_id) ?? 0,
+      seed_in_pool: seedMap.get(m.team_b_id) ?? 1,
     },
     work_team: m.work_team_id ? {
       id: (m.work_team as unknown as { id: string })?.id,

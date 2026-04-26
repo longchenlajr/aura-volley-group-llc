@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getMatchFormat, isSetComplete, matchWinner } from "@/lib/score-format";
 
 // GET /api/public/live-matches?tournament=X
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const tournamentId = req.nextUrl.searchParams.get("tournament");
   if (!tournamentId) return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   // Get all matches with team names + pool info
   const { data: allMatches } = await sb

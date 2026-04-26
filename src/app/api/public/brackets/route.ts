@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // GET /api/public/brackets?tournament=X — public bracket view with scores
 export async function GET(req: NextRequest) {
   const tournamentId = req.nextUrl.searchParams.get("tournament");
   if (!tournamentId) return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   const { data: brackets } = await sb
     .from("brackets")

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { computePoolStandings } from "@/lib/standings";
 import { getMatchFormat } from "@/lib/score-format";
 
@@ -8,14 +8,19 @@ export async function GET(req: NextRequest) {
   const tournamentId = req.nextUrl.searchParams.get("tournament");
   if (!tournamentId) return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   // Get pools
-  const { data: pools } = await sb
+  const { data: pools, error: poolsError } = await sb
     .from("pools")
     .select("id, pool_label, court_number")
     .eq("tournament_id", tournamentId)
     .order("court_number");
+
+  if (poolsError) {
+    console.error("standings: pools query failed", poolsError.message);
+    return NextResponse.json({ error: poolsError.message }, { status: 500 });
+  }
 
   if (!pools?.length) {
     return NextResponse.json({ pools: [], last_updated: new Date().toISOString() });
@@ -24,17 +29,25 @@ export async function GET(req: NextRequest) {
   const poolIds = pools.map((p) => p.id);
 
   // Get pool teams
-  const { data: poolTeams } = await sb
+  const { data: poolTeams, error: ptError } = await sb
     .from("pool_teams")
     .select("pool_id, team_id, seed_in_pool, teams(team_name, seed, withdrawn_at)")
     .in("pool_id", poolIds)
     .order("seed_in_pool");
 
+  if (ptError) {
+    console.error("standings: pool_teams query failed", ptError.message);
+  }
+
   // Get matches with sets
-  const { data: matches } = await sb
+  const { data: matches, error: matchError } = await sb
     .from("matches")
     .select("id, pool_id, team_a_id, team_b_id, status")
     .in("pool_id", poolIds);
+
+  if (matchError) {
+    console.error("standings: matches query failed", matchError.message);
+  }
 
   const matchIds = (matches ?? []).map((m) => m.id);
   let setsMap = new Map<string, Array<{ team_a_score: number; team_b_score: number }>>();

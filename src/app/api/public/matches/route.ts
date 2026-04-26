@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // GET /api/public/matches?tournament=X — public match schedule with set scores
 export async function GET(req: NextRequest) {
   const tournamentId = req.nextUrl.searchParams.get("tournament");
   if (!tournamentId) return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   const { data, error } = await sb
     .from("matches")

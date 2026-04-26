@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // GET /api/public/pools?tournament=X — public-safe pool structure (team names only, no PII)
 export async function GET(req: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
   }
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   const { data: pools, error: poolsError } = await sb
     .from("pools")

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // GET /api/public/rosters?tournament=X
 // Returns player names grouped by team_id (no emails/phones)
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing tournament" }, { status: 400 });
   }
 
-  const sb = getSupabase();
+  const sb = getSupabaseAdmin();
 
   const { data: teams } = await sb
     .from("teams")

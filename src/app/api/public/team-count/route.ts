@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 // GET /api/public/team-count?tournament=tournament-id
 // Returns { count: number } — aggregate only, no PII
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing tournament parameter" }, { status: 400 });
   }
 
-  const { count, error } = await getSupabase()
+  const { count, error } = await getSupabaseAdmin()
     .from("teams")
     .select("*", { count: "exact", head: true })
     .eq("tournament_id", tournamentId);

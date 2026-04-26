@@ -1085,8 +1085,14 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
                 <span className="lv-playoff-name">{t.team_name}</span>
                 <span className="lv-playoff-origin">Pool {t.pool_label} #{t.pool_rank}</span>
                 <span className="lv-playoff-record">{t.sets_won}-{t.sets_lost}</span>
+                <span style={{ fontSize: "0.75rem", color: "var(--lv-ink-muted)" }}>
+                  S{(t.set_win_pct * 100).toFixed(0)}%
+                </span>
                 <span style={{ color: t.point_differential >= 0 ? "var(--lv-green)" : "var(--lv-error)", fontSize: "0.8rem" }}>
                   {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
+                </span>
+                <span style={{ fontSize: "0.75rem", color: "var(--lv-ink-muted)" }}>
+                  P{(t.point_pct * 100).toFixed(0)}%
                 </span>
               </div>
             </React.Fragment>

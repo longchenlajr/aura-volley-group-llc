@@ -49,20 +49,30 @@ export function TournamentOverview({ standingsData, onSelectPool, totalMatchesBy
                   <th>Rank</th>
                   <th>Team</th>
                   <th>Set W-L</th>
+                  <th>Set %</th>
                   <th>+/-</th>
+                  <th>Pt %</th>
                 </tr>
               </thead>
               <tbody>
-                {pool.standings.map((t, i) => (
-                  <tr key={t.team_id} className={`${i === 0 ? "lv-overview-row-first" : ""} ${t.withdrawn ? "lv-overview-row-withdrawn" : ""}`}>
-                    <td className="lv-overview-rank">{i + 1}</td>
-                    <td className="lv-overview-name">{t.team_name}</td>
-                    <td>{t.sets_won}-{t.sets_lost}</td>
-                    <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
-                      {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
-                    </td>
-                  </tr>
-                ))}
+                {pool.standings.map((t, i) => {
+                  const totalSets = t.sets_won + t.sets_lost;
+                  const setWinPct = totalSets > 0 ? (t.sets_won / totalSets) * 100 : 0;
+                  const totalPoints = t.points_for + t.points_against;
+                  const pointPct = totalPoints > 0 ? (t.points_for / totalPoints) * 100 : 0;
+                  return (
+                    <tr key={t.team_id} className={`${i === 0 ? "lv-overview-row-first" : ""} ${t.withdrawn ? "lv-overview-row-withdrawn" : ""}`}>
+                      <td className="lv-overview-rank">{i + 1}</td>
+                      <td className="lv-overview-name">{t.team_name}</td>
+                      <td>{t.sets_won}-{t.sets_lost}</td>
+                      <td>{totalSets > 0 ? `${setWinPct.toFixed(0)}%` : "—"}</td>
+                      <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
+                        {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
+                      </td>
+                      <td>{totalPoints > 0 ? `${pointPct.toFixed(0)}%` : "—"}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 

@@ -103,7 +103,9 @@ export function PoolSummaryCard({
                 <th>Rank</th>
                 <th>Team</th>
                 <th>Set W-L</th>
+                <th>Set %</th>
                 <th>+/-</th>
+                <th>Pt %</th>
               </tr>
             </thead>
             <tbody>
@@ -154,12 +156,17 @@ function StandingsRow({
 }: {
   rank: number;
   seed: number | null;
-  standing: { team_id: string; team_name: string; sets_won: number; sets_lost: number; point_differential: number };
+  standing: { team_id: string; team_name: string; sets_won: number; sets_lost: number; points_for: number; points_against: number; point_differential: number };
   isFirst: boolean;
   isExpanded: boolean;
   onToggle: () => void;
   onSwap: () => void;
 }) {
+  const totalSets = t.sets_won + t.sets_lost;
+  const setWinPct = totalSets > 0 ? (t.sets_won / totalSets) * 100 : 0;
+  const totalPoints = t.points_for + t.points_against;
+  const pointPct = totalPoints > 0 ? (t.points_for / totalPoints) * 100 : 0;
+
   return (
     <>
       <tr
@@ -170,13 +177,15 @@ function StandingsRow({
         <td className="lv-overview-rank">{rank}</td>
         <td className="lv-overview-name">{seed ? `(${seed}) ` : ""}{t.team_name}</td>
         <td>{t.sets_won}-{t.sets_lost}</td>
+        <td>{totalSets > 0 ? `${setWinPct.toFixed(0)}%` : "—"}</td>
         <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
           {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
         </td>
+        <td>{totalPoints > 0 ? `${pointPct.toFixed(0)}%` : "—"}</td>
       </tr>
       {isExpanded && (
         <tr className="lv-admin-standings-expand-row">
-          <td colSpan={4}>
+          <td colSpan={6}>
             <button
               className="lv-admin-swap-inline-btn"
               onClick={(e) => { e.stopPropagation(); onSwap(); }}

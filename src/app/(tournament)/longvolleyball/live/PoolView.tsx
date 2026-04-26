@@ -95,13 +95,19 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
               <th>Rank</th>
               <th>Team</th>
               <th>Set W-L</th>
+              <th>Set %</th>
               <th>+/-</th>
+              <th>Pt %</th>
             </tr>
           </thead>
           <tbody>
             {pool.standings.map((t, i) => {
               const isExpanded = expandedTeam === t.team_id;
               const players = rosters[t.team_id];
+              const totalSets = t.sets_won + t.sets_lost;
+              const setWinPct = totalSets > 0 ? (t.sets_won / totalSets) * 100 : 0;
+              const totalPoints = t.points_for + t.points_against;
+              const pointPct = totalPoints > 0 ? (t.points_for / totalPoints) * 100 : 0;
               return (
                 <React.Fragment key={t.team_id}>
                   <tr
@@ -111,13 +117,15 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
                     <td className="lv-overview-rank">{i + 1}</td>
                     <td className="lv-overview-name">{t.team_name}</td>
                     <td>{t.sets_won}-{t.sets_lost}</td>
+                    <td>{totalSets > 0 ? `${setWinPct.toFixed(0)}%` : "—"}</td>
                     <td className={t.point_differential >= 0 ? "lv-overview-diff-pos" : "lv-overview-diff-neg"}>
                       {t.point_differential >= 0 ? "+" : ""}{t.point_differential}
                     </td>
+                    <td>{totalPoints > 0 ? `${pointPct.toFixed(0)}%` : "—"}</td>
                   </tr>
                   {isExpanded && players && (
                     <tr className="lv-overview-expand-row">
-                      <td colSpan={4}>
+                      <td colSpan={6}>
                         <div className="lv-overview-players">
                           {players.map((p, idx) => (
                             <div key={idx} className="lv-overview-player">{p.name}</div>

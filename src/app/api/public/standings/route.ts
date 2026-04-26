@@ -28,15 +28,34 @@ export async function GET(req: NextRequest) {
 
   const poolIds = pools.map((p) => p.id);
 
-  // Get pool teams
-  const { data: poolTeams, error: ptError } = await sb
+  // Get pool teams (query without withdrawn_at first, fall back if column exists)
+  let poolTeams: Array<{ pool_id: string; team_id: string; seed_in_pool: number; teams: unknown }> | null = null;
+  let hasWithdrawnAt = false;
+
+  // Try with withdrawn_at first
+  const { data: ptWithdrawn, error: ptError1 } = await sb
     .from("pool_teams")
     .select("pool_id, team_id, seed_in_pool, teams(team_name, seed, withdrawn_at)")
     .in("pool_id", poolIds)
     .order("seed_in_pool");
 
-  if (ptError) {
-    console.error("standings: pool_teams query failed", ptError.message);
+  if (!ptError1 && ptWithdrawn) {
+    poolTeams = ptWithdrawn;
+    hasWithdrawnAt = true;
+  } else {
+    // Fallback: query without withdrawn_at (column may not exist)
+    if (ptError1) console.error("standings: pool_teams query with withdrawn_at failed, retrying without:", ptError1.message);
+    const { data: ptBasic, error: ptError2 } = await sb
+      .from("pool_teams")
+      .select("pool_id, team_id, seed_in_pool, teams(team_name, seed)")
+      .in("pool_id", poolIds)
+      .order("seed_in_pool");
+
+    if (ptError2) {
+      console.error("standings: pool_teams query failed", ptError2.message);
+    } else {
+      poolTeams = ptBasic;
+    }
   }
 
   // Get matches with sets
@@ -72,13 +91,13 @@ export async function GET(req: NextRequest) {
     const teams = (poolTeams ?? [])
       .filter((pt) => pt.pool_id === pool.id)
       .map((pt) => {
-        const t = pt.teams as unknown as { team_name: string; seed: number | null; withdrawn_at: string | null };
+        const t = pt.teams as unknown as { team_name: string; seed: number | null; withdrawn_at?: string | null };
         return {
           team_id: pt.team_id,
           team_name: t?.team_name ?? "Unknown",
           seed_in_pool: pt.seed_in_pool,
           overall_seed: t?.seed ?? null,
-          withdrawn: !!t?.withdrawn_at,
+          withdrawn: hasWithdrawnAt ? !!t?.withdrawn_at : false,
         };
       });
 

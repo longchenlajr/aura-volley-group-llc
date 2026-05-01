@@ -6,11 +6,10 @@ import { useRouter } from "next/navigation";
 interface Props {
   matchId: string;
   matchType?: "pool" | "bracket";
-  workTeamName: string;
   onClose: () => void;
 }
 
-export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onClose }: Props) {
+export function ScoreLinkModal({ matchId, matchType = "pool", onClose }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -49,7 +48,7 @@ export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onCl
     <div className="lv-admin-overlay" onClick={onClose}>
       <div className="lv-admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
         <div className="lv-admin-modal-header">
-          <h2 className="lv-admin-modal-title">Verify you&rsquo;re the scorekeeper</h2>
+          <h2 className="lv-admin-modal-title">Submit scores</h2>
           <button className="lv-admin-modal-close" onClick={onClose} aria-label="Close">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <path d="M5 5l10 10M15 5L5 15" />
@@ -58,12 +57,12 @@ export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onCl
         </div>
 
         <p style={{ fontSize: "0.85rem", color: "var(--lv-ink-muted)", marginBottom: "1rem" }}>
-          Enter the email of any player on <strong>{workTeamName}</strong> to access the score submission form.
+          Enter any registered player&rsquo;s email to access the score form. Your team will be recorded as the scorekeeper.
         </p>
 
         <form onSubmit={handleVerify} className="lv-form">
           <div className="lv-field">
-            <label className="lv-field-label" htmlFor="verify-email">Player email</label>
+            <label className="lv-field-label" htmlFor="verify-email">Your email</label>
             <input
               id="verify-email"
               className="lv-input"
@@ -72,7 +71,7 @@ export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onCl
               onChange={(e) => setEmail(e.target.value)}
               required
               autoFocus
-              placeholder="captain@email.com"
+              placeholder="player@email.com"
             />
           </div>
 
@@ -81,7 +80,7 @@ export function ScoreLinkModal({ matchId, matchType = "pool", workTeamName, onCl
           <div className="lv-admin-modal-footer">
             <button type="button" className="lv-btn lv-btn-ghost" onClick={onClose}>Cancel</button>
             <button type="submit" className="lv-btn lv-btn-primary" disabled={verifying}>
-              {verifying ? "Verifying..." : "Verify"}
+              {verifying ? "Verifying..." : "Continue"}
             </button>
           </div>
         </form>

@@ -59,7 +59,6 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
   const [scoreLinkMatch, setScoreLinkMatch] = useState<{
     matchId: string;
     matchType: "pool" | "bracket";
-    workTeamName: string;
   } | null>(null);
 
   // If a match is live, it goes first. Otherwise next upcoming goes first.
@@ -73,8 +72,8 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
     return [...top, ...complete, ...restScheduled];
   })();
 
-  function handleOpenModal(matchId: string, matchType: "pool" | "bracket", workTeamName: string) {
-    setScoreLinkMatch({ matchId, matchType, workTeamName });
+  function handleOpenModal(matchId: string, matchType: "pool" | "bracket") {
+    setScoreLinkMatch({ matchId, matchType });
   }
 
   return (
@@ -190,9 +189,7 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
               <SubmitScoresButton
                 matchId={m.match_id}
                 matchType="pool"
-                workTeamName={m.work_team ?? ""}
                 status={m.status}
-                hasWorkTeam={!!m.work_team}
                 onOpenModal={handleOpenModal}
               />
 
@@ -206,7 +203,6 @@ export function PoolView({ pool, matches, totalMatches, completeMatches, teamSee
         <ScoreLinkModal
           matchId={scoreLinkMatch.matchId}
           matchType={scoreLinkMatch.matchType}
-          workTeamName={scoreLinkMatch.workTeamName}
           onClose={() => setScoreLinkMatch(null)}
         />
       )}

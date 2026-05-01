@@ -3,29 +3,25 @@
 interface Props {
   matchId: string;
   matchType: "pool" | "bracket";
-  workTeamName: string;
   status: string;
-  hasWorkTeam: boolean;
-  onOpenModal: (matchId: string, matchType: "pool" | "bracket", workTeamName: string) => void;
+  onOpenModal: (matchId: string, matchType: "pool" | "bracket") => void;
 }
 
 export function SubmitScoresButton({
   matchId,
   matchType,
-  workTeamName,
   status,
-  hasWorkTeam,
   onOpenModal,
 }: Props) {
-  // Only show for scheduled/in-progress matches with a work team assigned
-  if (!hasWorkTeam || status === "complete") return null;
+  // Show for all non-complete matches — any team can submit scores
+  if (status === "complete") return null;
 
   return (
     <button
       className="lv-btn lv-btn-secondary lv-btn-submit-scores"
       onClick={(e) => {
         e.stopPropagation();
-        onOpenModal(matchId, matchType, workTeamName);
+        onOpenModal(matchId, matchType);
       }}
       aria-label="Submit scores"
     >

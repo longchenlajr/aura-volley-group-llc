@@ -149,7 +149,6 @@ export function BracketView({
   const [scoreLinkMatch, setScoreLinkMatch] = useState<{
     matchId: string;
     matchType: "pool" | "bracket";
-    workTeamName: string;
   } | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -281,8 +280,8 @@ export function BracketView({
     return () => el.removeEventListener("scroll", onScroll);
   }, [totalRounds, layout]);
 
-  function handleOpenModal(matchId: string, matchType: "pool" | "bracket", workTeamName: string) {
-    setScoreLinkMatch({ matchId, matchType, workTeamName });
+  function handleOpenModal(matchId: string, matchType: "pool" | "bracket") {
+    setScoreLinkMatch({ matchId, matchType });
   }
 
   // ── Match feed labels ──
@@ -583,7 +582,7 @@ export function BracketView({
                 {workDisplay && (
                   <div className="lv-match-card-work">Scorekeeper: {workDisplay}</div>
                 )}
-                <SubmitScoresButton matchId={m.match_id} matchType="bracket" workTeamName={m.work_team ?? ""} status={m.status} hasWorkTeam={!!m.work_team} onOpenModal={handleOpenModal} />
+                <SubmitScoresButton matchId={m.match_id} matchType="bracket" status={m.status} onOpenModal={handleOpenModal} />
               </div>
             );
           })}
@@ -591,7 +590,7 @@ export function BracketView({
       )}
 
       {scoreLinkMatch && (
-        <ScoreLinkModal matchId={scoreLinkMatch.matchId} matchType={scoreLinkMatch.matchType} workTeamName={scoreLinkMatch.workTeamName} onClose={() => setScoreLinkMatch(null)} />
+        <ScoreLinkModal matchId={scoreLinkMatch.matchId} matchType={scoreLinkMatch.matchType} onClose={() => setScoreLinkMatch(null)} />
       )}
     </div>
   );

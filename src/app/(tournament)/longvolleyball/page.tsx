@@ -1,4 +1,4 @@
-import { getUpcomingTournaments } from "@/lib/tournaments";
+import { getTournamentsWithStatus } from "@/lib/tournaments";
 import Link from "next/link";
 import { ArrowRight } from "../ornaments";
 import { DecorativeAsset } from "../DecorativeAsset";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: { absolute: "Home | Long Volleyball" } };
 
 export default function TournamentsPage() {
-  const tournaments = getUpcomingTournaments();
+  const tournaments = getTournamentsWithStatus();
 
   return (
     <>

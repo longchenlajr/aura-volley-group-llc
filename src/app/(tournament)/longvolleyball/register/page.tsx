@@ -192,14 +192,41 @@ function RegisterForm() {
 
   return (
     <div className="lv-register">
-      {/* Section divider above heading */}
-      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <SectionDivider className="lv-section-divider" style={{ color: "var(--lv-gold)", opacity: 0.5 }} />
-      </div>
-
-      <div className="lv-register-header">
-        <p className="lv-label lv-register-label">Register</p>
-        <h1 className="lv-register-heading">Claim your spot</h1>
+      {/* Header */}
+      <div className="lv-live-header">
+        <p className="lv-label" style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}>
+          Register
+        </p>
+        <h1
+          className="lv-h1"
+          style={{
+            fontSize: "clamp(2.5rem, 8vw, 4.5rem)",
+            fontWeight: 900,
+            letterSpacing: "-0.025em",
+            lineHeight: 1.05,
+          }}
+        >
+          Claim your spot
+        </h1>
+        <p
+          style={{
+            fontFamily: "var(--lv-font-body)",
+            fontSize: "0.6rem",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: "var(--lv-gold)",
+            opacity: 0.8,
+            marginTop: "0.875rem",
+          }}
+        >
+          Your shot. Claim it.
+        </p>
+        <div style={{ marginTop: "1.5rem" }}>
+          <SectionDivider
+            className="lv-section-divider"
+            style={{ color: "var(--lv-gold)", opacity: 0.5 }}
+          />
+        </div>
       </div>
 
       {/* Certificate-style card with double border + corner flourishes */}

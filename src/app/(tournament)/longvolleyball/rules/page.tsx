@@ -6,21 +6,32 @@ export default function RulesPage() {
       <div className="lv-container">
         {/* Header */}
         <div className="lv-live-header">
-          <p
-            className="lv-label"
-            style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}
-          >
+          <p className="lv-label" style={{ color: "var(--lv-red)", marginBottom: "0.5rem" }}>
             Rules
           </p>
-          <h1 className="lv-h1">Tournament Guidelines</h1>
-          <p
+          <h1
+            className="lv-h1"
             style={{
-              color: "var(--lv-ink-muted)",
-              fontSize: "0.95rem",
-              marginTop: "0.5rem",
+              fontSize: "clamp(2.5rem, 8vw, 4.5rem)",
+              fontWeight: 900,
+              letterSpacing: "-0.025em",
+              lineHeight: 1.05,
             }}
           >
-            Standard rules and regulations enforced during competition.
+            Tournament Guidelines
+          </h1>
+          <p
+            style={{
+              fontFamily: "var(--lv-font-body)",
+              fontSize: "0.6rem",
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+              color: "var(--lv-gold)",
+              opacity: 0.8,
+              marginTop: "0.875rem",
+            }}
+          >
+            The law of the court.
           </p>
           <div style={{ marginTop: "1.5rem" }}>
             <SectionDivider
@@ -100,8 +111,7 @@ export default function RulesPage() {
                 3rd contact (attack)
               </span>
               <p>
-                Setting over the net is <strong>not allowed</strong> unless the
-                ball path is perpendicular to the player&rsquo;s shoulders. Tips
+                Setting over the net is <strong>never</strong> allowed. Tips
                 are <strong>never</strong> allowed.
               </p>
             </div>

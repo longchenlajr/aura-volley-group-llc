@@ -54,7 +54,7 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
           const dayName = DAYS[d.getDay()];
           const isSelected = t.id === selectedId;
           const status = t.status;
-
+          const isArchive = status === "archive";
           const isAwesome = t.name.toLowerCase().includes("awesome");
 
           return (
@@ -62,18 +62,22 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
               key={t.id}
               role="option"
               aria-selected={isSelected}
-              className={`lv-date-chip ${isSelected ? "selected" : ""} ${showStatus && status === "live" ? "lv-date-chip--live" : ""} ${isAwesome ? "lv-date-chip--event" : ""}`}
-              onClick={() => setSelectedId(isSelected ? null : t.id)}
+              aria-disabled={isArchive}
+              className={`lv-date-chip ${isSelected ? "selected" : ""} ${showStatus && status === "live" ? "lv-date-chip--live" : ""} ${isAwesome ? "lv-date-chip--event" : ""} ${isArchive ? "lv-date-chip--archive" : ""}`}
+              onClick={() => {
+                if (isArchive) return;
+                setSelectedId(isSelected ? null : t.id);
+              }}
             >
-              {showStatus && status && (
+              {showStatus && status && !isArchive && (
                 <span className="lv-date-chip-status">
                   <StatusTag status={status} />
                 </span>
               )}
               <span className="lv-date-chip-month">{month}</span>
               <span className="lv-date-chip-day">{day}</span>
-              <span className="lv-date-chip-dayname">{dayName}</span>
-              {isAwesome && (
+              <span className="lv-date-chip-dayname">{isArchive ? "Done" : dayName}</span>
+              {isAwesome && !isArchive && (
                 <span className="lv-date-chip-event-tag">AWESOME! Fest</span>
               )}
             </button>
@@ -182,7 +186,11 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
 
               {/* CTA */}
               <div className="lv-dossier-cta">
-                {selected.registrationOpen ? (
+                {selected.status === "archive" ? (
+                  <span className="lv-dossier-closed-msg">
+                    This tournament has passed.
+                  </span>
+                ) : selected.registrationOpen ? (
                   <Link
                     href={`/longvolleyball/register?tournament=${selected.id}`}
                     className="lv-btn lv-btn-primary"

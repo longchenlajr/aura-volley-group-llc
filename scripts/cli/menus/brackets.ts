@@ -117,13 +117,17 @@ async function generateBracketsAction(ctx: CliContext): Promise<void> {
 
   // Compute pool standings
   const poolStandings = pools.map((pool) => {
-    const poolTeams = (pool.pool_teams as any[]).map((pt) => ({
+    const allPoolTeams = (pool.pool_teams as any[]).map((pt) => ({
       team_id: pt.team_id,
       team_name: (pt.teams as any).team_name,
       seed_in_pool: pt.seed_in_pool,
       overall_seed: (pt.teams as any).seed,
       withdrawn: !!(pt.teams as any).withdrawn_at,
     }));
+
+    // Filter out withdrawn teams
+    const poolTeams = allPoolTeams.filter((t) => !t.withdrawn);
+
     const poolMatches = (allMatches ?? [])
       .filter((m) => m.pool_id === pool.id)
       .map((m) => ({

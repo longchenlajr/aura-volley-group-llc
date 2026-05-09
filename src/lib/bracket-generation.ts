@@ -335,10 +335,12 @@ function seedWithPoolSeparation(
   const order = bracketSeedOrder(bracketSize);
   const slots: (OverallTeamStanding | null)[] = new Array(bracketSize).fill(null);
 
-  for (let pos = 0; pos < bracketSize; pos++) {
-    const seedIdx = order[pos] - 1;
-    if (seedIdx < teams.length) {
-      slots[pos] = teams[seedIdx];
+  // Place each team in the correct bracket position based on its rank
+  for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
+    const seedRank = teamIndex + 1; // teams[0] is rank 1, teams[1] is rank 2, etc.
+    const bracketPos = order.indexOf(seedRank);
+    if (bracketPos >= 0) {
+      slots[bracketPos] = teams[teamIndex];
     }
   }
 

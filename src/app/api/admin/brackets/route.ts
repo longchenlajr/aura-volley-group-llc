@@ -139,11 +139,14 @@ export async function POST(req: NextRequest) {
   // Fetch withdrawn team IDs
   const { data: withdrawnTeams } = await sb
     .from("teams")
-    .select("id")
+    .select("id, team_name")
     .eq("tournament_id", tournament_id)
     .not("withdrawn_at", "is", null);
 
   const withdrawnTeamIds = new Set((withdrawnTeams ?? []).map((t) => t.id));
+  if (withdrawnTeamIds.size > 0) {
+    console.log("[BRACKET GENERATION] Withdrawn teams:", withdrawnTeams?.map((t) => t.team_name).join(", "));
+  }
 
   // Fetch all pool teams
   const { data: allPoolTeams } = await sb
@@ -154,6 +157,11 @@ export async function POST(req: NextRequest) {
 
   // Filter out withdrawn teams
   const poolTeams = (allPoolTeams ?? []).filter((pt) => !withdrawnTeamIds.has(pt.team_id));
+
+  if (withdrawnTeamIds.size > 0) {
+    const filtered = (allPoolTeams ?? []).filter((pt) => withdrawnTeamIds.has(pt.team_id));
+    console.log("[BRACKET GENERATION] Filtered out", filtered.length, "pool team entries from", allPoolTeams?.length ?? 0, "total");
+  }
 
   const { data: matches } = await sb
     .from("matches")
@@ -202,6 +210,9 @@ export async function POST(req: NextRequest) {
   // Split into gold and silver
   const goldTeams = overallStandings.filter((t) => t.overall_rank <= gold_cutoff);
   const silverTeams = overallStandings.filter((t) => t.overall_rank > gold_cutoff);
+
+  console.log("[BRACKET GENERATION] Gold bracket teams:", goldTeams.map((t) => t.team_name).join(", "));
+  console.log("[BRACKET GENERATION] Silver bracket teams:", silverTeams.map((t) => t.team_name).join(", "));
 
   const totalCourts = court_count || pools.length;
 

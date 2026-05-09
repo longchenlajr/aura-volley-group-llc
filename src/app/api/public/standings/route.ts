@@ -28,6 +28,15 @@ export async function GET(req: NextRequest) {
 
   const poolIds = pools.map((p) => p.id);
 
+  // Fetch withdrawn team IDs
+  const { data: withdrawnTeams } = await sb
+    .from("teams")
+    .select("id")
+    .eq("tournament_id", tournamentId)
+    .not("withdrawn_at", "is", null);
+
+  const withdrawnTeamIds = new Set((withdrawnTeams ?? []).map((t) => t.id));
+
   // Get pool teams (query without withdrawn_at first, fall back if column exists)
   let poolTeams: Array<{ pool_id: string; team_id: string; seed_in_pool: number; teams: unknown }> | null = null;
   let hasWithdrawnAt = false;
@@ -56,6 +65,11 @@ export async function GET(req: NextRequest) {
     } else {
       poolTeams = ptBasic;
     }
+  }
+
+  // Filter out withdrawn teams
+  if (poolTeams) {
+    poolTeams = poolTeams.filter((pt) => !withdrawnTeamIds.has(pt.team_id));
   }
 
   // Get matches with sets

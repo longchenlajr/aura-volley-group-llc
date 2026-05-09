@@ -219,7 +219,47 @@ async function withdrawTeam(ctx: CliContext): Promise<void> {
     .eq('work_team_id', team.id)
     .in('status', ['scheduled', 'in_progress']);
 
-  s2.stop(`"${team.team_name}" withdrawn. ${forfeited} match(es) forfeited.`);
+  // Handle bracket matches
+  const { data: bracketMatches } = await ctx.supabase
+    .from('bracket_matches')
+    .select('id, bracket_id, team_a_id, team_b_id, status, bracket:brackets!bracket_matches_bracket_id_fkey(points_per_set)')
+    .eq('tournament_id', ctx.tournamentId)
+    .in('status', ['scheduled', 'in_progress'])
+    .or(`team_a_id.eq.${team.id},team_b_id.eq.${team.id}`);
+
+  let bracketForfeited = 0;
+  if (bracketMatches?.length) {
+    for (const bMatch of bracketMatches) {
+      const bracket = bMatch.bracket as any;
+      const pps = bracket?.points_per_set ?? 15;
+      const isTeamA = bMatch.team_a_id === team.id;
+
+      await ctx.supabase.from('bracket_match_sets').insert({
+        bracket_match_id: bMatch.id,
+        set_number: 1,
+        team_a_score: isTeamA ? 0 : pps,
+        team_b_score: isTeamA ? pps : 0,
+        submitted_by: 'admin',
+        is_forfeit: true,
+        submitted_at: new Date().toISOString(),
+      });
+
+      await ctx.supabase
+        .from('bracket_matches')
+        .update({ status: 'complete', end_time: new Date().toISOString() })
+        .eq('id', bMatch.id);
+
+      try {
+        await ctx.supabase.rpc('propagate_bracket_winner', { completed_match_id: bMatch.id });
+      } catch (err) {
+        // Non-fatal
+      }
+
+      bracketForfeited++;
+    }
+  }
+
+  s2.stop(`"${team.team_name}" withdrawn. ${forfeited} pool match(es) + ${bracketForfeited} bracket match(es) forfeited.`);
 }
 
 async function deleteTeam(ctx: CliContext): Promise<void> {

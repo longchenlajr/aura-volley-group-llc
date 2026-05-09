@@ -71,7 +71,9 @@
       "Bash(where git *)",
       "Bash(\"C:/Program Files/Git/cmd/git.exe\" status)",
       "Bash(\"C:/Program Files/Git/cmd/git.exe\" diff --stat)",
-      "Bash(\"C:/Program Files/Git/cmd/git.exe\" log --oneline -5)"
+      "Bash(\"C:/Program Files/Git/cmd/git.exe\" log --oneline -5)",
+      "Bash(rtk proxy *)",
+      "Bash(rtk npm *)"
     ]
   }
 }

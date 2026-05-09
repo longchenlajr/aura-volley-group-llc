@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     tournamentId: string;
     teamName: string;
     contactPhone: string;
-    players: { name: string; email: string }[];
+    players: { name: string; email?: string; phone?: string }[];
   };
 
   // Validate tournament exists, is open, and hasn't passed
@@ -154,6 +154,7 @@ export async function POST(req: NextRequest) {
     team_id: team.id,
     name: p.name,
     email: p.email || null,
+    phone: p.phone ? normalizePhone(p.phone) : null,
     is_captain: idx === 0,
   }));
 
@@ -179,11 +180,11 @@ export async function POST(req: NextRequest) {
     });
 
     const playerListHtml = players
-      .map((p, i) => `<tr><td style="padding:6px 0;color:#2A1810;font-size:15px;">${p.name}${i === 0 ? " (Captain)" : ""}</td><td style="padding:6px 0;color:#6B4E3D;font-size:14px;text-align:right;">${p.email || "—"}</td></tr>`)
+      .map((p, i) => `<tr><td style="padding:6px 0;color:#2A1810;font-size:15px;">${p.name}${i === 0 ? " (Captain)" : ""}</td><td style="padding:6px 0;color:#6B4E3D;font-size:13px;text-align:right;">${p.email || "—"}<br>${p.phone || "—"}</td></tr>`)
       .join("");
 
     const playerListText = players
-      .map((p, i) => `  ${p.name}${i === 0 ? " (Captain)" : ""} — ${p.email || "no email"}`)
+      .map((p, i) => `  ${p.name}${i === 0 ? " (Captain)" : ""}\n    ${p.email || "no email"} / ${p.phone || "no phone"}`)
       .join("\n");
 
     const total = tournament.teamSize * 25;

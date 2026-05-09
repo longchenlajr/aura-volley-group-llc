@@ -151,6 +151,7 @@ export function TeamRoster({
                           {isTeamExpanded && (
                             <span className="lv-roster-player-contact">
                               {captain?.email && <span>{captain.email}</span>}
+                              {(captain as any)?.phone && <span>{(captain as any).phone}</span>}
                               {t.contact_phone && <span>{t.contact_phone}</span>}
                             </span>
                           )}
@@ -158,9 +159,10 @@ export function TeamRoster({
                         {teammates.map((p) => (
                           <div key={p.id} className="lv-roster-player-line">
                             <span className="lv-roster-player-name">{p.name}</span>
-                            {isTeamExpanded && p.email && (
+                            {isTeamExpanded && (p.email || (p as any).phone) && (
                               <span className="lv-roster-player-contact">
-                                <span>{p.email}</span>
+                                {p.email && <span>{p.email}</span>}
+                                {(p as any).phone && <span>{(p as any).phone}</span>}
                               </span>
                             )}
                           </div>

@@ -127,7 +127,7 @@ async function seed() {
     const players = playerNames(i);
     const captainEmail = `team${i + 1}.${players[0].toLowerCase().replace(/ /g, ".")}@test.dev`;
 
-    const { data: team, error: teamErr } = await supabase
+    const { data: teams, error: teamErr } = await supabase
       .from("teams")
       .insert({
         tournament_id: TOURNAMENT_ID,
@@ -137,11 +137,12 @@ async function seed() {
         seed: i + 1,
         checked_in: true,
       })
-      .select("id")
-      .single();
+      .select("id");
 
-    if (teamErr) {
-      console.error(`   ❌ Team "${name}": ${teamErr.message}`);
+    const team = teams?.[0];
+
+    if (teamErr || !team) {
+      console.error(`   ❌ Team "${name}": error=${JSON.stringify(teamErr)}, team=${JSON.stringify(team)}`);
       continue;
     }
 

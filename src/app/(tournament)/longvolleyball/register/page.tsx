@@ -37,7 +37,7 @@ function RegisterForm() {
   const [teamName, setTeamName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [players, setPlayers] = useState<{ name: string; email: string }[]>([]);
+  const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{
     ok: boolean;
@@ -64,11 +64,11 @@ function RegisterForm() {
       return;
     }
     setPlayers(
-      Array.from({ length: selected.teamSize }, () => ({ name: "", email: "" })),
+      Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "" })),
     );
   }, [selected]);
 
-  function updatePlayer(idx: number, field: "name" | "email", value: string) {
+  function updatePlayer(idx: number, field: "name" | "email" | "phone", value: string) {
     setPlayers((prev) =>
       prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)),
     );
@@ -135,7 +135,7 @@ function RegisterForm() {
     setContactPhone("");
     if (selected) {
       setPlayers(
-        Array.from({ length: selected.teamSize }, () => ({ name: "", email: "" })),
+        Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "" })),
       );
     }
   }
@@ -335,27 +335,38 @@ function RegisterForm() {
                       <input
                         className="lv-input"
                         type="email"
-                        value={p.email}
+                        value={p.email || ""}
                         onChange={(e) => updatePlayer(idx, "email", e.target.value)}
                         required={isCaptain}
                         placeholder={isCaptain ? "Captain's email (required)" : "Player email"}
                       />
                     </div>
-                    {isCaptain && (
-                      <div className="lv-field">
-                        <label className="lv-field-label">Phone</label>
-                        <input
-                          className="lv-input"
-                          type="tel"
-                          value={contactPhone}
-                          onChange={(e) => { setContactPhone(e.target.value); setPhoneError(""); }}
-                          onBlur={() => { if (contactPhone) validatePhone(contactPhone); }}
-                          required
-                          placeholder="(555) 123-4567"
-                        />
-                        {phoneError && <span className="lv-field-error">{phoneError}</span>}
-                      </div>
-                    )}
+                    <div className="lv-field">
+                      <label className="lv-field-label">
+                        Phone{isCaptain ? "" : " (optional)"}
+                      </label>
+                      <input
+                        className="lv-input"
+                        type="tel"
+                        value={isCaptain ? contactPhone : (p.phone || "")}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (isCaptain) {
+                            setContactPhone(val);
+                            setPhoneError("");
+                          } else {
+                            updatePlayer(idx, "phone", val);
+                          }
+                        }}
+                        onBlur={() => {
+                          const val = isCaptain ? contactPhone : (p.phone || "");
+                          if (val && isCaptain) validatePhone(val);
+                        }}
+                        required={isCaptain}
+                        placeholder="(555) 123-4567"
+                      />
+                      {isCaptain && phoneError && <span className="lv-field-error">{phoneError}</span>}
+                    </div>
                   </fieldset>
                 );
               })}

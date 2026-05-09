@@ -135,12 +135,25 @@ export async function POST(req: NextRequest) {
   }
 
   const poolIds = pools.map((p) => p.id);
-  const { data: poolTeams } = await sb
+
+  // Fetch withdrawn team IDs
+  const { data: withdrawnTeams } = await sb
+    .from("teams")
+    .select("id")
+    .eq("tournament_id", tournament_id)
+    .not("withdrawn_at", "is", null);
+
+  const withdrawnTeamIds = new Set((withdrawnTeams ?? []).map((t) => t.id));
+
+  // Fetch all pool teams
+  const { data: allPoolTeams } = await sb
     .from("pool_teams")
-    .select("pool_id, team_id, seed_in_pool, teams(team_name, withdrawn_at)")
+    .select("pool_id, team_id, seed_in_pool, teams(team_name)")
     .in("pool_id", poolIds)
-    .is("teams.withdrawn_at", null)
     .order("seed_in_pool");
+
+  // Filter out withdrawn teams
+  const poolTeams = (allPoolTeams ?? []).filter((pt) => !withdrawnTeamIds.has(pt.team_id));
 
   const { data: matches } = await sb
     .from("matches")

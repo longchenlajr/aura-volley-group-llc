@@ -100,7 +100,52 @@ export async function POST(
     }
   }
 
-  // 3. Check if withdrawn team is work team for any remaining scheduled matches
+  // 3. Handle bracket play matches for withdrawn team
+  const { data: bracketMatches } = await sb
+    .from("bracket_matches")
+    .select("id, bracket_id, team_a_id, team_b_id, status, bracket:brackets!bracket_matches_bracket_id_fkey(tournament_id, points_per_set)")
+    .eq("tournament_id", team.tournament_id)
+    .in("status", ["scheduled", "in_progress"])
+    .or(`team_a_id.eq.${teamId},team_b_id.eq.${teamId}`);
+
+  let bracketForfeited = 0;
+  if (bracketMatches?.length) {
+    for (const bMatch of bracketMatches) {
+      const bracket = bMatch.bracket as unknown as { tournament_id: string; points_per_set: number };
+      const pps = bracket?.points_per_set ?? 15;
+      const isTeamA = bMatch.team_a_id === teamId;
+
+      // Insert forfeit score
+      const { error: forfeitErr } = await sb.from("bracket_match_sets").insert({
+        bracket_match_id: bMatch.id,
+        set_number: 1,
+        team_a_score: isTeamA ? 0 : pps,
+        team_b_score: isTeamA ? pps : 0,
+        submitted_by: "admin",
+        is_forfeit: true,
+        submitted_at: new Date().toISOString(),
+      });
+
+      if (!forfeitErr) {
+        // Mark match as complete
+        await sb
+          .from("bracket_matches")
+          .update({ status: "complete", end_time: new Date().toISOString() })
+          .eq("id", bMatch.id);
+
+        // Propagate winner
+        try {
+          await sb.rpc("propagate_bracket_winner", { completed_match_id: bMatch.id });
+        } catch (err) {
+          console.error(`[BRACKET FORFEIT] Winner propagation failed for ${bMatch.id}:`, err);
+        }
+
+        bracketForfeited++;
+      }
+    }
+  }
+
+  // 4. Check if withdrawn team is work team for any remaining scheduled matches
   const { data: workTeamMatches } = await sb
     .from("matches")
     .select("id, match_order, pool_id, pool:pools!matches_pool_id_fkey(pool_label)")
@@ -112,6 +157,7 @@ export async function POST(
     ok: true,
     team_name: team.team_name,
     forfeited_matches: forfeitCount,
+    bracket_forfeited_matches: bracketForfeited,
     withdrawn_work_team_matches: (workTeamMatches ?? []).map((m) => ({
       match_id: m.id,
       match_order: m.match_order,

@@ -137,8 +137,9 @@ export async function POST(req: NextRequest) {
   const poolIds = pools.map((p) => p.id);
   const { data: poolTeams } = await sb
     .from("pool_teams")
-    .select("pool_id, team_id, seed_in_pool, teams(team_name)")
+    .select("pool_id, team_id, seed_in_pool, teams(team_name, withdrawn_at)")
     .in("pool_id", poolIds)
+    .is("teams.withdrawn_at", null)
     .order("seed_in_pool");
 
   const { data: matches } = await sb

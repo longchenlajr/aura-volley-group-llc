@@ -19,9 +19,30 @@ export async function showStatus(ctx: CliContext): Promise<void> {
     supabase.from('brackets').select('id, bracket_type').eq('tournament_id', tournamentId),
   ]);
 
+  if (teamsRes.error) {
+    s.stop('');
+    log.error(`Failed to fetch teams: ${teamsRes.error.message}`);
+    return;
+  }
+  if (poolCountRes.error) {
+    s.stop('');
+    log.error(`Failed to fetch pools: ${poolCountRes.error.message}`);
+    return;
+  }
+  if (matchesRes.error) {
+    s.stop('');
+    log.error(`Failed to fetch matches: ${matchesRes.error.message}`);
+    return;
+  }
+  if (bracketsRes.error) {
+    s.stop('');
+    log.error(`Failed to fetch brackets: ${bracketsRes.error.message}`);
+    return;
+  }
+
   const teams = teamsRes.data ?? [];
   const totalTeams = teams.length;
-  const checkedIn = teams.filter((t) => t.checked_in).length;
+  const checkedIn = teams.filter((t) => t.checked_in && !t.withdrawn_at).length;
   const withdrawn = teams.filter((t) => t.withdrawn_at).length;
   const poolCount = poolCountRes.count ?? 0;
 

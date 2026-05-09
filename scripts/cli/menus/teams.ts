@@ -200,6 +200,7 @@ async function withdrawTeam(ctx: CliContext): Promise<void> {
           team_a_score: s.team_a_score,
           team_b_score: s.team_b_score,
           submitted_by: 'admin',
+          is_forfeit: true,
         })),
       );
       await ctx.supabase

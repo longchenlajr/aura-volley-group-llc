@@ -335,14 +335,24 @@ function seedWithPoolSeparation(
   const order = bracketSeedOrder(bracketSize);
   const slots: (OverallTeamStanding | null)[] = new Array(bracketSize).fill(null);
 
+  console.log("[SEEDING] Teams passed to seedWithPoolSeparation:", teams.map((t, i) => `${i+1}. ${t.team_name} (rank ${t.overall_rank})`).join(", "));
+
   // Place each team in the correct bracket position based on its rank
   for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
     const seedRank = teamIndex + 1; // teams[0] is rank 1, teams[1] is rank 2, etc.
     const bracketPos = order.indexOf(seedRank);
+    console.log(`[SEEDING] Team ${teamIndex+1} (${teams[teamIndex].team_name}): seedRank=${seedRank}, bracketPos=${bracketPos}`);
     if (bracketPos >= 0) {
       slots[bracketPos] = teams[teamIndex];
     }
   }
+
+  // Log bye positions
+  const byePositions = slots
+    .map((t, i) => t === null ? i : null)
+    .filter(i => i !== null)
+    .slice(0, 4);
+  console.log(`[SEEDING] Bye positions: ${byePositions.join(", ")}`);
 
   return slots;
 }

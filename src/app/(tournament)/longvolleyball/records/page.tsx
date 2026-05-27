@@ -13,6 +13,32 @@ interface TournamentResult {
 
 const RESULTS: TournamentResult[] = [
   {
+    date: "5/24/26",
+    name: "Doubles @ Hamilton",
+    format: "doubles",
+    gold: {
+      first: "Fernando Munoz + Eduardo Munoz",
+      second: "Owen McFadden + Donald Joseph West III",
+    },
+    silver: {
+      first: "Alex Mkryan + Mike Mkryan",
+      second: "Heng Long + Christian Flores",
+    },
+  },
+  {
+    date: "5/9/26",
+    name: "Doubles @ Hamilton",
+    format: "doubles",
+    gold: {
+      first: "Owen McFadden + Alberto Ramon",
+      second: "Chenla Long, Jr. + Kyle Whiteman",
+    },
+    silver: {
+      first: "Van Wyck Mason+ Marcus Scheirer",
+      second: "Tim Carnes + Elden Campbell",
+    },
+  },
+  {
     date: "4/26/26",
     name: "Doubles @ Hamilton",
     format: "doubles",

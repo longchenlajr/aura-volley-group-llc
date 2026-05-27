@@ -37,6 +37,15 @@
       "registrationOpen": true
     },
     {
+          "id": "doubles-05-31-2026",
+          "name": "Doubles @ Hamilton",
+          "date": "2026-05-31T09:00:00-04:00",
+          "location": "515 S. Ott Street, Allentown, PA 18104",
+          "format": "doubles",
+          "teamSize": 2,
+          "registrationOpen": true
+        },
+    {
       "id": "doubles-06-20-2026",
       "name": "Doubles @ Hamilton",
       "date": "2026-06-20T09:00:00-04:00",

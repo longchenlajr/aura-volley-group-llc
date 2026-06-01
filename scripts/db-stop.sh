@@ -8,6 +8,15 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 export PATH="$HOME/scoop/apps/postgresql/current/bin:$PATH"
 export PGDATA="$HOME/scoop/apps/postgresql/current/data"
 
+# Stop proxy
+if [ -f "$PROJECT_DIR/.proxy.pid" ]; then
+  PID=$(cat "$PROJECT_DIR/.proxy.pid")
+  kill "$PID" 2>/dev/null && echo "Proxy stopped." || echo "Proxy was not running."
+  rm -f "$PROJECT_DIR/.proxy.pid"
+else
+  echo "No proxy PID file found."
+fi
+
 # Stop PostgREST
 if [ -f "$PROJECT_DIR/.postgrest.pid" ]; then
   PID=$(cat "$PROJECT_DIR/.postgrest.pid")

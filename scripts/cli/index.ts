@@ -18,6 +18,7 @@ import { teamsMenu } from './menus/teams';
 import { poolsMenu } from './menus/pools';
 import { matchesMenu } from './menus/matches';
 import { bracketsMenu } from './menus/brackets';
+import { devMenu, standingsInspector } from './menus/dev';
 
 interface TournamentConfig {
   id: string;
@@ -94,16 +95,20 @@ async function main() {
 
   // Step 3: Main menu loop
   while (true) {
+    const options = [
+      { value: 'status', label: 'Tournament Status', hint: 'overview of teams, matches, brackets' },
+      { value: 'teams', label: 'Team Management', hint: 'seed, check-in, withdraw, delete' },
+      { value: 'pools', label: 'Pool Management', hint: 'generate, view, reset' },
+      { value: 'matches', label: 'Match Management', hint: 'generate, view live, edit score, reset' },
+      { value: 'brackets', label: 'Bracket Management', hint: 'generate, view, reset' },
+      { value: 'standings', label: 'Standings', hint: 'pool + overall rankings' },
+      ...(ctx.env === 'local' ? [{ value: 'dev', label: 'Dev Tools', hint: 'seed, simulate, reset' }] : []),
+      { value: 'exit', label: 'Exit' },
+    ];
+
     const action = await select({
       message: `[${ctx.env.toUpperCase()}] ${ctx.tournamentName}`,
-      options: [
-        { value: 'status', label: 'Tournament Status', hint: 'overview of teams, matches, brackets' },
-        { value: 'teams', label: 'Team Management', hint: 'seed, check-in, withdraw, delete' },
-        { value: 'pools', label: 'Pool Management', hint: 'generate, view, reset' },
-        { value: 'matches', label: 'Match Management', hint: 'generate, view live, reset' },
-        { value: 'brackets', label: 'Bracket Management', hint: 'generate, view, reset' },
-        { value: 'exit', label: 'Exit' },
-      ],
+      options,
     });
 
     if (isCancel(action) || action === 'exit') break;
@@ -123,6 +128,12 @@ async function main() {
         break;
       case 'brackets':
         await bracketsMenu(ctx);
+        break;
+      case 'standings':
+        await standingsInspector(ctx);
+        break;
+      case 'dev':
+        await devMenu(ctx);
         break;
     }
   }

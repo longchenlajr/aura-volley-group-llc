@@ -63,25 +63,42 @@ SQL
   psql -h 127.0.0.1 -U postgres -d aura_volley_dev -f "$PROJECT_DIR/supabase/seed.sql" > /dev/null
 }
 
-# Start PostgREST in background
-if curl -s http://127.0.0.1:54321/ > /dev/null 2>&1; then
+# Start PostgREST on internal port 3001
+if curl -s http://127.0.0.1:3001/ > /dev/null 2>&1; then
   echo "PostgREST already running."
 else
-  echo "Starting PostgREST on :54321..."
+  echo "Starting PostgREST on :3001..."
   postgrest "$PROJECT_DIR/supabase/postgrest.conf" &
   POSTGREST_PID=$!
   echo "$POSTGREST_PID" > "$PROJECT_DIR/.postgrest.pid"
+  sleep 1
+
+  if ! curl -s http://127.0.0.1:3001/ > /dev/null 2>&1; then
+    echo "PostgREST failed to start. Check logs."
+    exit 1
+  fi
+fi
+
+# Start proxy on port 54321 (strips /rest/v1 → forwards to :3001)
+if curl -s http://127.0.0.1:54321/ > /dev/null 2>&1; then
+  echo "Proxy already running."
+else
+  echo "Starting proxy on :54321..."
+  node "$PROJECT_DIR/scripts/postgrest-proxy.mjs" &
+  PROXY_PID=$!
+  echo "$PROXY_PID" > "$PROJECT_DIR/.proxy.pid"
   sleep 1
 
   if curl -s http://127.0.0.1:54321/ > /dev/null 2>&1; then
     echo ""
     echo "Ready! Local dev stack running:"
     echo "  PostgreSQL  → 127.0.0.1:5432"
-    echo "  PostgREST   → http://127.0.0.1:54321"
+    echo "  PostgREST   → http://127.0.0.1:3001 (internal)"
+    echo "  Proxy       → http://127.0.0.1:54321/rest/v1/"
     echo ""
     echo "Run 'npm run dev' to start Next.js"
   else
-    echo "PostgREST failed to start. Check logs."
+    echo "Proxy failed to start."
     exit 1
   fi
 fi

@@ -439,7 +439,6 @@ export default function TournamentViewPage() {
           onWithdrawTeam={(t) => setWithdrawModal(t)}
           onDeleteTeam={handleDeleteTeam}
           onPatchTeam={patchTeam}
-          setTeams={setTeams}
         />
       )}
 
@@ -542,7 +541,6 @@ export default function TournamentViewPage() {
           onWithdrawTeam={(t) => setWithdrawModal(t)}
           onDeleteTeam={handleDeleteTeam}
           onPatchTeam={patchTeam}
-          setTeams={setTeams}
         />
       )}
 

@@ -10,7 +10,8 @@
     "db:start": "bash scripts/db-start.sh",
     "db:stop": "bash scripts/db-stop.sh",
     "db:reset": "bash scripts/db-reset.sh",
-    "admin": "node node_modules/tsx/dist/cli.cjs scripts/cli/index.ts"
+    "admin": "node node_modules/tsx/dist/cli.cjs scripts/cli/index.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^5.6.1",
@@ -36,6 +37,7 @@
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -20,6 +20,19 @@ function formatDisplayLabel(format: string, teamSize: number): string {
   return `${format} (${teamSize}v${teamSize})`;
 }
 
+function isValidPhone(value: string): boolean {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 10 || (digits.length === 11 && digits.startsWith("1"));
+}
+
+// Progressive US phone formatting as the user types → (555) 123-4567
+function formatPhone(value: string): string {
+  const d = value.replace(/\D/g, "").slice(0, 10);
+  if (d.length < 4) return d;
+  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
 export default function RegisterPage() {
   return (
     <Suspense>
@@ -36,7 +49,8 @@ function RegisterForm() {
   const [selectedId, setSelectedId] = useState(preselected);
   const [teamName, setTeamName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
+  // Phone validation errors keyed by player index (captain = 0).
+  const [phoneErrors, setPhoneErrors] = useState<Record<number, string>>({});
   const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -74,20 +88,42 @@ function RegisterForm() {
     );
   }
 
-  function validatePhone(value: string): boolean {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length === 10 || (digits.length === 11 && digits.startsWith("1"))) {
-      setPhoneError("");
-      return true;
-    }
-    setPhoneError("Phone must be a valid 10-digit US number.");
-    return false;
+  // Whether email + phone are required for every player (small teams) vs just
+  // the captain (quads/sixes). Mirrors the server-side rule.
+  const requireAllContact = selected ? selected.teamSize <= 3 : false;
+
+  function setPhoneFieldError(idx: number, message: string) {
+    setPhoneErrors((prev) => {
+      const next = { ...prev };
+      if (message) next[idx] = message;
+      else delete next[idx];
+      return next;
+    });
+  }
+
+  function validatePhoneField(idx: number, value: string): boolean {
+    const ok = isValidPhone(value);
+    setPhoneFieldError(idx, ok ? "" : "Enter a valid 10-digit US number.");
+    return ok;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selected) return;
-    if (!validatePhone(contactPhone)) return;
+
+    // Captain phone always required; other players' phones required only on
+    // small teams. Validate all applicable phones before submitting.
+    let firstInvalid: number | null = null;
+    if (!validatePhoneField(0, contactPhone)) firstInvalid = 0;
+    if (requireAllContact) {
+      for (let i = 1; i < players.length; i++) {
+        if (!validatePhoneField(i, players[i].phone || "")) {
+          if (firstInvalid === null) firstInvalid = i;
+        }
+      }
+    }
+    if (firstInvalid !== null) return;
+
     setSubmitting(true);
     setResult(null);
 
@@ -133,6 +169,7 @@ function RegisterForm() {
     setResult(null);
     setTeamName("");
     setContactPhone("");
+    setPhoneErrors({});
     if (selected) {
       setPlayers(
         Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "" })),
@@ -310,6 +347,8 @@ function RegisterForm() {
 
               {players.map((p, idx) => {
                 const isCaptain = idx === 0;
+                const contactRequired = isCaptain || requireAllContact;
+                const optionalHint = contactRequired ? "" : " (optional)";
                 return (
                   <fieldset key={idx} className="lv-player-group">
                     <legend className="lv-player-legend">
@@ -330,42 +369,41 @@ function RegisterForm() {
                     </div>
                     <div className="lv-field">
                       <label className="lv-field-label">
-                        Email{isCaptain ? "" : " (optional)"}
+                        Email{optionalHint}
                       </label>
                       <input
                         className="lv-input"
                         type="email"
                         value={p.email || ""}
                         onChange={(e) => updatePlayer(idx, "email", e.target.value)}
-                        required={isCaptain}
-                        placeholder={isCaptain ? "Captain's email (required)" : "Player email"}
+                        required={contactRequired}
+                        placeholder={isCaptain ? "Captain's email" : "Player email"}
                       />
                     </div>
                     <div className="lv-field">
                       <label className="lv-field-label">
-                        Phone{isCaptain ? "" : " (optional)"}
+                        Phone{optionalHint}
                       </label>
                       <input
                         className="lv-input"
                         type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
                         value={isCaptain ? contactPhone : (p.phone || "")}
                         onChange={(e) => {
-                          const val = e.target.value;
-                          if (isCaptain) {
-                            setContactPhone(val);
-                            setPhoneError("");
-                          } else {
-                            updatePlayer(idx, "phone", val);
-                          }
+                          const val = formatPhone(e.target.value);
+                          if (isCaptain) setContactPhone(val);
+                          else updatePlayer(idx, "phone", val);
+                          if (phoneErrors[idx]) setPhoneFieldError(idx, "");
                         }}
                         onBlur={() => {
                           const val = isCaptain ? contactPhone : (p.phone || "");
-                          if (val && isCaptain) validatePhone(val);
+                          if (val || contactRequired) validatePhoneField(idx, val);
                         }}
-                        required={isCaptain}
+                        required={contactRequired}
                         placeholder="(555) 123-4567"
                       />
-                      {isCaptain && phoneError && <span className="lv-field-error">{phoneError}</span>}
+                      {phoneErrors[idx] && <span className="lv-field-error">{phoneErrors[idx]}</span>}
                     </div>
                   </fieldset>
                 );

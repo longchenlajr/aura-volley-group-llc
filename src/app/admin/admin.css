@@ -1585,6 +1585,64 @@
   padding: 0 12px 8px;
   border-bottom: 0.5px solid rgba(122, 28, 28, 0.06);
 }
+
+/* Roster group sub-headers (Seeded / Unseeded / Withdrawn) */
+.lv-roster-group-row > td {
+  height: auto;
+  padding: 10px 12px 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+  border-bottom: 1px solid var(--lv-border);
+  white-space: nowrap;
+}
+.lv-roster-group-header {
+  padding: 8px 4px 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv-gold);
+}
+
+/* Seed problem flag — red left border on the row/card */
+.lv-roster-row-flag > td:first-child,
+.lv-roster-card.lv-roster-row-flag {
+  box-shadow: inset 3px 0 0 0 var(--lv-error);
+}
+
+/* Brief highlight when a row re-sorts after a seed change */
+@keyframes lv-roster-flash {
+  from { background: rgba(155, 107, 30, 0.18); }
+  to { background: transparent; }
+}
+.lv-roster-row-highlight > td {
+  animation: lv-roster-flash 1.2s ease-out;
+}
+.lv-roster-card.lv-roster-row-highlight {
+  animation: lv-roster-flash 1.2s ease-out;
+}
+
+/* Seed warning banner */
+.lv-roster-seed-warning {
+  margin: 0 8px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--lv-error);
+  border-left-width: 3px;
+  border-radius: var(--lv-radius-sm);
+  background: rgba(180, 60, 60, 0.06);
+  font-size: 0.78rem;
+  color: var(--lv-ink);
+  line-height: 1.5;
+}
+.lv-roster-seed-warning strong {
+  color: var(--lv-error);
+}
+.lv-roster-seed-warning > div + div {
+  margin-top: 4px;
+}
 .lv-roster-player-line {
   line-height: 1.3;
 }

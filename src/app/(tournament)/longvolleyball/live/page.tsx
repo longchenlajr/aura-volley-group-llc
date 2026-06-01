@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { getTournamentsWithStatus } from "@/lib/tournaments";
+import { computeOverallStandings } from "@/lib/tournament-standings";
 import type { PoolStandings } from "@/lib/standings";
 import { daysUntil } from "@/lib/time-format";
 import { SectionDivider } from "../../ornaments";
@@ -236,36 +237,22 @@ export default function LivePage() {
       }));
   }, [effectiveMatches, selectedPoolStandings]);
 
-  // Team records for bracket display (seed + W-L from pool play)
+  // Team records for bracket display (seed + W-L from pool play).
+  // Seeds come from computeOverallStandings — the SAME ranking used to place
+  // teams into the playoff bracket — so the seed labels on bracket cards always
+  // match the overall seeds the bracket was built from.
   const teamRecords = useMemo(() => {
     const map = new Map<
       string,
       { team_name: string; seed: number; record: string }
     >();
     if (!activeStandings?.pools) return map;
-    let overallSeed = 1;
-    // Collect all teams by pool rank tiers
-    const maxTeamsPerPool = Math.max(
-      ...activeStandings.pools.map((p) => p.standings.length),
-      0,
-    );
-    for (let rank = 0; rank < maxTeamsPerPool; rank++) {
-      const tier = activeStandings.pools
-        .map((p) => p.standings[rank])
-        .filter(Boolean)
-        .sort((a, b) => {
-          if (a.sets_won !== b.sets_won) return b.sets_won - a.sets_won;
-          if (a.point_differential !== b.point_differential)
-            return b.point_differential - a.point_differential;
-          return b.points_for - a.points_for;
-        });
-      for (const t of tier) {
-        map.set(t.team_id, {
-          team_name: t.team_name,
-          seed: overallSeed++,
-          record: `${t.sets_won}-${t.sets_lost}`,
-        });
-      }
+    for (const t of computeOverallStandings(activeStandings.pools)) {
+      map.set(t.team_id, {
+        team_name: t.team_name,
+        seed: t.overall_rank,
+        record: `${t.sets_won}-${t.sets_lost}`,
+      });
     }
     return map;
   }, [activeStandings]);

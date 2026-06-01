@@ -54,11 +54,14 @@ export function generateBracket(
     return { bracket_type: bracketType, points_per_set: pointsPerSet, slots: [], matches: [] };
   }
 
+  // Sort by overall_rank so seeding is correct regardless of input array order
+  const sorted = [...teams].sort((a, b) => a.overall_rank - b.overall_rank);
+
   const bracketSize = nextPowerOf2(n);
   const totalRounds = Math.log2(bracketSize);
 
   // --- Seed teams into bracket positions with pool separation ---
-  const seeded = seedWithPoolSeparation(teams, bracketSize);
+  const seeded = seedWithPoolSeparation(sorted, bracketSize);
 
   // --- Create round 1 slots ---
   const slots: GeneratedSlot[] = [];
@@ -185,8 +188,8 @@ export function generateBracket(
       let workTeamId: string | null = byeWorker ?? null;
       if (!workTeamId && gi + 1 < courtGames.length) {
         const nextGame = courtGames[gi + 1];
-        const nextTeamA = nextGame.slotA.team_id ? teams.find((t) => t.team_id === nextGame.slotA.team_id) : null;
-        const nextTeamB = nextGame.slotB.team_id ? teams.find((t) => t.team_id === nextGame.slotB.team_id) : null;
+        const nextTeamA = nextGame.slotA.team_id ? sorted.find((t) => t.team_id === nextGame.slotA.team_id) : null;
+        const nextTeamB = nextGame.slotB.team_id ? sorted.find((t) => t.team_id === nextGame.slotB.team_id) : null;
         if (nextTeamA && nextTeamB) {
           workTeamId = nextTeamA.overall_rank > nextTeamB.overall_rank
             ? nextTeamA.team_id
@@ -324,37 +327,92 @@ function nextPowerOf2(n: number): number {
 }
 
 /**
- * Standard bracket seeding across the full bracket.
- * Seed 1 at top, seed 2 at bottom half — always on opposite sides.
- * Byes go to positions of the highest seed numbers (i.e. top seeds get byes).
+ * Pool-separated bracket seeding (separation-first).
+ *
+ * Teams (sorted strongest-first by overall_rank) are placed into bracket slots
+ * by recursive bisection: at each region the field splits into a top and bottom
+ * half, and teams are dealt into the two halves with this priority:
+ *   1. Capacity — a half cannot exceed its slot count.
+ *   2. Separation — if one half already holds a team from the same pool and the
+ *      other does not, the team goes to the half WITHOUT the pool-mate. This
+ *      pushes pool-mates apart at the highest level possible (halves, then
+ *      quarters, then eighths) so they meet as late as possible.
+ *   3. Seed balance — otherwise follow the standard single-elim snake pattern,
+ *      keeping the halves strength-balanced and top seeds advantaged.
+ *
+ * Byes are the weakest entries (null) and never trigger separation, so the
+ * snake pattern pairs them with the top overall seeds — i.e. top seeds get the
+ * byes, exactly as in standard seeding.
+ *
+ * When pools are all distinct (or all identical) no separation is triggered and
+ * the result is identical to standard bracket seed order.
  */
 function seedWithPoolSeparation(
   teams: OverallTeamStanding[],
   bracketSize: number,
 ): (OverallTeamStanding | null)[] {
-  const order = bracketSeedOrder(bracketSize);
+  // Pad to bracket size with byes (null) as the weakest entries.
+  const entries: (OverallTeamStanding | null)[] = [];
+  for (let i = 0; i < bracketSize; i++) entries.push(teams[i] ?? null);
+
   const slots: (OverallTeamStanding | null)[] = new Array(bracketSize).fill(null);
+  placeRegion(entries, 0, bracketSize, slots);
+  return slots;
+}
 
-  console.log("[SEEDING] Teams passed to seedWithPoolSeparation:", teams.map((t, i) => `${i+1}. ${t.team_name} (rank ${t.overall_rank})`).join(", "));
-
-  // Place each team in the correct bracket position based on its rank
-  for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
-    const seedRank = teamIndex + 1; // teams[0] is rank 1, teams[1] is rank 2, etc.
-    const bracketPos = order.indexOf(seedRank);
-    console.log(`[SEEDING] Team ${teamIndex+1} (${teams[teamIndex].team_name}): seedRank=${seedRank}, bracketPos=${bracketPos}`);
-    if (bracketPos >= 0) {
-      slots[bracketPos] = teams[teamIndex];
-    }
+/**
+ * Recursively place a region's entries (sorted strongest-first) into its slots,
+ * splitting into top/bottom halves with the separation-first rules above.
+ */
+function placeRegion(
+  entries: (OverallTeamStanding | null)[],
+  slotStart: number,
+  regionSize: number,
+  slots: (OverallTeamStanding | null)[],
+): void {
+  if (regionSize === 1) {
+    slots[slotStart] = entries[0] ?? null;
+    return;
   }
 
-  // Log bye positions
-  const byePositions = slots
-    .map((t, i) => t === null ? i : null)
-    .filter(i => i !== null)
-    .slice(0, 4);
-  console.log(`[SEEDING] Bye positions: ${byePositions.join(", ")}`);
+  const half = regionSize / 2;
+  const pattern = standardSidePattern(regionSize); // true = top half
+  const top: (OverallTeamStanding | null)[] = [];
+  const bottom: (OverallTeamStanding | null)[] = [];
 
-  return slots;
+  entries.forEach((entry, j) => {
+    if (top.length >= half) { bottom.push(entry); return; }
+    if (bottom.length >= half) { top.push(entry); return; }
+
+    const pool = entry?.pool_label ?? null;
+    if (pool) {
+      const topHas = top.some((t) => t?.pool_label === pool);
+      const botHas = bottom.some((t) => t?.pool_label === pool);
+      if (topHas && !botHas) { bottom.push(entry); return; }
+      if (botHas && !topHas) { top.push(entry); return; }
+    }
+
+    if (pattern[j]) top.push(entry);
+    else bottom.push(entry);
+  });
+
+  placeRegion(top, slotStart, half, slots);
+  placeRegion(bottom, slotStart + half, half, slots);
+}
+
+/**
+ * For a region of the given size, return the standard single-elim side pattern:
+ * pattern[j] is true if the j-th strongest entry (seed j+1) belongs in the top
+ * half under standard seeding. Derived from bracketSeedOrder so it stays in sync.
+ */
+function standardSidePattern(size: number): boolean[] {
+  const order = bracketSeedOrder(size); // order[slot] = seed
+  const slotOfSeed = new Array<number>(size);
+  order.forEach((seed, slot) => {
+    slotOfSeed[seed - 1] = slot;
+  });
+  const half = size / 2;
+  return slotOfSeed.map((slot) => slot < half);
 }
 
 /**

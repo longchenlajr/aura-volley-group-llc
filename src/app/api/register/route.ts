@@ -98,28 +98,59 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Validate captain (first player) has name and email
+  if (!teamName) {
+    return NextResponse.json(
+      { error: "Team name is required." },
+      { status: 400 },
+    );
+  }
+
+  // The captain (first player) always needs name + email + a valid phone.
   if (!players[0]?.name || !players[0]?.email) {
     return NextResponse.json(
       { error: "Captain name and email are required." },
       { status: 400 },
     );
   }
-
-  if (!teamName || !contactPhone) {
+  const phone = normalizePhone(contactPhone);
+  if (!phone) {
     return NextResponse.json(
-      { error: "Team name and contact phone are required." },
+      { error: "A valid 10-digit captain phone number is required." },
       { status: 400 },
     );
   }
 
-  // Validate and normalize phone
-  const phone = normalizePhone(contactPhone);
-  if (!phone) {
-    return NextResponse.json(
-      { error: "Phone must be a valid 10-digit US number." },
-      { status: 400 },
-    );
+  // Field requirements for the rest of the roster:
+  // - Admins (authenticated) stay lenient — they enter walk-ups quickly and can
+  //   fill contact details in later. Only the captain above is enforced.
+  // - Public self-registration is strict: every player needs a name. For small
+  //   teams (doubles/triples, ≤3) every player also needs email + phone; for
+  //   larger teams (quads/sixes) only the captain's contact is required.
+  if (!session) {
+    const requireAllContact = tournament.teamSize <= 3;
+    for (let i = 1; i < players.length; i++) {
+      const p = players[i];
+      if (!p?.name) {
+        return NextResponse.json(
+          { error: `Player ${i + 1}'s name is required.` },
+          { status: 400 },
+        );
+      }
+      if (requireAllContact) {
+        if (!p.email) {
+          return NextResponse.json(
+            { error: `Player ${i + 1}'s email is required.` },
+            { status: 400 },
+          );
+        }
+        if (!p.phone || !normalizePhone(p.phone)) {
+          return NextResponse.json(
+            { error: `Player ${i + 1} needs a valid 10-digit phone number.` },
+            { status: 400 },
+          );
+        }
+      }
+    }
   }
 
   // Insert team
@@ -149,12 +180,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Insert players
+  // Insert players. The captain's phone is collected as the team contact phone,
+  // so mirror it onto the captain's player row for a consistent roster record.
   const playerRows = players.map((p, idx) => ({
     team_id: team.id,
     name: p.name,
     email: p.email || null,
-    phone: p.phone ? normalizePhone(p.phone) : null,
+    phone: idx === 0 ? phone : p.phone ? normalizePhone(p.phone) : null,
     is_captain: idx === 0,
   }));
 

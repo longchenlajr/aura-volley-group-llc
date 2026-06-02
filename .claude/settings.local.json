@@ -73,7 +73,11 @@
       "Bash(\"C:/Program Files/Git/cmd/git.exe\" diff --stat)",
       "Bash(\"C:/Program Files/Git/cmd/git.exe\" log --oneline -5)",
       "Bash(rtk proxy *)",
-      "Bash(rtk npm *)"
+      "Bash(rtk npm *)",
+      "Bash(rtk grep *)",
+      "Bash(rtk curl *)",
+      "PowerShell(curl -s -o $null -w \"%{http_code}\" http://127.0.0.1:54321/ 2>$null; if \\(-not $?\\) { \"ECONNREFUSED - PostgREST not running\" })",
+      "PowerShell(pg_isready *)"
     ]
   }
 }

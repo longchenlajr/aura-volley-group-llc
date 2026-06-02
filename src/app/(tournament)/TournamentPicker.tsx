@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Tournament, TournamentStatus } from "@/lib/tournaments";
-import { ArrowRight, DividerOrnament } from "./ornaments";
+import { ArrowRight, CalendarIcon, DividerOrnament } from "./ornaments";
 import { DecorativeAsset } from "./DecorativeAsset";
 import { StatusTag } from "./StatusTag";
 
@@ -24,6 +24,17 @@ function formatLabel(format: string): string {
   if (f === "quads") return "Quads (4v4)";
   if (f === "sixes") return "Sixes (6v6)";
   return format;
+}
+
+function buildGCalEventUrl(t: Tournament & { status?: TournamentStatus }): string {
+  const start = new Date(t.date);
+  const end = new Date(start.getTime() + 8 * 60 * 60 * 1000);
+  const fmt = (d: Date) =>
+    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const title = encodeURIComponent(`Long's Grass Volleyball – ${formatLabel(t.format)}`);
+  const details = encodeURIComponent(`Entry: ${getEntryFee(t.teamSize)}\nLocation: ${t.location}`);
+  const loc = encodeURIComponent(t.location);
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(start)}/${fmt(end)}&details=${details}&location=${loc}`;
 }
 
 interface TournamentPickerProps {
@@ -205,6 +216,18 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
                   <span className="lv-dossier-closed-msg">
                     Registration is not open yet
                   </span>
+                )}
+                {selected.status !== "archive" && (
+                  <a
+                    href={buildGCalEventUrl(selected)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lv-btn lv-btn-ghost"
+                    style={{ fontSize: "13px" }}
+                  >
+                    <CalendarIcon style={{ width: 14, height: 14 }} />
+                    Add to my calendar
+                  </a>
                 )}
               </div>
             </div>

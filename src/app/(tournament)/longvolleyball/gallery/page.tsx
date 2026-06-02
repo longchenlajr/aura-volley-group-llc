@@ -35,34 +35,9 @@ function getImages(dir: string, urlBase: string): GalleryImage[] {
   }
 }
 
-/** Interleave two arrays so images from each source are spread evenly */
-function interleave(a: GalleryImage[], b: GalleryImage[]): GalleryImage[] {
-  const result: GalleryImage[] = [];
-  const long = a.length >= b.length ? a : b;
-  const short = a.length >= b.length ? b : a;
-  if (short.length === 0) return long;
-
-  const ratio = long.length / short.length;
-  let si = 0;
-  for (let li = 0; li < long.length; li++) {
-    result.push(long[li]);
-    // Insert a short item at evenly spaced intervals
-    if (si < short.length && li >= Math.round((si + 1) * ratio) - 1) {
-      result.push(short[si]);
-      si++;
-    }
-  }
-  // Push any remaining
-  while (si < short.length) {
-    result.push(short[si++]);
-  }
-  return result;
-}
 
 export default function GalleryPage() {
-  const champions = getImages("longvolleyball/champions", "/longvolleyball/champions");
-  const gallery = getImages("longvolleyball/gallery", "/longvolleyball/gallery");
-  const allImages = interleave(gallery, champions);
+  const allImages = getImages("longvolleyball/gallery", "/longvolleyball/gallery");
 
   return (
     <div className="lv-gallery-page">

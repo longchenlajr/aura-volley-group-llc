@@ -18,7 +18,7 @@ import sharp from "sharp";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, "..", "public", "longvolleyball");
 
-const DIRS = ["champions", "gallery"];
+const DIRS = ["gallery"];
 const EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"]);
 const THUMB_WIDTH = 800;
 const QUALITY = 78;

@@ -1,0 +1,38 @@
+name: Sync Gallery from Google Drive
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-save sharp
+
+      - name: Download new photos from Google Drive
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: node scripts/sync-gallery.mjs
+
+      - name: Generate thumbnails
+        run: node scripts/generate-thumbs.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name "Gallery Sync Bot"
+          git config user.email "gallery-bot@users.noreply.github.com"
+          git add public/longvolleyball/gallery/
+          git diff --staged --quiet || (git commit -m "chore: sync gallery photos from Google Drive" && git push)

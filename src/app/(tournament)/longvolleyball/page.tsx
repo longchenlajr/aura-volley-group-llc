@@ -1,6 +1,6 @@
 import { getTournamentsWithStatus } from "@/lib/tournaments";
 import Link from "next/link";
-import { ArrowRight } from "../ornaments";
+import { ArrowRight, CalendarIcon } from "../ornaments";
 import { DecorativeAsset } from "../DecorativeAsset";
 import { TournamentPicker } from "../TournamentPicker";
 
@@ -111,6 +111,19 @@ export default function TournamentsPage() {
               width={100}
               height={60}
             />
+          </div>
+
+          <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+            <a
+              href="https://calendar.google.com/calendar/r?cid=8fb5e6c4cc8021ff797c228baf5996a0ce3f3850544abd42550e43e641fed3d2%40group.calendar.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lv-btn lv-btn-secondary"
+              style={{ fontSize: "13px", padding: "8px 18px" }}
+            >
+              <CalendarIcon style={{ width: 14, height: 14 }} />
+              Add all dates to Google Calendar
+            </a>
           </div>
 
           <TournamentPicker tournaments={tournaments} />

@@ -306,6 +306,25 @@ export function LaurelWreath({ className, style }: SvgProps) {
   );
 }
 
+export function CalendarIcon({ className, style }: SvgProps) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      <rect x="2" y="4" width="16" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M2 8h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M6 2v4M14 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="7" cy="13" r="1" fill="currentColor" />
+      <circle cx="10" cy="13" r="1" fill="currentColor" />
+      <circle cx="13" cy="13" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function GoldDotSpinner({ className, style }: SvgProps) {
   return (
     <svg

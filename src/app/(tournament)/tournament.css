@@ -1583,6 +1583,10 @@ html:has(.lv)::-webkit-scrollbar {
 /* CTA */
 .lv-dossier-cta {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 .lv-dossier-closed-msg {
   font-size: 0.9rem;

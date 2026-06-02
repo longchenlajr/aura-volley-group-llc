@@ -3,8 +3,6 @@ import path from "path";
 import { SectionDivider } from "../../ornaments";
 import { GalleryGrid } from "./GalleryGrid";
 
-export const dynamic = "force-dynamic";
-
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"]);
 
 interface GalleryImage {

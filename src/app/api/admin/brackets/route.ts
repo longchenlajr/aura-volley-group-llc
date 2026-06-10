@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { computePoolStandings } from "@/lib/standings";
 import { computeOverallStandings } from "@/lib/tournament-standings";
 import { generateBracket, countR1Games } from "@/lib/bracket-generation";
-import { getMatchFormat } from "@/lib/score-format";
+import { matchFormatFromPool } from "@/lib/score-format";
 import { generateMatchToken, tokenExpiryForTournament } from "@/lib/tokens";
 import { getTournament } from "@/lib/tournaments";
 
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
   // Compute overall standings from pool data
   const { data: pools } = await sb
     .from("pools")
-    .select("id, pool_label, court_number")
+    .select("id, pool_label, court_number, sets_per_match, points_per_set, points_cap")
     .eq("tournament_id", tournament_id)
     .order("court_number");
 
@@ -136,24 +136,16 @@ export async function POST(req: NextRequest) {
 
   const poolIds = pools.map((p) => p.id);
 
-  // Fetch withdrawn team IDs
-  const { data: withdrawnTeams } = await sb
-    .from("teams")
-    .select("id, team_name")
-    .eq("tournament_id", tournament_id)
-    .not("withdrawn_at", "is", null);
-
-  const withdrawnTeamIds = new Set((withdrawnTeams ?? []).map((t) => t.id));
-
-  // Fetch all pool teams
+  // Fetch all pool teams, keeping withdrawn ones. They're kept through the standings
+  // computation so their completed/forfeit results still count for opponents, then
+  // dropped before seeding (a withdrawn team can't play the bracket).
   const { data: allPoolTeams } = await sb
     .from("pool_teams")
-    .select("pool_id, team_id, seed_in_pool, teams(team_name)")
+    .select("pool_id, team_id, seed_in_pool, teams(team_name, withdrawn_at)")
     .in("pool_id", poolIds)
     .order("seed_in_pool");
 
-  // Filter out withdrawn teams
-  const poolTeams = (allPoolTeams ?? []).filter((pt) => !withdrawnTeamIds.has(pt.team_id));
+  const poolTeams = allPoolTeams ?? [];
 
   const { data: matches } = await sb
     .from("matches")
@@ -176,19 +168,23 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Compute pool standings
+  // Compute pool standings (withdrawn teams included so their results count).
   const poolStandings = pools.map((pool) => {
-    const teams = (poolTeams ?? [])
+    const teams = poolTeams
       .filter((pt) => pt.pool_id === pool.id)
-      .map((pt) => ({
-        team_id: pt.team_id,
-        team_name: (pt.teams as unknown as { team_name: string })?.team_name ?? "Unknown",
-        seed_in_pool: pt.seed_in_pool,
-      }));
+      .map((pt) => {
+        const t = pt.teams as unknown as { team_name: string; withdrawn_at?: string | null };
+        return {
+          team_id: pt.team_id,
+          team_name: t?.team_name ?? "Unknown",
+          seed_in_pool: pt.seed_in_pool,
+          withdrawn: !!t?.withdrawn_at,
+        };
+      });
     const poolMatches = (matches ?? [])
       .filter((m) => m.pool_id === pool.id)
       .map((m) => ({ id: m.id, team_a_id: m.team_a_id, team_b_id: m.team_b_id, sets: setsMap.get(m.id) ?? [], status: m.status }));
-    const format = getMatchFormat(teams.length);
+    const format = matchFormatFromPool(pool, teams.length);
     return {
       pool_id: pool.id,
       pool_label: pool.pool_label,
@@ -197,7 +193,14 @@ export async function POST(req: NextRequest) {
     };
   });
 
-  const overallStandings = computeOverallStandings(poolStandings);
+  // Seed only live teams: drop withdrawn from each pool's ranked list (their
+  // results already counted above) so they don't occupy a bracket slot.
+  const seedingStandings = poolStandings.map((p) => ({
+    ...p,
+    standings: p.standings.filter((s) => !s.withdrawn),
+  }));
+
+  const overallStandings = computeOverallStandings(seedingStandings);
 
   // Split into gold and silver
   const goldTeams = overallStandings.filter((t) => t.overall_rank <= gold_cutoff);

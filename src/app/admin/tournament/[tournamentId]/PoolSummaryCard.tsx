@@ -35,13 +35,14 @@ export function PoolSummaryCard({
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   const standings = useMemo(() => {
-    const poolTeams = pool.teams
-      .filter((t) => !withdrawnTeamIds.has(t.team_id))
-      .map((t) => ({
-        team_id: t.team_id,
-        team_name: t.team_name,
-        seed_in_pool: t.seed_in_pool,
-      }));
+    // Keep withdrawn teams (they sink to the bottom) so matches against them still
+    // count — mirrors the server-side standings.
+    const poolTeams = pool.teams.map((t) => ({
+      team_id: t.team_id,
+      team_name: t.team_name,
+      seed_in_pool: t.seed_in_pool,
+      withdrawn: withdrawnTeamIds.has(t.team_id),
+    }));
     const matchInputs = matches
       .filter((m) => m.match.status === "complete")
       .map((m) => ({

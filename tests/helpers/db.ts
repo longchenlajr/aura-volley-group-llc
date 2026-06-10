@@ -68,3 +68,26 @@ export function anonClient(): SupabaseClient {
     { auth: { persistSession: false } },
   );
 }
+
+export interface SeededTeam {
+  id: string;
+  team_name: string;
+}
+
+/** Insert `count` teams for a tournament via the service role. Seeds 1..count. */
+export async function seedTeams(
+  sb: SupabaseClient,
+  tournamentId: string,
+  count: number,
+): Promise<SeededTeam[]> {
+  const rows = Array.from({ length: count }, (_, i) => ({
+    tournament_id: tournamentId,
+    team_name: `Team ${i + 1}`,
+    contact_email: `team${i + 1}@example.com`,
+    contact_phone: "5550000000",
+    seed: i + 1,
+  }));
+  const { data, error } = await sb.from("teams").insert(rows).select("id, team_name");
+  if (error) throw new Error(`seedTeams failed: ${error.message}`);
+  return data as SeededTeam[];
+}

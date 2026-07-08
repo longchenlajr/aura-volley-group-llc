@@ -55,7 +55,8 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO service_role;
 GRANT USAGE ON SCHEMA public TO anon;
 GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO anon;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO anon;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon;
+-- NOTE: anon is intentionally NOT granted EXECUTE on functions. RPCs are
+-- service-role only (migration 014); RLS governs the table grants above.
 SQL
 
   # Seed

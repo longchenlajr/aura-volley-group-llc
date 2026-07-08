@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { computePoolStandings } from "@/lib/standings";
-import { getMatchFormat } from "@/lib/score-format";
+import { matchFormatFromPool } from "@/lib/score-format";
 
 // GET /api/public/standings?tournament=X
 export async function GET(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   // Get pools
   const { data: pools, error: poolsError } = await sb
     .from("pools")
-    .select("id, pool_label, court_number")
+    .select("id, pool_label, court_number, sets_per_match, points_per_set, points_cap")
     .eq("tournament_id", tournamentId)
     .order("court_number");
 
@@ -27,15 +27,6 @@ export async function GET(req: NextRequest) {
   }
 
   const poolIds = pools.map((p) => p.id);
-
-  // Fetch withdrawn team IDs
-  const { data: withdrawnTeams } = await sb
-    .from("teams")
-    .select("id")
-    .eq("tournament_id", tournamentId)
-    .not("withdrawn_at", "is", null);
-
-  const withdrawnTeamIds = new Set((withdrawnTeams ?? []).map((t) => t.id));
 
   // Get pool teams (query without withdrawn_at first, fall back if column exists)
   let poolTeams: Array<{ pool_id: string; team_id: string; seed_in_pool: number; teams: unknown }> | null = null;
@@ -67,10 +58,9 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Filter out withdrawn teams
-  if (poolTeams) {
-    poolTeams = poolTeams.filter((pt) => !withdrawnTeamIds.has(pt.team_id));
-  }
+  // NOTE: withdrawn teams are intentionally kept. They sink to the bottom of the
+  // standings (computePoolStandings sort rule 0), but their completed/forfeit
+  // matches still count for everyone else — so a team that beat them keeps the win.
 
   // Get matches with sets
   const { data: matches, error: matchError } = await sb
@@ -125,7 +115,7 @@ export async function GET(req: NextRequest) {
         status: m.status,
       }));
 
-    const format = getMatchFormat(teams.length);
+    const format = matchFormatFromPool(pool, teams.length);
     const standings = computePoolStandings(teams, poolMatches, format);
 
     return {

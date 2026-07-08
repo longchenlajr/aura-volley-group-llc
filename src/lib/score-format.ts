@@ -29,6 +29,25 @@ export function getMatchFormat(poolSize: number): MatchFormat {
 }
 
 /**
+ * Build a MatchFormat from a pool's stored format columns, falling back to the
+ * size-based mapping if they aren't populated (e.g. pools created before the
+ * format columns existed).
+ */
+export function matchFormatFromPool(
+  cols: { sets_per_match: number | null; points_per_set: number | null; points_cap: number | null },
+  fallbackPoolSize: number,
+): MatchFormat {
+  if (cols.sets_per_match != null && cols.points_per_set != null) {
+    return {
+      sets: cols.sets_per_match,
+      pointsPerSet: cols.points_per_set,
+      pointsCap: cols.points_cap ?? undefined,
+    };
+  }
+  return getMatchFormat(fallbackPoolSize);
+}
+
+/**
  * Check if a single set is complete.
  * - Win-by-2 up to the cap.
  * - At the cap, win by 1 is allowed (e.g. 13-12 in a game to 11 with cap 13).

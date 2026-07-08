@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getUpcomingTournaments, getTournament, getTournamentStatus } from "@/lib/tournaments";
 import { auth } from "@/auth";
 import { Resend } from "resend";
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Insert team
-  const { data: team, error: teamError } = await getSupabase()
+  const { data: team, error: teamError } = await getSupabaseAdmin()
     .from("teams")
     .insert({
       tournament_id: tournamentId,
@@ -190,11 +190,15 @@ export async function POST(req: NextRequest) {
     is_captain: idx === 0,
   }));
 
-  const { error: playersError } = await getSupabase()
+  const { error: playersError } = await getSupabaseAdmin()
     .from("players")
     .insert(playerRows);
 
   if (playersError) {
+    // Compensate: PostgREST has no multi-statement transaction, so roll back the
+    // team row by hand — otherwise it orphans the unique team-name slot and the
+    // captain can never re-register under the same name.
+    await getSupabaseAdmin().from("teams").delete().eq("id", team.id);
     return NextResponse.json(
       { error: "Team created but failed to add players." },
       { status: 500 },

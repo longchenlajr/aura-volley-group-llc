@@ -749,15 +749,17 @@ export default function TournamentViewPage() {
   );
 }
 
+const SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
+
 /* ---- ADD TEAM MODAL ---- */
 function AddTeamModal({ tournament, onClose, onAdded }: { tournament: Tournament; onClose: () => void; onAdded: () => void }) {
   const [teamName, setTeamName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
-  const [players, setPlayers] = useState(Array.from({ length: tournament.teamSize }, () => ({ name: "", email: "" })));
+  const [players, setPlayers] = useState(Array.from({ length: tournament.teamSize }, () => ({ name: "", email: "", shirtSize: "" })));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  function updatePlayer(idx: number, field: "name" | "email", value: string) {
+  function updatePlayer(idx: number, field: "name" | "email" | "shirtSize", value: string) {
     setPlayers((prev) => prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)));
   }
 
@@ -793,6 +795,15 @@ function AddTeamModal({ tournament, onClose, onAdded }: { tournament: Tournament
                 <div className="lv-field"><label className="lv-field-label">Name</label><input className="lv-input" type="text" value={p.name} onChange={(e) => updatePlayer(idx, "name", e.target.value)} required /></div>
                 <div className="lv-field"><label className="lv-field-label">Email{isCaptain ? "" : " (optional)"}</label><input className="lv-input" type="email" value={p.email} onChange={(e) => updatePlayer(idx, "email", e.target.value)} required={isCaptain} /></div>
                 {isCaptain && (<div className="lv-field"><label className="lv-field-label">Phone</label><input className="lv-input" type="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} required /></div>)}
+                {tournament.collectShirtSize && (
+                  <div className="lv-field">
+                    <label className="lv-field-label">Shirt size</label>
+                    <select className="lv-input" value={p.shirtSize} onChange={(e) => updatePlayer(idx, "shirtSize", e.target.value)} required>
+                      <option value="" disabled>Select a size</option>
+                      {SHIRT_SIZES.map((size) => (<option key={size} value={size}>{size}</option>))}
+                    </select>
+                  </div>
+                )}
               </fieldset>
             );
           })}

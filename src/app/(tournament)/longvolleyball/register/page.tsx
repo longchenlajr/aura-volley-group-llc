@@ -11,6 +11,8 @@ import {
   GoldDotSpinner,
 } from "../../ornaments";
 
+const SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
+
 function formatDisplayLabel(format: string, teamSize: number): string {
   const f = format.toLowerCase();
   if (f === "doubles") return "Doubles (2v2)";
@@ -51,7 +53,7 @@ function RegisterForm() {
   const [contactPhone, setContactPhone] = useState("");
   // Phone validation errors keyed by player index (captain = 0).
   const [phoneErrors, setPhoneErrors] = useState<Record<number, string>>({});
-  const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string }[]>([]);
+  const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string; shirtSize?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{
     ok: boolean;
@@ -78,11 +80,11 @@ function RegisterForm() {
       return;
     }
     setPlayers(
-      Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "" })),
+      Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "", shirtSize: "" })),
     );
   }, [selected]);
 
-  function updatePlayer(idx: number, field: "name" | "email" | "phone", value: string) {
+  function updatePlayer(idx: number, field: "name" | "email" | "phone" | "shirtSize", value: string) {
     setPlayers((prev) =>
       prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)),
     );
@@ -172,7 +174,7 @@ function RegisterForm() {
     setPhoneErrors({});
     if (selected) {
       setPlayers(
-        Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "" })),
+        Array.from({ length: selected.teamSize }, () => ({ name: "", email: "", phone: "", shirtSize: "" })),
       );
     }
   }
@@ -405,6 +407,26 @@ function RegisterForm() {
                       />
                       {phoneErrors[idx] && <span className="lv-field-error">{phoneErrors[idx]}</span>}
                     </div>
+                    {selected.collectShirtSize && (
+                      <div className="lv-field">
+                        <label className="lv-field-label">Shirt size</label>
+                        <select
+                          className="lv-input"
+                          value={p.shirtSize || ""}
+                          onChange={(e) => updatePlayer(idx, "shirtSize", e.target.value)}
+                          required
+                        >
+                          <option value="" disabled>
+                            Select a size
+                          </option>
+                          {SHIRT_SIZES.map((size) => (
+                            <option key={size} value={size}>
+                              {size}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </fieldset>
                 );
               })}

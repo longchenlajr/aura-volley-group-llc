@@ -31,7 +31,7 @@ export interface Team {
   checked_in: boolean;
   created_at: string;
   withdrawn_at: string | null;
-  players: { id: string; name: string; email: string | null; phone: string | null; is_captain: boolean }[];
+  players: { id: string; name: string; email: string | null; phone: string | null; is_captain: boolean; shirt_size: string | null }[];
 }
 
 export type { PoolWithTeams };

@@ -9,6 +9,7 @@ export interface Tournament {
   teamSize: 2 | 3 | 4 | 6;
   registrationOpen: boolean;
   maxTeams?: number;
+  collectShirtSize?: boolean;
 }
 
 const allTournaments: Tournament[] = (data as { tournaments: Tournament[] }).tournaments;

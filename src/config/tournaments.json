@@ -70,7 +70,8 @@
       "location": "2600 Parkway Blvd, Allentown, PA 18104",
       "format": "Triples",
       "teamSize": 3,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "collectShirtSize": true
     },
     {
       "id": "awesomefest-quads-07-25-2026",
@@ -79,7 +80,8 @@
       "location": "2600 Parkway Blvd, Allentown, PA 18104",
       "format": "Quads",
       "teamSize": 4,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "collectShirtSize": true
     },
     {
       "id": "awesomefest-sixes-07-26-2026",
@@ -88,7 +90,8 @@
       "location": "2600 Parkway Blvd, Allentown, PA 18104",
       "format": "sixes",
       "teamSize": 6,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "collectShirtSize": true
     },
     {
       "id": "doubles-08-15-2026",

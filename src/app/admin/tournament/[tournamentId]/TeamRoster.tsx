@@ -284,16 +284,18 @@ export function TeamRoster({
                                 <span className="lv-roster-player-contact">
                                   {captain?.email && <span>{captain.email}</span>}
                                   {(captain?.phone || t.contact_phone) && <span>{captain?.phone || t.contact_phone}</span>}
+                                  {captain?.shirt_size && <span>Shirt: {captain.shirt_size}</span>}
                                 </span>
                               )}
                             </div>
                             {teammates.map((p) => (
                               <div key={p.id} className="lv-roster-player-line">
                                 <span className="lv-roster-player-name">{p.name}</span>
-                                {isTeamExpanded && (p.email || p.phone) && (
+                                {isTeamExpanded && (p.email || p.phone || p.shirt_size) && (
                                   <span className="lv-roster-player-contact">
                                     {p.email && <span>{p.email}</span>}
                                     {p.phone && <span>{p.phone}</span>}
+                                    {p.shirt_size && <span>Shirt: {p.shirt_size}</span>}
                                   </span>
                                 )}
                               </div>
@@ -453,6 +455,7 @@ function TeamTableRows({
               <span className="lv-roster-player-contact">
                 {captain?.email && <span>{captain.email}</span>}
                 {(captain?.phone || t.contact_phone) && <span>{captain?.phone || t.contact_phone}</span>}
+                {captain?.shirt_size && <span>Shirt: {captain.shirt_size}</span>}
               </span>
             )}
           </div>
@@ -463,10 +466,11 @@ function TeamTableRows({
               {teammates.map((p) => (
                 <div key={p.id} className="lv-roster-player-line">
                   <span className="lv-roster-player-name">{p.name}</span>
-                  {isTeamExpanded && (p.email || p.phone) && (
+                  {isTeamExpanded && (p.email || p.phone || p.shirt_size) && (
                     <span className="lv-roster-player-contact">
                       {p.email && <span>{p.email}</span>}
                       {p.phone && <span>{p.phone}</span>}
+                      {p.shirt_size && <span>Shirt: {p.shirt_size}</span>}
                     </span>
                   )}
                 </div>

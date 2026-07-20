@@ -34,6 +34,13 @@ function normalizePhone(raw: string): string | null {
   return null;
 }
 
+// --- Shirt size validation ---
+const SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
+type ShirtSize = (typeof SHIRT_SIZES)[number];
+function isShirtSize(value: unknown): value is ShirtSize {
+  return typeof value === "string" && (SHIRT_SIZES as readonly string[]).includes(value);
+}
+
 // GET: return open upcoming tournaments
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -66,7 +73,7 @@ export async function POST(req: NextRequest) {
     tournamentId: string;
     teamName: string;
     contactPhone: string;
-    players: { name: string; email?: string; phone?: string }[];
+    players: { name: string; email?: string; phone?: string; shirtSize?: string }[];
   };
 
   // Validate tournament exists, is open, and hasn't passed
@@ -153,6 +160,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Shirt size: required for every player on tournaments that collect it, with
+  // no admin leniency exception (unlike the contact-info rule above).
+  if (tournament.collectShirtSize) {
+    for (let i = 0; i < players.length; i++) {
+      if (!isShirtSize(players[i]?.shirtSize)) {
+        return NextResponse.json(
+          { error: `Player ${i + 1}'s shirt size is required.` },
+          { status: 400 },
+        );
+      }
+    }
+  }
+
   // Insert team
   const { data: team, error: teamError } = await getSupabaseAdmin()
     .from("teams")
@@ -188,6 +208,7 @@ export async function POST(req: NextRequest) {
     email: p.email || null,
     phone: idx === 0 ? phone : p.phone ? normalizePhone(p.phone) : null,
     is_captain: idx === 0,
+    shirt_size: p.shirtSize || null,
   }));
 
   const { error: playersError } = await getSupabaseAdmin()

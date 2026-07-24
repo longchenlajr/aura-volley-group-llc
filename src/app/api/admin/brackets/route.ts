@@ -210,14 +210,15 @@ export async function POST(req: NextRequest) {
 
   // Split courts between gold and silver brackets
   // Odd court goes to the bracket with more R1 games
+  // (No silver bracket will actually be generated below 2 teams — give gold every court.)
   const goldR1 = countR1Games(goldTeams.length);
   const silverR1 = countR1Games(silverTeams.length);
   const halfCourts = Math.floor(totalCourts / 2);
   const extraCourt = totalCourts % 2 === 1 ? 1 : 0;
   const goldGetsExtra = goldR1 >= silverR1;
 
-  const goldCourtCount = halfCourts + (goldGetsExtra ? extraCourt : 0);
-  const silverCourtCount = halfCourts + (goldGetsExtra ? 0 : extraCourt);
+  const goldCourtCount = silverTeams.length < 2 ? totalCourts : halfCourts + (goldGetsExtra ? extraCourt : 0);
+  const silverCourtCount = silverTeams.length < 2 ? 0 : halfCourts + (goldGetsExtra ? 0 : extraCourt);
 
   // Gold gets courts 1..goldCourtCount, silver gets the rest
   const goldCourts = Array.from({ length: goldCourtCount }, (_, i) => i + 1);

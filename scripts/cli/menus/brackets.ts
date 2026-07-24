@@ -140,7 +140,7 @@ async function generateBracketsAction(ctx: CliContext): Promise<void> {
           team_b_score: s.team_b_score,
         })),
       }));
-    const format = getMatchFormat(poolTeams.length);
+    const format = getMatchFormat(poolTeams.length, ctx.awesomefest);
     return {
       pool_id: pool.id,
       pool_label: pool.pool_label,
@@ -150,7 +150,7 @@ async function generateBracketsAction(ctx: CliContext): Promise<void> {
   });
 
   const overallStandings = computeOverallStandings(poolStandings);
-  const defaultCutoff = getDefaultGoldCutoff(overallStandings, pools.length);
+  const defaultCutoff = ctx.awesomefest ? overallStandings.length : getDefaultGoldCutoff(overallStandings, pools.length);
 
   // Show standings preview
   const preview = overallStandings
@@ -162,27 +162,36 @@ async function generateBracketsAction(ctx: CliContext): Promise<void> {
   log.info(`Overall Standings (${overallStandings.length} teams):\n${preview}`);
 
   // Prompts
-  const cutoffInput = await text({
-    message: `Gold bracket size — top N teams (default ${defaultCutoff}):`,
-    placeholder: String(defaultCutoff),
-    validate: (v) => {
-      const n = parseInt(v || String(defaultCutoff));
-      if (isNaN(n) || n < 2 || n > overallStandings.length - 1)
-        return `Enter 2–${overallStandings.length - 1}`;
-    },
-  });
-  if (isCancel(cutoffInput)) return;
-  const goldCutoff = parseInt((cutoffInput as string) || String(defaultCutoff)) || defaultCutoff;
+  let goldCutoff: number;
+  let pointsPerSet: 11 | 15 | 21;
 
-  const ptsChoice = await select({
-    message: 'Points per set for playoffs:',
-    options: [
-      { value: '15', label: '15 points' },
-      { value: '11', label: '11 points' },
-    ],
-  });
-  if (isCancel(ptsChoice)) return;
-  const pointsPerSet = parseInt(ptsChoice as string) as 11 | 15;
+  if (ctx.awesomefest) {
+    goldCutoff = overallStandings.length;
+    pointsPerSet = 21;
+    log.info('AwesomeFest tournament — games to 21, single bracket (everyone makes playoffs).');
+  } else {
+    const cutoffInput = await text({
+      message: `Gold bracket size — top N teams (default ${defaultCutoff}):`,
+      placeholder: String(defaultCutoff),
+      validate: (v) => {
+        const n = parseInt(v || String(defaultCutoff));
+        if (isNaN(n) || n < 2 || n > overallStandings.length - 1)
+          return `Enter 2–${overallStandings.length - 1}`;
+      },
+    });
+    if (isCancel(cutoffInput)) return;
+    goldCutoff = parseInt((cutoffInput as string) || String(defaultCutoff)) || defaultCutoff;
+
+    const ptsChoice = await select({
+      message: 'Points per set for playoffs:',
+      options: [
+        { value: '15', label: '15 points' },
+        { value: '11', label: '11 points' },
+      ],
+    });
+    if (isCancel(ptsChoice)) return;
+    pointsPerSet = parseInt(ptsChoice as string) as 11 | 15;
+  }
 
   const goldCourtsInput = await text({
     message: 'Gold bracket courts (comma-separated, e.g. 1,2):',

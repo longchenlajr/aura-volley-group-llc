@@ -7,6 +7,7 @@ export interface CliContext {
   tournamentName: string;
   tournamentDate: string;
   teamSize: number;
+  awesomefest: boolean;
 }
 
 export function createCliClient(env: 'local' | 'live'): SupabaseClient {

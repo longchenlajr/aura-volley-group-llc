@@ -12,12 +12,20 @@ export interface MatchSet {
   submitted_at?: string;
 }
 
+/** AwesomeFest pool play format: games to 21, 2 sets, cap 23. */
+export const AWESOMEFEST_FORMAT: MatchFormat = { sets: 2, pointsPerSet: 21, pointsCap: 23 };
+
 /**
  * Determine match format from pool size.
  * Pool play: win-by-2 with a point cap (cap = pointsPerSet + 2).
  * At the cap, win by 1 is allowed (e.g. 13-12 in a game to 11).
+ *
+ * If `awesomefest` is true, the pool-size mapping is bypassed entirely in
+ * favor of the AwesomeFest override (games to 21).
  */
-export function getMatchFormat(poolSize: number): MatchFormat {
+export function getMatchFormat(poolSize: number, awesomefest?: boolean): MatchFormat {
+  if (awesomefest) return AWESOMEFEST_FORMAT;
+
   switch (poolSize) {
     case 3: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
     case 4: return { sets: 2, pointsPerSet: 15, pointsCap: 17 };
@@ -34,8 +42,9 @@ export function getMatchFormat(poolSize: number): MatchFormat {
  * format columns existed).
  */
 export function matchFormatFromPool(
-  cols: { sets_per_match: number | null; points_per_set: number | null; points_cap: number | null },
+  cols: { sets_per_match?: number | null; points_per_set?: number | null; points_cap?: number | null },
   fallbackPoolSize: number,
+  awesomefest?: boolean,
 ): MatchFormat {
   if (cols.sets_per_match != null && cols.points_per_set != null) {
     return {
@@ -44,7 +53,7 @@ export function matchFormatFromPool(
       pointsCap: cols.points_cap ?? undefined,
     };
   }
-  return getMatchFormat(fallbackPoolSize);
+  return getMatchFormat(fallbackPoolSize, awesomefest);
 }
 
 /**

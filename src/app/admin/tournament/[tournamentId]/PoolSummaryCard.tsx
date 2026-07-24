@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { computePoolStandings } from "@/lib/standings";
-import { getMatchFormat } from "@/lib/score-format";
+import { matchFormatFromPool } from "@/lib/score-format";
 import { PoolMatchTable } from "./PoolMatchTable";
 import type { MatchData, PoolWithTeams } from "./types";
 
@@ -31,7 +31,10 @@ export function PoolSummaryCard({
   onCopyScoreLink,
   onSwapMatchOrder,
 }: PoolSummaryCardProps) {
-  const format = useMemo(() => getMatchFormat(pool.teams.length), [pool.teams.length]);
+  const format = useMemo(
+    () => matchFormatFromPool(pool.pool, pool.teams.length),
+    [pool.pool, pool.teams.length],
+  );
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   const standings = useMemo(() => {

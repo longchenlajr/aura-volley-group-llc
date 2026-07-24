@@ -10,6 +10,8 @@ export interface Tournament {
   registrationOpen: boolean;
   maxTeams?: number;
   collectShirtSize?: boolean;
+  /** AwesomeFest format override: games to 21 (2 sets, cap 23) and a single playoff bracket (everyone makes playoffs). */
+  awesomefest?: boolean;
 }
 
 const allTournaments: Tournament[] = (data as { tournaments: Tournament[] }).tournaments;

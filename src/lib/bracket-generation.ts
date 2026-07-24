@@ -45,7 +45,7 @@ export interface GeneratedBracket {
 export function generateBracket(
   teams: OverallTeamStanding[],
   bracketType: "gold" | "silver",
-  pointsPerSet: 11 | 15,
+  pointsPerSet: 11 | 15 | 21,
   courts: number[],
   matchOrderOffset: number = 0,
 ): GeneratedBracket {

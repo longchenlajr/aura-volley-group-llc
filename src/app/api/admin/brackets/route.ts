@@ -99,8 +99,8 @@ export async function POST(req: NextRequest) {
   const { tournament_id, gold_cutoff, gold_points_per_set, silver_points_per_set, court_count } = body as {
     tournament_id: string;
     gold_cutoff: number;
-    gold_points_per_set: 11 | 15;
-    silver_points_per_set: 11 | 15;
+    gold_points_per_set: 11 | 15 | 21;
+    silver_points_per_set: 11 | 15 | 21;
     court_count: number;
   };
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getMatchFormat } from "@/lib/score-format";
+import { getTournament } from "@/lib/tournaments";
 
 // GET /api/admin/pools?tournament=X — pools with team assignments
 export async function GET(req: NextRequest) {
@@ -79,8 +80,9 @@ export async function POST(req: NextRequest) {
 
   // Insert pools. Freeze each pool's match format from its roster size now, so a
   // later withdrawal can't shift how its completed matches are interpreted.
+  const awesomefest = getTournament(tournament_id)?.awesomefest ?? false;
   const poolRows = pools.map((p) => {
-    const fmt = getMatchFormat(p.team_ids.length);
+    const fmt = getMatchFormat(p.team_ids.length, awesomefest);
     return {
       tournament_id,
       pool_label: p.pool_label,

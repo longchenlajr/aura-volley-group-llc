@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { isSetComplete, isMatchComplete, getMatchFormat } from "@/lib/score-format";
+import { getTournament } from "@/lib/tournaments";
 
 // Rate limiter per token (120/min for live per-point scoring)
 const tokenRateMap = new Map<string, { count: number; resetAt: number }>();
@@ -67,7 +68,8 @@ export async function GET(
     .eq("pool_id", match.pool_id);
 
   const poolSize = poolTeamCount ?? 4;
-  const format = getMatchFormat(poolSize);
+  const awesomefest = getTournament(match.tournament_id)?.awesomefest ?? false;
+  const format = getMatchFormat(poolSize, awesomefest);
 
   // Get total matches in this pool for "Match X of Y"
   const { count: totalMatches } = await sb
@@ -136,7 +138,7 @@ export async function POST(
   // Get match and pool size for format
   const { data: match } = await sb
     .from("matches")
-    .select("id, pool_id, work_team_id")
+    .select("id, pool_id, work_team_id, tournament_id")
     .eq("id", tokenRow.match_id)
     .single();
 
@@ -147,7 +149,8 @@ export async function POST(
     .select("*", { count: "exact", head: true })
     .eq("pool_id", match.pool_id);
 
-  const format = getMatchFormat(poolTeamCount ?? 4);
+  const awesomefest = getTournament(match.tournament_id)?.awesomefest ?? false;
+  const format = getMatchFormat(poolTeamCount ?? 4, awesomefest);
 
   // Validate and upsert each set
   const now = new Date().toISOString();

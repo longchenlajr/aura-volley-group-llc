@@ -4,6 +4,9 @@ export interface Pool {
   pool_label: string;
   court_number: number;
   created_at: string;
+  sets_per_match?: number | null;
+  points_per_set?: number | null;
+  points_cap?: number | null;
 }
 
 export interface PoolTeam {

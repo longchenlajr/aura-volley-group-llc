@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getMatchFormat } from "@/lib/score-format";
+import { getTournament } from "@/lib/tournaments";
 
 // POST /api/admin/teams/[id]/withdraw — soft-delete a team and forfeit its
 // remaining pool + bracket matches, all in one atomic RPC.
@@ -41,7 +42,8 @@ export async function POST(
       .eq("pool_id", poolTeam.pool_id);
     poolSize = count ?? 4;
   }
-  const format = getMatchFormat(poolSize);
+  const awesomefest = getTournament(team.tournament_id)?.awesomefest ?? false;
+  const format = getMatchFormat(poolSize, awesomefest);
 
   // Atomic withdrawal: forfeits pool + bracket matches, handles in-progress and
   // not-yet-populated bracket slots, marks withdrawn last.

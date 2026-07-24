@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isSetComplete, isMatchComplete, matchWinner, type MatchFormat } from "../score-format";
+import { isSetComplete, isMatchComplete, matchWinner, getMatchFormat, type MatchFormat } from "../score-format";
 
 const DOUBLE: MatchFormat = { sets: 2, pointsPerSet: 15, pointsCap: 17 };
 
@@ -27,6 +27,17 @@ describe("isMatchComplete", () => {
       { set_number: 1, team_a_score: 15, team_b_score: 5 },
       { set_number: 2, team_a_score: 15, team_b_score: 9 },
     ], DOUBLE)).toBe(true);
+  });
+});
+
+describe("getMatchFormat", () => {
+  it("uses pool-size mapping by default", () => {
+    expect(getMatchFormat(4)).toEqual({ sets: 2, pointsPerSet: 15, pointsCap: 17 });
+    expect(getMatchFormat(7)).toEqual({ sets: 1, pointsPerSet: 11, pointsCap: 13 });
+  });
+  it("overrides to games-to-21 when awesomefest is true, regardless of pool size", () => {
+    expect(getMatchFormat(4, true)).toEqual({ sets: 2, pointsPerSet: 21, pointsCap: 23 });
+    expect(getMatchFormat(7, true)).toEqual({ sets: 2, pointsPerSet: 21, pointsCap: 23 });
   });
 });
 

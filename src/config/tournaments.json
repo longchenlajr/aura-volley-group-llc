@@ -71,7 +71,8 @@
       "format": "Triples",
       "teamSize": 3,
       "registrationOpen": true,
-      "collectShirtSize": true
+      "collectShirtSize": true,
+      "awesomefest": true
     },
     {
       "id": "awesomefest-quads-07-25-2026",
@@ -81,7 +82,8 @@
       "format": "Quads",
       "teamSize": 4,
       "registrationOpen": true,
-      "collectShirtSize": true
+      "collectShirtSize": true,
+      "awesomefest": true
     },
     {
       "id": "awesomefest-sixes-07-26-2026",
@@ -91,7 +93,8 @@
       "format": "sixes",
       "teamSize": 6,
       "registrationOpen": true,
-      "collectShirtSize": true
+      "collectShirtSize": true,
+      "awesomefest": true
     },
     {
       "id": "doubles-08-15-2026",

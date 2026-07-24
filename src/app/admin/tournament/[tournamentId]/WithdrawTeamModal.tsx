@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getMatchFormat } from "@/lib/score-format";
+import { matchFormatFromPool } from "@/lib/score-format";
 import type { Team, MatchData, PoolWithTeams } from "./types";
 
 interface WithdrawTeamModalProps {
@@ -46,7 +46,8 @@ export function WithdrawTeamModal({
   function getForfeitDisplay(m: MatchData) {
     const pool = pools.find((p) => p.pool.id === m.pool.id);
     const poolSize = pool?.teams.length ?? 4;
-    const format = getMatchFormat(poolSize);
+    const poolCols = pool?.pool ?? { sets_per_match: null, points_per_set: null, points_cap: null };
+    const format = matchFormatFromPool(poolCols, poolSize);
     const scores = Array.from({ length: format.sets }, () => `${format.pointsPerSet}-0`);
     return scores.join(", ");
   }

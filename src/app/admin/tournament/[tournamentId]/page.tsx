@@ -6,7 +6,7 @@ import { getTournament, type Tournament } from "@/lib/tournaments";
 import type { PoolWithTeams } from "@/lib/pools";
 import { generatePools as runPoolGeneration } from "@/lib/pool-generation";
 import { computeOverallStandings, getDefaultGoldCutoff, type OverallTeamStanding } from "@/lib/tournament-standings";
-import { getMatchFormat } from "@/lib/score-format";
+import { matchFormatFromPool } from "@/lib/score-format";
 import { TournamentToolbar } from "./TournamentToolbar";
 import { PoolSummaryCard } from "./PoolSummaryCard";
 import { BracketSummaryCard } from "./BracketSummaryCard";
@@ -624,6 +624,7 @@ export default function TournamentViewPage() {
           poolCount={savedPools.length}
           courtCount={savedPools.length}
           withdrawnTeamIds={withdrawnTeamIds}
+          awesomefest={tournament?.awesomefest ?? false}
           onClose={() => setPlayoffSetup(false)}
           onGenerated={() => { setPlayoffSetup(false); checkBrackets(); }}
         />
@@ -993,13 +994,13 @@ function SwapModal({ teamName, teamId, pools, onClose, onSwap }: {
 }
 
 /* ---- PLAYOFF SETUP MODAL ---- */
-function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamIds, onClose, onGenerated }: {
-  tournamentId: string; poolCount: number; courtCount: number; withdrawnTeamIds: Set<string>; onClose: () => void; onGenerated: () => void;
+function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamIds, awesomefest, onClose, onGenerated }: {
+  tournamentId: string; poolCount: number; courtCount: number; withdrawnTeamIds: Set<string>; awesomefest: boolean; onClose: () => void; onGenerated: () => void;
 }) {
   const [standings, setStandings] = useState<OverallTeamStanding[]>([]);
   const [cutoff, setCutoff] = useState(0);
-  const [goldFormat, setGoldFormat] = useState<11 | 15>(15);
-  const [silverFormat, setSilverFormat] = useState<11 | 15>(11);
+  const [goldFormat, setGoldFormat] = useState<11 | 15 | 21>(awesomefest ? 21 : 15);
+  const [silverFormat, setSilverFormat] = useState<11 | 15 | 21>(awesomefest ? 21 : 11);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -1013,12 +1014,13 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
             .filter((t) => !withdrawnTeamIds.has(t.team_id))
             .map((t, i) => ({ ...t, overall_rank: i + 1 }));
           setStandings(overall);
-          setCutoff(getDefaultGoldCutoff(overall, poolCount));
+          // AwesomeFest: one bracket, everyone makes playoffs — no gold/silver split.
+          setCutoff(awesomefest ? overall.length : getDefaultGoldCutoff(overall, poolCount));
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [tournamentId, poolCount, withdrawnTeamIds]);
+  }, [tournamentId, poolCount, withdrawnTeamIds, awesomefest]);
 
   const goldTeams = standings.filter((t) => t.overall_rank <= cutoff);
   const silverTeams = standings.filter((t) => t.overall_rank > cutoff);
@@ -1076,13 +1078,13 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
 
         <div className="lv-playoff-standings">
           <div className="lv-playoff-header-row">
-            <span className="lv-playoff-gold-label">Gold Bracket — {goldTeams.length} teams</span>
+            <span className="lv-playoff-gold-label">{awesomefest ? "Bracket" : "Gold Bracket"} — {goldTeams.length} teams</span>
             {goldByes > 0 && <span className="lv-playoff-byes">{goldByes} bye{goldByes > 1 ? "s" : ""}</span>}
           </div>
 
           {standings.map((t, i) => (
             <React.Fragment key={t.team_id}>
-              {i === cutoff && (
+              {!awesomefest && i === cutoff && (
                 <div className="lv-playoff-cutoff">
                   <button className="lv-playoff-cutoff-btn" onClick={() => setCutoff(Math.max(2, cutoff - 1))} disabled={cutoff <= 2}>&#9650;</button>
                   <span className="lv-playoff-cutoff-label">Cutoff</span>
@@ -1107,7 +1109,7 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
             </React.Fragment>
           ))}
 
-          {silverTeams.length >= 2 && (
+          {!awesomefest && silverTeams.length >= 2 && (
             <div className="lv-playoff-header-row" style={{ marginTop: "0.5rem" }}>
               <span className="lv-playoff-silver-label">Silver Bracket — {silverTeams.length} teams</span>
               {silverByes > 0 && <span className="lv-playoff-byes">{silverByes} bye{silverByes > 1 ? "s" : ""}</span>}
@@ -1116,28 +1118,37 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
         </div>
 
         {goldByes === 0 ? (
-          <p className="lv-playoff-rec">Clean bracket — no byes needed for gold.</p>
+          <p className="lv-playoff-rec">Clean bracket — no byes needed{awesomefest ? "" : " for gold"}.</p>
         ) : (
           <p className="lv-playoff-rec">
-            {goldByes} bye{goldByes > 1 ? "s" : ""} in gold (top seed{goldByes > 1 ? "s" : ""} auto-advance).
+            {goldByes} bye{goldByes > 1 ? "s" : ""}{awesomefest ? "" : " in gold"} (top seed{goldByes > 1 ? "s" : ""} auto-advance).
           </p>
         )}
 
         <div className="lv-playoff-formats">
-          <div className="lv-playoff-format-row">
-            <span className="lv-field-label">Gold format</span>
-            <div className="lv-playoff-format-toggle">
-              <button className={`lv-playoff-format-btn ${goldFormat === 15 ? "active" : ""}`} onClick={() => setGoldFormat(15)}>To 15</button>
-              <button className={`lv-playoff-format-btn ${goldFormat === 11 ? "active" : ""}`} onClick={() => setGoldFormat(11)}>To 11</button>
+          {awesomefest ? (
+            <div className="lv-playoff-format-row">
+              <span className="lv-field-label">Format</span>
+              <span style={{ fontSize: "0.85rem", color: "var(--lv-ink-muted)" }}>Games to 21 (AwesomeFest)</span>
             </div>
-          </div>
-          <div className="lv-playoff-format-row">
-            <span className="lv-field-label">Silver format</span>
-            <div className="lv-playoff-format-toggle">
-              <button className={`lv-playoff-format-btn ${silverFormat === 15 ? "active" : ""}`} onClick={() => setSilverFormat(15)}>To 15</button>
-              <button className={`lv-playoff-format-btn ${silverFormat === 11 ? "active" : ""}`} onClick={() => setSilverFormat(11)}>To 11</button>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="lv-playoff-format-row">
+                <span className="lv-field-label">Gold format</span>
+                <div className="lv-playoff-format-toggle">
+                  <button className={`lv-playoff-format-btn ${goldFormat === 15 ? "active" : ""}`} onClick={() => setGoldFormat(15)}>To 15</button>
+                  <button className={`lv-playoff-format-btn ${goldFormat === 11 ? "active" : ""}`} onClick={() => setGoldFormat(11)}>To 11</button>
+                </div>
+              </div>
+              <div className="lv-playoff-format-row">
+                <span className="lv-field-label">Silver format</span>
+                <div className="lv-playoff-format-toggle">
+                  <button className={`lv-playoff-format-btn ${silverFormat === 15 ? "active" : ""}`} onClick={() => setSilverFormat(15)}>To 15</button>
+                  <button className={`lv-playoff-format-btn ${silverFormat === 11 ? "active" : ""}`} onClick={() => setSilverFormat(11)}>To 11</button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {error && <div className="lv-error">{error}</div>}
@@ -1161,14 +1172,18 @@ function ScoreOverrideModal({ matchId, match, pools, onClose, onSaved }: {
   onClose: () => void;
   onSaved: () => void;
 }) {
-  // Determine format from pool size
+  // Determine format from the pool's stored format (falls back to pool size if unset)
   const poolSize = useMemo(() => {
     if (!match || !pools) return 4;
     const pool = pools.find((p) => p.pool.id === match.pool.id);
     return pool?.teams.length ?? 4;
   }, [match, pools]);
 
-  const format = useMemo(() => getMatchFormat(poolSize), [poolSize]);
+  const format = useMemo(() => {
+    const pool = match && pools ? pools.find((p) => p.pool.id === match.pool.id) : undefined;
+    const poolCols = pool?.pool ?? { sets_per_match: null, points_per_set: null, points_cap: null };
+    return matchFormatFromPool(poolCols, poolSize);
+  }, [match, pools, poolSize]);
 
   const [sets, setSets] = useState<Array<{ team_a_score: number; team_b_score: number }>>(() => {
     const result = [];

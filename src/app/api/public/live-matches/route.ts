@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getMatchFormat, isSetComplete, matchWinner } from "@/lib/score-format";
+import { getTournament } from "@/lib/tournaments";
 
 // GET /api/public/live-matches?tournament=X
 export async function GET(req: NextRequest) {
@@ -64,13 +65,14 @@ export async function GET(req: NextRequest) {
   }
 
   const any_started = allMatches.some((m) => m.status !== "scheduled");
+  const awesomefest = getTournament(tournamentId)?.awesomefest ?? false;
 
   // In progress
   const in_progress = allMatches
     .filter((m) => m.status === "in_progress")
     .map((m) => {
       const poolSize = poolSizeMap.get(m.pool_id) ?? 4;
-      const format = getMatchFormat(poolSize);
+      const format = getMatchFormat(poolSize, awesomefest);
       const sets = setsMap.get(m.id) ?? [];
 
       return {
@@ -95,7 +97,7 @@ export async function GET(req: NextRequest) {
     .filter((m) => m.status === "complete" && m.end_time && m.end_time > thirtyMinAgo)
     .map((m) => {
       const poolSize = poolSizeMap.get(m.pool_id) ?? 4;
-      const format = getMatchFormat(poolSize);
+      const format = getMatchFormat(poolSize, awesomefest);
       const sets = setsMap.get(m.id) ?? [];
       const winner = matchWinner(
         sets.map((s, i) => ({ set_number: i + 1, team_a_score: s.team_a_score, team_b_score: s.team_b_score })),

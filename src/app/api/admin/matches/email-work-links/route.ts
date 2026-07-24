@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     const matchListHtml = teamMatches.map((m) => {
       const poolLabel = (m.pool as unknown as { pool_label: string })?.pool_label ?? "";
       const poolSize = poolTeamCountMap.get(poolLabel) ?? 4;
-      const format = getMatchFormat(poolSize);
+      const format = getMatchFormat(poolSize, tournament.awesomefest);
       const teamA = (m.team_a as unknown as { team_name: string })?.team_name ?? "TBD";
       const teamB = (m.team_b as unknown as { team_name: string })?.team_name ?? "TBD";
       const token = tokenMap.get(m.id) ?? "";

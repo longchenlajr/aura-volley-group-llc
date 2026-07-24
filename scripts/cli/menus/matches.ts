@@ -298,7 +298,7 @@ async function editMatchScore(ctx: CliContext): Promise<void> {
 
   const match = matches[parseInt(pickInput as string) - 1];
   const poolSize = poolSizeMap.get(match.pool_id) ?? 4;
-  const format = getMatchFormat(poolSize);
+  const format = getMatchFormat(poolSize, ctx.awesomefest);
   const a = teamMap.get(match.team_a_id) ?? '?';
   const b = teamMap.get(match.team_b_id) ?? '?';
 

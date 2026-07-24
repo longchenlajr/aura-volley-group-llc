@@ -161,7 +161,7 @@ async function simulatePoolPlayAction(ctx: CliContext): Promise<void> {
   s2.start('Simulating...');
 
   for (const match of matches) {
-    const format = getMatchFormat(poolSizeMap.get(match.pool_id) ?? 4);
+    const format = getMatchFormat(poolSizeMap.get(match.pool_id) ?? 4, ctx.awesomefest);
 
     await ctx.supabase.from('match_sets').delete().eq('match_id', match.id);
 
@@ -297,7 +297,7 @@ export async function standingsInspector(ctx: CliContext): Promise<void> {
     }));
 
     const activeTeams = poolTeams.filter((t) => !t.withdrawn);
-    const format = getMatchFormat(activeTeams.length);
+    const format = getMatchFormat(activeTeams.length, ctx.awesomefest);
 
     const poolMatches = (allMatches ?? [])
       .filter((m) => m.pool_id === pool.id)
@@ -349,7 +349,7 @@ async function persistBracket(
   ctx: CliContext,
   teams: any[],
   bracketType: 'gold' | 'silver',
-  pointsPerSet: 11 | 15,
+  pointsPerSet: 11 | 15 | 21,
   courts: number[],
   matchOrderOffset: number,
 ): Promise<number> {
@@ -443,15 +443,21 @@ async function fullSimulationAction(ctx: CliContext): Promise<void> {
   if (isCancel(netInput)) return;
   const netCount = parseInt(netInput as string);
 
-  const ptsChoice = await select({
-    message: 'Bracket points per set:',
-    options: [
-      { value: '15', label: '15 pts' },
-      { value: '11', label: '11 pts' },
-    ],
-  });
-  if (isCancel(ptsChoice)) return;
-  const pointsPerSet = parseInt(ptsChoice as string) as 11 | 15;
+  let pointsPerSet: 11 | 15 | 21;
+  if (ctx.awesomefest) {
+    pointsPerSet = 21;
+    log.info('AwesomeFest tournament — games to 21, single bracket (everyone makes playoffs).');
+  } else {
+    const ptsChoice = await select({
+      message: 'Bracket points per set:',
+      options: [
+        { value: '15', label: '15 pts' },
+        { value: '11', label: '11 pts' },
+      ],
+    });
+    if (isCancel(ptsChoice)) return;
+    pointsPerSet = parseInt(ptsChoice as string) as 11 | 15;
+  }
 
   const confirmed = await confirm({
     message: `Full simulation: ${teamCount} teams, ${netCount} net(s), ${pointsPerSet}pts/set. Wipe existing data first?`,
@@ -558,7 +564,7 @@ async function fullSimulationAction(ctx: CliContext): Promise<void> {
   }
 
   for (const match of allMatches ?? []) {
-    const format = getMatchFormat(poolSizeMap.get(match.pool_id) ?? 4);
+    const format = getMatchFormat(poolSizeMap.get(match.pool_id) ?? 4, ctx.awesomefest);
     const sets = Array.from({ length: format.sets }, (_, i) => {
       const [a, b] = simulateSet(format.pointsPerSet, format.pointsCap);
       return { match_id: match.id, set_number: i + 1, team_a_score: a, team_b_score: b, submitted_by: 'sim' };
@@ -591,7 +597,7 @@ async function fullSimulationAction(ctx: CliContext): Promise<void> {
       withdrawn: !!(pt.teams as any).withdrawn_at,
     })).filter((t) => !t.withdrawn);
 
-    const format = getMatchFormat(poolTeams.length);
+    const format = getMatchFormat(poolTeams.length, ctx.awesomefest);
     const poolMatches = (completedMatches ?? [])
       .filter((m) => m.pool_id === pool.id)
       .map((m) => ({
@@ -614,7 +620,10 @@ async function fullSimulationAction(ctx: CliContext): Promise<void> {
   });
 
   const overallStandings = computeOverallStandings(poolStandings);
-  const goldCutoff = getDefaultGoldCutoff(overallStandings, (pools ?? []).length);
+  // AwesomeFest: one bracket, everyone makes playoffs — no gold/silver split.
+  const goldCutoff = ctx.awesomefest
+    ? overallStandings.length
+    : getDefaultGoldCutoff(overallStandings, (pools ?? []).length);
   const goldTeams = overallStandings.slice(0, goldCutoff);
   const silverTeams = overallStandings.slice(goldCutoff);
 

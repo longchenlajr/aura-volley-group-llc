@@ -27,6 +27,7 @@ interface TournamentConfig {
   format: string;
   teamSize: number;
   location: string;
+  awesomefest?: boolean;
 }
 
 async function main() {
@@ -91,6 +92,7 @@ async function main() {
     tournamentName: tournament.name,
     tournamentDate: tournament.date,
     teamSize: tournament.teamSize,
+    awesomefest: tournament.awesomefest ?? false,
   };
 
   // Step 3: Main menu loop

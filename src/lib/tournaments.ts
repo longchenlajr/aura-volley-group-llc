@@ -12,6 +12,10 @@ export interface Tournament {
   collectShirtSize?: boolean;
   /** AwesomeFest format override: games to 21 (2 sets, cap 23) and a single playoff bracket (everyone makes playoffs). */
   awesomefest?: boolean;
+  /** Entry fee per player, in integer cents (e.g. 2500 for $25/player). */
+  priceCents?: number;
+  /** Offer optional online pre-payment (PayPal) during registration. Default off. */
+  onlinePaymentEnabled?: boolean;
 }
 
 const allTournaments: Tournament[] = (data as { tournaments: Tournament[] }).tournaments;

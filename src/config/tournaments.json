@@ -7,7 +7,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-05-09-2026",
@@ -16,7 +17,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-05-24-2026",
@@ -25,7 +27,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-05-31-2026",
@@ -34,7 +37,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-06-20-2026",
@@ -43,7 +47,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "triples-06-21-2026",
@@ -52,7 +57,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "triples",
       "teamSize": 3,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-07-4-2026",
@@ -61,7 +67,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "awesomefest-triples-07-24-2026",
@@ -71,6 +78,7 @@
       "format": "Triples",
       "teamSize": 3,
       "registrationOpen": true,
+      "priceCents": 2500,
       "collectShirtSize": true,
       "awesomefest": true
     },
@@ -82,6 +90,7 @@
       "format": "Quads",
       "teamSize": 4,
       "registrationOpen": true,
+      "priceCents": 2500,
       "collectShirtSize": true,
       "awesomefest": true
     },
@@ -93,6 +102,7 @@
       "format": "sixes",
       "teamSize": 6,
       "registrationOpen": true,
+      "priceCents": 2500,
       "collectShirtSize": true,
       "awesomefest": true
     },
@@ -103,7 +113,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "triples-08-16-2026",
@@ -112,7 +123,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "triples",
       "teamSize": 3,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-08-30-2026",
@@ -121,7 +133,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-09-06-2026",
@@ -130,7 +143,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-10-11-2026",
@@ -139,7 +153,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-10-25-2026",
@@ -148,7 +163,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     }
   ]
 }

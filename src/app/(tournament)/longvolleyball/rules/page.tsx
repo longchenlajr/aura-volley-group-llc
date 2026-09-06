@@ -83,6 +83,10 @@ export default function RulesPage() {
               entire set. If a team is caught serving out of order, they forfeit
               possession of the serve.
             </li>
+            <li>
+              Each team is allowed <strong>two 1-minute timeouts</strong> per
+              set.
+            </li>
           </ul>
 
           {/* Hand contact rules */}

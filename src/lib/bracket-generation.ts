@@ -340,9 +340,27 @@ function nextPowerOf2(n: number): number {
  *   3. Seed balance — otherwise follow the standard single-elim snake pattern,
  *      keeping the halves strength-balanced and top seeds advantaged.
  *
- * Byes are the weakest entries (null) and never trigger separation, so the
- * snake pattern pairs them with the top overall seeds — i.e. top seeds get the
- * byes, exactly as in standard seeding.
+ * When there are byes (`bracketSize > teams.length`), the top `byeCount` teams
+ * by overall_rank are split off as a separate "bye group" up front and routed
+ * exclusively into the slots the standard bracket structure reserves for byes
+ * (see `classifySlots`), so byes are guaranteed to go to the top seeds by
+ * construction rather than incidentally falling out of the same bisection used
+ * for pool separation (see issue #10 — pool separation could previously move
+ * real teams across the bye/non-bye boundary and hand a bye to a lower seed).
+ * Pool separation is still applied within each group, checked in two tiers:
+ * first field-wide (both groups combined, so a same-pool bye/play pair still
+ * gets pushed apart at the highest level possible, keeping their eventual
+ * meet-round as late as possible), then — only if that check is ambiguous
+ * (both halves or neither already hold the pool) — within this team's own
+ * group only, since bye-group teams never play each other and a bye-group
+ * pool-mate can otherwise mask a real conflict between two play-group
+ * pool-mates. Because bye assignment is a hard rule, in the rare case where
+ * one pool has members in BOTH the bye group and the play group, the two
+ * groups are routed into different slot types — so "maximum possible
+ * separation across the entire field" can occasionally lose to "byes strictly
+ * by rank." This is intentional and matches standard tournament convention.
+ * The guarantee that no two same-pool teams meet in Round 1 is unaffected
+ * (byes don't play R1 at all).
  *
  * When pools are all distinct (or all identical) no separation is triggered and
  * the result is identical to standard bracket seed order.
@@ -351,20 +369,178 @@ function seedWithPoolSeparation(
   teams: OverallTeamStanding[],
   bracketSize: number,
 ): (OverallTeamStanding | null)[] {
-  // Pad to bracket size with byes (null) as the weakest entries.
-  const entries: (OverallTeamStanding | null)[] = [];
-  for (let i = 0; i < bracketSize; i++) entries.push(teams[i] ?? null);
+  const n = teams.length;
+  const byeCount = bracketSize - n;
+
+  // SAFETY: when there are no byes, use the exact previous algorithm unchanged.
+  if (byeCount === 0) {
+    const slots: (OverallTeamStanding | null)[] = new Array(bracketSize).fill(null);
+    legacyPlaceRegion(teams, 0, bracketSize, slots);
+    return slots;
+  }
+
+  const slotType = classifySlots(n, bracketSize);
+
+  const byeGroup = teams.slice(0, byeCount);
+  const playGroup = teams.slice(byeCount);
 
   const slots: (OverallTeamStanding | null)[] = new Array(bracketSize).fill(null);
-  placeRegion(entries, 0, bracketSize, slots);
+  placeByeAware(byeGroup, playGroup, 0, bracketSize, slotType, slots);
   return slots;
 }
 
+type SlotType = "BYE" | "BYEWIN" | "PLAY";
+
 /**
- * Recursively place a region's entries (sorted strongest-first) into its slots,
- * splitting into top/bottom halves with the separation-first rules above.
+ * Classify every R1 slot (0-indexed) using the standard bracket seed order:
+ *   - BYE:    the slot's standard seed number exceeds the real team count `n`
+ *             (i.e. it holds a null — a bye).
+ *   - BYEWIN: a real team whose R1 opponent slot is a BYE — this team gets a bye.
+ *   - PLAY:   a real team that plays a real R1 game.
+ *
+ * BYEWIN slots receive the bye group (top `byeCount` ranked teams); PLAY slots
+ * receive the play group; BYE slots get null.
  */
-function placeRegion(
+function classifySlots(n: number, bracketSize: number): SlotType[] {
+  const seedOrder = bracketSeedOrder(bracketSize);
+  const types: SlotType[] = new Array(bracketSize);
+  for (let slot = 0; slot < bracketSize; slot++) {
+    if (seedOrder[slot] > n) {
+      types[slot] = "BYE";
+      continue;
+    }
+    const partnerSlot = slot % 2 === 0 ? slot + 1 : slot - 1;
+    types[slot] = seedOrder[partnerSlot] > n ? "BYEWIN" : "PLAY";
+  }
+  return types;
+}
+
+function countSlotType(slotType: SlotType[], type: SlotType, start: number, len: number): number {
+  let count = 0;
+  for (let i = start; i < start + len; i++) if (slotType[i] === type) count++;
+  return count;
+}
+
+/** Merge two rank-sorted (ascending) team lists into one rank-sorted list. */
+function mergeByOverallRank(
+  a: OverallTeamStanding[],
+  b: OverallTeamStanding[],
+): OverallTeamStanding[] {
+  return [...a, ...b].sort((x, y) => x.overall_rank - y.overall_rank);
+}
+
+/**
+ * Recursively place the bye group and play group into a region's slots,
+ * routing each team into its own group's reserved slot type (from
+ * `classifySlots`) while applying pool separation within that constraint.
+ */
+function placeByeAware(
+  byeGroup: OverallTeamStanding[],
+  playGroup: OverallTeamStanding[],
+  slotStart: number,
+  regionSize: number,
+  slotType: SlotType[],
+  slots: (OverallTeamStanding | null)[],
+): void {
+  if (process.env.NODE_ENV !== "production") {
+    const byeWinInRegion = countSlotType(slotType, "BYEWIN", slotStart, regionSize);
+    const playInRegion = countSlotType(slotType, "PLAY", slotStart, regionSize);
+    if (byeGroup.length !== byeWinInRegion || playGroup.length !== playInRegion) {
+      throw new Error(
+        `placeByeAware: capacity mismatch at region [${slotStart}, ${slotStart + regionSize}) — ` +
+          `byeGroup=${byeGroup.length}/${byeWinInRegion} playGroup=${playGroup.length}/${playInRegion}`,
+      );
+    }
+  }
+
+  if (regionSize === 1) {
+    const t = slotType[slotStart];
+    if (t === "BYE") slots[slotStart] = null;
+    else if (t === "BYEWIN") slots[slotStart] = byeGroup[0];
+    else slots[slotStart] = playGroup[0];
+    return;
+  }
+
+  const half = regionSize / 2;
+  const topStart = slotStart;
+  const botStart = slotStart + half;
+
+  const byeWinCapTop = countSlotType(slotType, "BYEWIN", topStart, half);
+  const playCapTop = countSlotType(slotType, "PLAY", topStart, half);
+  const byeWinCapBot = countSlotType(slotType, "BYEWIN", botStart, half);
+  const playCapBot = countSlotType(slotType, "PLAY", botStart, half);
+
+  const byeIds = new Set(byeGroup.map((t) => t.team_id));
+  const merged = mergeByOverallRank(byeGroup, playGroup);
+
+  // Combined (both groups) — mirrors legacy field-wide separation, needed so
+  // same-pool teams still get pushed apart at the highest possible level even
+  // when one is a bye and the other plays (keeps their eventual meet-round as
+  // late as possible).
+  const topList: OverallTeamStanding[] = [];
+  const botList: OverallTeamStanding[] = [];
+  // Per-group — bye-group teams never play each other, so only the play
+  // group's own separation affects real Round-1 matchups. Used as a fallback
+  // when the combined check is ambiguous (both/neither side already has the
+  // pool), since a bye-group pool-mate can otherwise mask a real conflict
+  // between two play-group pool-mates.
+  const byeTop: OverallTeamStanding[] = [];
+  const byeBot: OverallTeamStanding[] = [];
+  const playTop: OverallTeamStanding[] = [];
+  const playBot: OverallTeamStanding[] = [];
+  let usedByeTop = 0, usedByeBot = 0, usedPlayTop = 0, usedPlayBot = 0;
+
+  for (const team of merged) {
+    const isBye = byeIds.has(team.team_id);
+    const capTop = isBye ? byeWinCapTop : playCapTop;
+    const capBot = isBye ? byeWinCapBot : playCapBot;
+    const usedTop = isBye ? usedByeTop : usedPlayTop;
+    const usedBot = isBye ? usedByeBot : usedPlayBot;
+    const sameGroupTop = isBye ? byeTop : playTop;
+    const sameGroupBot = isBye ? byeBot : playBot;
+
+    let side: "TOP" | "BOTTOM";
+    if (usedTop >= capTop) {
+      side = "BOTTOM";
+    } else if (usedBot >= capBot) {
+      side = "TOP";
+    } else {
+      const pool = team.pool_label;
+      const combinedTopHas = pool ? topList.some((t) => t.pool_label === pool) : false;
+      const combinedBotHas = pool ? botList.some((t) => t.pool_label === pool) : false;
+      const groupTopHas = pool ? sameGroupTop.some((t) => t.pool_label === pool) : false;
+      const groupBotHas = pool ? sameGroupBot.some((t) => t.pool_label === pool) : false;
+
+      if (combinedTopHas !== combinedBotHas) {
+        side = combinedTopHas ? "BOTTOM" : "TOP";
+      } else if (groupTopHas !== groupBotHas) {
+        side = groupTopHas ? "BOTTOM" : "TOP";
+      } else {
+        const remTop = capTop - usedTop;
+        const remBot = capBot - usedBot;
+        side = remTop >= remBot ? "TOP" : "BOTTOM";
+      }
+    }
+
+    if (side === "TOP") {
+      topList.push(team);
+      if (isBye) { byeTop.push(team); usedByeTop++; } else { playTop.push(team); usedPlayTop++; }
+    } else {
+      botList.push(team);
+      if (isBye) { byeBot.push(team); usedByeBot++; } else { playBot.push(team); usedPlayBot++; }
+    }
+  }
+
+  placeByeAware(byeTop, playTop, topStart, half, slotType, slots);
+  placeByeAware(byeBot, playBot, botStart, half, slotType, slots);
+}
+
+/**
+ * The original bisection algorithm (pre-issue-#10), used verbatim when there
+ * are no byes (`bracketSize === teams.length`). Kept unchanged so the
+ * power-of-2 test suite stays byte-for-byte identical.
+ */
+function legacyPlaceRegion(
   entries: (OverallTeamStanding | null)[],
   slotStart: number,
   regionSize: number,
@@ -396,8 +572,8 @@ function placeRegion(
     else bottom.push(entry);
   });
 
-  placeRegion(top, slotStart, half, slots);
-  placeRegion(bottom, slotStart + half, half, slots);
+  legacyPlaceRegion(top, slotStart, half, slots);
+  legacyPlaceRegion(bottom, slotStart + half, half, slots);
 }
 
 /**

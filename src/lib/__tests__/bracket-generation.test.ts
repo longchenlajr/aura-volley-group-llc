@@ -202,3 +202,100 @@ describe("generateBracket – pool separation", () => {
     expect(Math.max(...meetRounds)).toBe(3);
   });
 });
+
+/* ── Bye-seeding regression (issue #10) ──
+ * Pool separation can shuffle real teams between halves, which changes how many
+ * byes land in each half — handing a bye to a lower-ranked team while a
+ * higher-ranked team plays a Round-1 game. These tests pin the guarantee that
+ * byes always go to the top `byeCount` teams by overall_rank.
+ */
+
+const BRACKET_SIZE_16 = 16;
+
+describe("generateBracket – bye seeding guarantee (issue #10)", () => {
+  it("awards byes to exactly the top 5 ranked teams in a mixed 4/4/3 pool field", () => {
+    // pools of 4, 4, 3 = 11 teams, bracketSize 16, byeCount 5.
+    // Ranks: 1:A1 2:B1 3:C1 4:A2 5:B2 6:C2 7:A3 8:B3 9:C3 10:A4 11:B4
+    const teams = [
+      makeTeam(1, "A"), makeTeam(2, "B"), makeTeam(3, "C"), makeTeam(4, "A"),
+      makeTeam(5, "B"), makeTeam(6, "C"), makeTeam(7, "A"), makeTeam(8, "B"),
+      makeTeam(9, "C"), makeTeam(10, "A"), makeTeam(11, "B"),
+    ];
+    const bracket = generateBracket(teams, "gold", 15, [1]);
+
+    const byeTeamIds = new Set<string>();
+    for (const team of teams) {
+      if (hasBye(bracket, team.team_id)) byeTeamIds.add(team.team_id);
+    }
+    expect(byeTeamIds).toEqual(
+      new Set(["team-1", "team-2", "team-3", "team-4", "team-5"]),
+    );
+  });
+
+  it("never pairs two same-pool teams in round 1 for the 4/4/3 field", () => {
+    const teams = [
+      makeTeam(1, "A"), makeTeam(2, "B"), makeTeam(3, "C"), makeTeam(4, "A"),
+      makeTeam(5, "B"), makeTeam(6, "C"), makeTeam(7, "A"), makeTeam(8, "B"),
+      makeTeam(9, "C"), makeTeam(10, "A"), makeTeam(11, "B"),
+    ];
+    const bracket = generateBracket(teams, "gold", 15, [1]);
+    const byId = new Map(teams.map((t) => [t.team_id, t.pool_label]));
+
+    for (const m of bracket.matches.filter((mm) => mm.round_number === 1)) {
+      if (m.team_a_id && m.team_b_id) {
+        expect(byId.get(m.team_a_id)).not.toBe(byId.get(m.team_b_id));
+      }
+    }
+  });
+
+  it("keeps every pool's earliest same-pool meeting at round 3 (semis) for the 4/4/3 field", () => {
+    const teams = [
+      makeTeam(1, "A"), makeTeam(2, "B"), makeTeam(3, "C"), makeTeam(4, "A"),
+      makeTeam(5, "B"), makeTeam(6, "C"), makeTeam(7, "A"), makeTeam(8, "B"),
+      makeTeam(9, "C"), makeTeam(10, "A"), makeTeam(11, "B"),
+    ];
+    const bracket = generateBracket(teams, "gold", 15, [1]);
+
+    for (const pool of ["A", "B", "C"]) {
+      const poolTeams = teams.filter((t) => t.pool_label === pool);
+      const meetRounds: number[] = [];
+      for (let i = 0; i < poolTeams.length; i++) {
+        for (let j = i + 1; j < poolTeams.length; j++) {
+          meetRounds.push(
+            meetRound(
+              r1SlotOf(bracket, poolTeams[i].team_id),
+              r1SlotOf(bracket, poolTeams[j].team_id),
+              BRACKET_SIZE_16,
+            ),
+          );
+        }
+      }
+      expect(Math.min(...meetRounds)).toBe(3);
+    }
+  });
+
+  it("awards byes to the top-ranked teams and keeps R1 pool-separated for a lopsided 6+5 field", () => {
+    // pools of 6, 5 = 11 teams, bracketSize 16, byeCount 5.
+    const teams = [
+      makeTeam(1, "A"), makeTeam(2, "B"), makeTeam(3, "A"), makeTeam(4, "B"),
+      makeTeam(5, "A"), makeTeam(6, "B"), makeTeam(7, "A"), makeTeam(8, "B"),
+      makeTeam(9, "A"), makeTeam(10, "B"), makeTeam(11, "A"),
+    ];
+    const bracket = generateBracket(teams, "gold", 15, [1]);
+
+    const byeTeamIds = new Set<string>();
+    for (const team of teams) {
+      if (hasBye(bracket, team.team_id)) byeTeamIds.add(team.team_id);
+    }
+    expect(byeTeamIds).toEqual(
+      new Set(["team-1", "team-2", "team-3", "team-4", "team-5"]),
+    );
+
+    const byId = new Map(teams.map((t) => [t.team_id, t.pool_label]));
+    for (const m of bracket.matches.filter((mm) => mm.round_number === 1)) {
+      if (m.team_a_id && m.team_b_id) {
+        expect(byId.get(m.team_a_id)).not.toBe(byId.get(m.team_b_id));
+      }
+    }
+  });
+});

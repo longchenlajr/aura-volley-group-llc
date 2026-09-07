@@ -34,6 +34,7 @@ export function psqlExec(sql: string): string {
 const ALL_TABLES = [
   "teams",
   "players",
+  "payments",
   "pools",
   "pool_teams",
   "matches",

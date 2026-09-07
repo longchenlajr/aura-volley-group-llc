@@ -1,4 +1,5 @@
-import { getTournamentsWithStatus } from "@/lib/tournaments";
+import { getTournamentsWithStatus, getStandardEntryFeeCents } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import Link from "next/link";
 import { ArrowRight, CalendarIcon } from "../ornaments";
 import { DecorativeAsset } from "../DecorativeAsset";
@@ -9,6 +10,7 @@ export const metadata = { title: { absolute: "Home | Long Volleyball" } };
 
 export default function TournamentsPage() {
   const tournaments = getTournamentsWithStatus();
+  const perPlayerCents = getStandardEntryFeeCents();
 
   return (
     <>
@@ -182,7 +184,7 @@ export default function TournamentsPage() {
                   <div className="lv-fact-content">
                     <span className="lv-fact-label">Entry fee</span>
                     <span className="lv-fact-value">
-                      $25 per player ($50 doubles, $75 triples)
+                      {formatCents(perPlayerCents)} per player ({formatCents(perPlayerCents * 2)} doubles, {formatCents(perPlayerCents * 3)} triples)
                     </span>
                   </div>
                 </div>

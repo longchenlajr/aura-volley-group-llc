@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Tournament } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import {
   Checkmark,
   ArrowRight,
@@ -63,6 +64,7 @@ function RegisterForm() {
     teamNameResult?: string;
     playerNames?: string[];
     teamSize?: number;
+    priceCents?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -158,6 +160,7 @@ function RegisterForm() {
           teamNameResult: teamName,
           playerNames: players.map((p) => p.name),
           teamSize: selected.teamSize,
+          priceCents: selected.priceCents,
         });
       }
     } catch {
@@ -187,7 +190,8 @@ function RegisterForm() {
   }, [result?.ok]);
 
   if (result?.ok) {
-    const total = (result.teamSize ?? 2) * 25;
+    const priceCents = result.priceCents ?? 0;
+    const totalCents = priceCents * (result.teamSize ?? 2);
     return (
       <div className="lv-register">
         <div className="lv-success">
@@ -208,12 +212,12 @@ function RegisterForm() {
             {result.playerNames?.map((name, i) => (
               <div key={i} className="lv-invoice-row">
                 <span>{name}</span>
-                <span>$25</span>
+                <span>{formatCents(priceCents)}</span>
               </div>
             ))}
             <div className="lv-invoice-total">
               <span>Total due at check-in</span>
-              <span>${total}</span>
+              <span>{formatCents(totalCents)}</span>
             </div>
           </div>
 

@@ -1,6 +1,9 @@
+import { getStandardEntryFeeCents } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import { SectionDivider } from "../../ornaments";
 
 export default function RulesPage() {
+  const perPlayerCents = getStandardEntryFeeCents();
   return (
     <div className="lv-rules-page">
       <div className="lv-container">
@@ -55,7 +58,7 @@ export default function RulesPage() {
               for.
             </li>
             <li>
-              Entry fee is <strong>$25 per player</strong>. Cash is preferred,
+              Entry fee is <strong>{formatCents(perPlayerCents)} per player</strong>. Cash is preferred,
               but other payment methods will be available.
             </li>
             <li>

@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Tournament } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import {
   Checkmark,
   ArrowRight,
@@ -12,6 +13,23 @@ import {
 } from "../../ornaments";
 
 const SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
+
+/**
+ * A success carries everything the invoice needs, so the success screen never
+ * has to substitute a placeholder amount for a missing price.
+ */
+type RegisterResult =
+  | { ok: false; message: string }
+  | {
+      ok: true;
+      message: string;
+      tournamentName: string;
+      tournamentDate: string;
+      teamNameResult: string;
+      playerNames: string[];
+      teamSize: number;
+      priceCents: number;
+    };
 
 function formatDisplayLabel(format: string, teamSize: number): string {
   const f = format.toLowerCase();
@@ -55,15 +73,7 @@ function RegisterForm() {
   const [phoneErrors, setPhoneErrors] = useState<Record<number, string>>({});
   const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string; shirtSize?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{
-    ok: boolean;
-    message: string;
-    tournamentName?: string;
-    tournamentDate?: string;
-    teamNameResult?: string;
-    playerNames?: string[];
-    teamSize?: number;
-  } | null>(null);
+  const [result, setResult] = useState<RegisterResult | null>(null);
 
   useEffect(() => {
     fetch("/api/register?check=tournaments")
@@ -158,6 +168,7 @@ function RegisterForm() {
           teamNameResult: teamName,
           playerNames: players.map((p) => p.name),
           teamSize: selected.teamSize,
+          priceCents: selected.priceCents,
         });
       }
     } catch {
@@ -187,7 +198,8 @@ function RegisterForm() {
   }, [result?.ok]);
 
   if (result?.ok) {
-    const total = (result.teamSize ?? 2) * 25;
+    const priceCents = result.priceCents;
+    const totalCents = priceCents * result.teamSize;
     return (
       <div className="lv-register">
         <div className="lv-success">
@@ -208,12 +220,12 @@ function RegisterForm() {
             {result.playerNames?.map((name, i) => (
               <div key={i} className="lv-invoice-row">
                 <span>{name}</span>
-                <span>$25</span>
+                <span>{formatCents(priceCents)}</span>
               </div>
             ))}
             <div className="lv-invoice-total">
               <span>Total due at check-in</span>
-              <span>${total}</span>
+              <span>{formatCents(totalCents)}</span>
             </div>
           </div>
 

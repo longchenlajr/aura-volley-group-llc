@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getUpcomingTournaments, getTournament, getTournamentStatus } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import { auth } from "@/auth";
 import { Resend } from "resend";
 
@@ -244,7 +245,7 @@ export async function POST(req: NextRequest) {
       .map((p, i) => `  ${p.name}${i === 0 ? " (Captain)" : ""}\n    ${p.email || "no email"} / ${p.phone || "no phone"}`)
       .join("\n");
 
-    const total = tournament.teamSize * 25;
+    const totalCents = tournament.teamSize * tournament.priceCents;
     const labelStyle = "padding:4px 0;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#9B6B1E;";
     const valueStyle = "padding:4px 0;font-size:15px;color:#2A1810;text-align:right;";
     const sectionTitle = "font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#9B6B1E;margin:0 0 8px;";
@@ -278,8 +279,8 @@ export async function POST(req: NextRequest) {
     </div>
 
     <div style="background:#FFF8E7;border:1px solid rgba(122,28,28,0.18);border-radius:8px;padding:16px;text-align:center;margin-bottom:32px;">
-      <p style="font-size:13px;color:#7A1C1C;font-weight:bold;margin:0 0 4px;">$${total} due at check-in</p>
-      <p style="font-size:12px;color:#6B4E3D;margin:0;">$25 per player &middot; Cash only</p>
+      <p style="font-size:13px;color:#7A1C1C;font-weight:bold;margin:0 0 4px;">${formatCents(totalCents)} due at check-in</p>
+      <p style="font-size:12px;color:#6B4E3D;margin:0;">${formatCents(tournament.priceCents)} per player &middot; Cash only</p>
     </div>
 
     <div style="border-top:1px solid rgba(122,28,28,0.12);margin:32px 0;"></div>
@@ -327,7 +328,7 @@ Location: ${tournament.location}
 Roster:
 ${playerListText}
 
-$${total} due at check-in ($25 per player, cash only).
+${formatCents(totalCents)} due at check-in (${formatCents(tournament.priceCents)} per player, cash only).
 
 ---
 

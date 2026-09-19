@@ -153,7 +153,8 @@
       "location": "515 S. Ott Street, Allentown, PA 18104",
       "format": "doubles",
       "teamSize": 2,
-      "registrationOpen": true
+      "registrationOpen": true,
+      "priceCents": 2500
     },
     {
       "id": "doubles-10-11-2026",

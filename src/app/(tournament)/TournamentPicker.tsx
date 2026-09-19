@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Tournament, TournamentStatus } from "@/lib/tournaments";
+import { formatCents } from "@/lib/money";
 import { ArrowRight, CalendarIcon, DividerOrnament } from "./ornaments";
 import { DecorativeAsset } from "./DecorativeAsset";
 import { StatusTag } from "./StatusTag";
@@ -11,10 +12,8 @@ import { StatusTag } from "./StatusTag";
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-function getEntryFee(teamSize: number): string {
-  if (teamSize === 2) return "$25/player · $50/team";
-  if (teamSize === 3) return "$25/player · $75/team";
-  return `$25/player · $${25 * teamSize}/team`;
+function getEntryFee(priceCents: number, teamSize: number): string {
+  return `${formatCents(priceCents)}/player · ${formatCents(priceCents * teamSize)}/team`;
 }
 
 function formatLabel(format: string): string {
@@ -32,7 +31,7 @@ function buildGCalEventUrl(t: Tournament & { status?: TournamentStatus }): strin
   const fmt = (d: Date) =>
     d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const title = encodeURIComponent(`Long's Grass Volleyball – ${formatLabel(t.format)}`);
-  const details = encodeURIComponent(`Entry: ${getEntryFee(t.teamSize)}\nLocation: ${t.location}`);
+  const details = encodeURIComponent(`Entry: ${getEntryFee(t.priceCents, t.teamSize)}\nLocation: ${t.location}`);
   const loc = encodeURIComponent(t.location);
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(start)}/${fmt(end)}&details=${details}&location=${loc}`;
 }
@@ -161,7 +160,7 @@ export function TournamentPicker({ tournaments, showStatus = false }: Tournament
                   <div className="lv-dossier-row">
                     <span className="lv-dossier-label">Entry</span>
                     <span className="lv-dossier-value">
-                      {getEntryFee(selected.teamSize)}
+                      {getEntryFee(selected.priceCents, selected.teamSize)}
                     </span>
                   </div>
                   <div className="lv-dossier-row">

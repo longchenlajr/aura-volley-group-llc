@@ -13,7 +13,7 @@ export interface Tournament {
   /** AwesomeFest format override: games to 21 (2 sets, cap 23) and a single playoff bracket (everyone makes playoffs). */
   awesomefest?: boolean;
   /** Entry fee per player, in integer cents (e.g. 2500 for $25/player). */
-  priceCents?: number;
+  priceCents: number;
   /** Offer optional online pre-payment (PayPal) during registration. Default off. */
   onlinePaymentEnabled?: boolean;
 }
@@ -30,6 +30,18 @@ export function getTournaments(): Tournament[] {
 
 export function getTournament(id: string): Tournament | null {
   return tournaments.find((t) => t.id === id) ?? null;
+}
+
+/**
+ * The standard per-player entry fee, in cents, for marketing copy that isn't
+ * tied to a specific tournament (e.g. the landing page facts, rules page).
+ * Reads from the first doubles-format tournament's `priceCents` (every
+ * tournament currently shares the same fee); falls back to the first
+ * tournament in config if none is a doubles tournament.
+ */
+export function getStandardEntryFeeCents(): number {
+  const reference = tournaments.find((t) => t.format === "doubles") ?? tournaments[0];
+  return reference?.priceCents ?? 0;
 }
 
 export function getUpcomingTournaments(): Tournament[] {

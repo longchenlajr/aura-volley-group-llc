@@ -28,6 +28,8 @@ interface TournamentConfig {
   teamSize: number;
   location: string;
   awesomefest?: boolean;
+  /** Entry fee per player, in integer cents. Mirrors Tournament in src/lib/tournaments.ts. */
+  priceCents: number;
 }
 
 async function main() {

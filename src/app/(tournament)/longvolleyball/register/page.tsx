@@ -14,6 +14,23 @@ import {
 
 const SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "2XL"] as const;
 
+/**
+ * A success carries everything the invoice needs, so the success screen never
+ * has to substitute a placeholder amount for a missing price.
+ */
+type RegisterResult =
+  | { ok: false; message: string }
+  | {
+      ok: true;
+      message: string;
+      tournamentName: string;
+      tournamentDate: string;
+      teamNameResult: string;
+      playerNames: string[];
+      teamSize: number;
+      priceCents: number;
+    };
+
 function formatDisplayLabel(format: string, teamSize: number): string {
   const f = format.toLowerCase();
   if (f === "doubles") return "Doubles (2v2)";
@@ -56,16 +73,7 @@ function RegisterForm() {
   const [phoneErrors, setPhoneErrors] = useState<Record<number, string>>({});
   const [players, setPlayers] = useState<{ name: string; email?: string; phone?: string; shirtSize?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{
-    ok: boolean;
-    message: string;
-    tournamentName?: string;
-    tournamentDate?: string;
-    teamNameResult?: string;
-    playerNames?: string[];
-    teamSize?: number;
-    priceCents?: number;
-  } | null>(null);
+  const [result, setResult] = useState<RegisterResult | null>(null);
 
   useEffect(() => {
     fetch("/api/register?check=tournaments")
@@ -190,8 +198,8 @@ function RegisterForm() {
   }, [result?.ok]);
 
   if (result?.ok) {
-    const priceCents = result.priceCents ?? 0;
-    const totalCents = priceCents * (result.teamSize ?? 2);
+    const priceCents = result.priceCents;
+    const totalCents = priceCents * result.teamSize;
     return (
       <div className="lv-register">
         <div className="lv-success">

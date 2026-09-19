@@ -29,6 +29,7 @@ export interface Team {
   contact_phone: string;
   seed: number | null;
   checked_in: boolean;
+  paid: boolean;
   created_at: string;
   withdrawn_at: string | null;
   players: { id: string; name: string; email: string | null; phone: string | null; is_captain: boolean; shirt_size: string | null }[];

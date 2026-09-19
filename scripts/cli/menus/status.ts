@@ -9,7 +9,7 @@ export async function showStatus(ctx: CliContext): Promise<void> {
   const [teamsRes, poolCountRes, matchesRes, bracketsRes] = await Promise.all([
     supabase
       .from('teams')
-      .select('id, checked_in, withdrawn_at')
+      .select('id, checked_in, paid, withdrawn_at')
       .eq('tournament_id', tournamentId),
     supabase
       .from('pools')
@@ -43,6 +43,7 @@ export async function showStatus(ctx: CliContext): Promise<void> {
   const teams = teamsRes.data ?? [];
   const totalTeams = teams.length;
   const checkedIn = teams.filter((t) => t.checked_in && !t.withdrawn_at).length;
+  const paid = teams.filter((t) => t.paid && !t.withdrawn_at).length;
   const withdrawn = teams.filter((t) => t.withdrawn_at).length;
   const poolCount = poolCountRes.count ?? 0;
 
@@ -113,7 +114,7 @@ export async function showStatus(ctx: CliContext): Promise<void> {
       `  Date:        ${new Date(ctx.tournamentDate).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}`,
       `  Env:         ${ctx.env.toUpperCase()}`,
       '',
-      `  Teams:       ${totalTeams} registered / ${checkedIn} checked in / ${withdrawn} withdrawn`,
+      `  Teams:       ${totalTeams} registered / ${checkedIn} checked in / ${paid} paid / ${withdrawn} withdrawn`,
       `  Pools:       ${poolCount} pool${poolCount === 1 ? '' : 's'}`,
       `  Pool Play:   ${matchLine}`,
       `  Brackets:    ${bracketLine}`,

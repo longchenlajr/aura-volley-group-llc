@@ -79,6 +79,7 @@ export function TeamRoster({
   const activeTeams = teams.filter((t) => !t.withdrawn_at);
   const withdrawnTeams = teams.filter((t) => !!t.withdrawn_at);
   const checkedInCount = activeTeams.filter((t) => t.checked_in).length;
+  const paidCount = activeTeams.filter((t) => t.paid).length;
 
   // Seeded teams first (ascending by seed), then unseeded by registration time.
   const seededTeams = useMemo(
@@ -150,7 +151,7 @@ export function TeamRoster({
         </span>
         {!expanded && (
           <span className="lv-roster-summary">
-            {seededTeams.length} seeded &middot; {checkedInCount} checked in
+            {seededTeams.length} seeded &middot; {checkedInCount} checked in &middot; {paidCount} paid
             {withdrawnTeams.length > 0 && ` · ${withdrawnTeams.length} withdrawn`}
           </span>
         )}
@@ -211,6 +212,7 @@ export function TeamRoster({
                   <th>Players</th>
                   <th>Seed</th>
                   <th>Checked in</th>
+                  <th>Paid</th>
                   <th></th>
                 </tr>
               </thead>
@@ -218,7 +220,7 @@ export function TeamRoster({
                 {groups.map((group) => (
                   <Fragment key={group.key}>
                     <tr className="lv-roster-group-row">
-                      <td colSpan={6}>{group.label} &middot; {group.teams.length}</td>
+                      <td colSpan={7}>{group.label} &middot; {group.teams.length}</td>
                     </tr>
                     {group.teams.map((t) => {
                       const captain = t.players.find((p) => p.is_captain);
@@ -330,6 +332,14 @@ export function TeamRoster({
                               className={`lv-toggle ${t.checked_in ? "on" : ""}`}
                               onClick={() => onPatchTeam(t.id, { checked_in: !t.checked_in })}
                               aria-label={t.checked_in ? "Checked in" : "Not checked in"}
+                            />
+                          </div>
+                          <div className="lv-admin-card-row">
+                            <span className="lv-admin-card-label">Paid</span>
+                            <button
+                              className={`lv-toggle ${t.paid ? "on" : ""}`}
+                              onClick={() => onPatchTeam(t.id, { paid: !t.paid })}
+                              aria-label={t.paid ? "Paid" : "Not paid"}
                             />
                           </div>
                         </div>
@@ -497,6 +507,17 @@ function TeamTableRows({
           )}
         </td>
         <td onClick={(e) => e.stopPropagation()}>
+          {isWithdrawn ? (
+            <span style={{ fontSize: "0.7rem", color: "var(--lv-ink-muted)" }}>—</span>
+          ) : (
+            <button
+              className={`lv-toggle ${t.paid ? "on" : ""}`}
+              onClick={() => onPatchTeam(t.id, { paid: !t.paid })}
+              aria-label={t.paid ? "Paid" : "Not paid"}
+            />
+          )}
+        </td>
+        <td onClick={(e) => e.stopPropagation()}>
           {!isWithdrawn && (
             <div style={{ display: "flex", gap: 2 }}>
               <button
@@ -528,7 +549,7 @@ function TeamTableRows({
       {/* Expanded registered-at row */}
       {isTeamExpanded && (
         <tr className="lv-roster-detail-row">
-          <td colSpan={6}>
+          <td colSpan={7}>
             <div className="lv-roster-registered-at">
               Registered {formatRegisteredDate(t.created_at)}
             </div>

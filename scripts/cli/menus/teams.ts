@@ -7,13 +7,14 @@ interface Team {
   team_name: string;
   seed: number | null;
   checked_in: boolean;
+  paid: boolean;
   withdrawn_at: string | null;
 }
 
 async function fetchTeams(ctx: CliContext): Promise<Team[]> {
   const { data } = await ctx.supabase
     .from('teams')
-    .select('id, team_name, seed, checked_in, withdrawn_at')
+    .select('id, team_name, seed, checked_in, paid, withdrawn_at')
     .eq('tournament_id', ctx.tournamentId)
     .order('seed', { ascending: true, nullsFirst: false })
     .order('team_name');
@@ -25,15 +26,16 @@ function displayTeams(teams: Team[]): void {
     log.warn('No teams registered.');
     return;
   }
-  const header = ' #   Team Name                      Seed  Check-in  Status';
-  const divider = '─'.repeat(58);
+  const header = ' #   Team Name                      Seed  Check-in  Paid  Status';
+  const divider = '─'.repeat(64);
   const rows = teams.map((t, i) => {
     const num = String(i + 1).padStart(2);
     const name = t.team_name.padEnd(30).slice(0, 30);
     const seed = (t.seed != null ? String(t.seed) : '-').padStart(4);
     const checkin = t.checked_in ? '✓' : '-';
+    const paid = t.paid ? '✓' : '-';
     const status = t.withdrawn_at ? '[WITHDRAWN]' : '';
-    return ` ${num}  ${name}  ${seed}       ${checkin}   ${status}`;
+    return ` ${num}  ${name}  ${seed}       ${checkin}     ${paid}   ${status}`;
   });
   log.info([header, divider, ...rows, ''].join('\n'));
 }
@@ -59,7 +61,7 @@ async function listTeams(ctx: CliContext): Promise<void> {
   s.stop('');
   displayTeams(teams);
   log.info(
-    `Total: ${teams.length}  |  Checked in: ${teams.filter((t) => t.checked_in && !t.withdrawn_at).length}  |  Withdrawn: ${teams.filter((t) => t.withdrawn_at).length}`,
+    `Total: ${teams.length}  |  Checked in: ${teams.filter((t) => t.checked_in && !t.withdrawn_at).length}  |  Paid: ${teams.filter((t) => t.paid && !t.withdrawn_at).length}  |  Withdrawn: ${teams.filter((t) => t.withdrawn_at).length}`,
   );
 }
 
@@ -111,6 +113,27 @@ async function toggleCheckin(ctx: CliContext): Promise<void> {
   s2.start('Updating...');
   await ctx.supabase.from('teams').update({ checked_in: newValue }).eq('id', team.id);
   s2.stop(`"${team.team_name}" → ${newValue ? 'CHECKED IN' : 'checked out'}`);
+}
+
+async function togglePaid(ctx: CliContext): Promise<void> {
+  const s = spinner();
+  s.start('Loading teams...');
+  const teams = (await fetchTeams(ctx)).filter((t) => !t.withdrawn_at);
+  s.stop('');
+
+  if (!teams.length) {
+    log.warn('No active teams.');
+    return;
+  }
+
+  const team = await selectTeam(teams, 'Select team to toggle paid (enter #):');
+  if (!team) return;
+
+  const newValue = !team.paid;
+  const s2 = spinner();
+  s2.start('Updating...');
+  await ctx.supabase.from('teams').update({ paid: newValue }).eq('id', team.id);
+  s2.stop(`"${team.team_name}" → ${newValue ? 'PAID' : 'unpaid'}`);
 }
 
 async function bulkCheckin(ctx: CliContext): Promise<void> {
@@ -292,6 +315,7 @@ export async function teamsMenu(ctx: CliContext): Promise<void> {
         { value: 'seed', label: 'Set team seed' },
         { value: 'checkin', label: 'Toggle check-in' },
         { value: 'bulk-checkin', label: 'Bulk check-in all' },
+        { value: 'paid', label: 'Toggle paid' },
         { value: 'withdraw', label: 'Withdraw team' },
         { value: 'delete', label: 'Delete team' },
         { value: 'back', label: '← Back' },
@@ -312,6 +336,9 @@ export async function teamsMenu(ctx: CliContext): Promise<void> {
         break;
       case 'bulk-checkin':
         await bulkCheckin(ctx);
+        break;
+      case 'paid':
+        await togglePaid(ctx);
         break;
       case 'withdraw':
         await withdrawTeam(ctx);

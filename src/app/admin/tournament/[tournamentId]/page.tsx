@@ -1031,29 +1031,42 @@ function PlayoffSetupModal({ tournamentId, poolCount, courtCount, withdrawnTeamI
   async function handleGenerate() {
     setGenerating(true);
     setError("");
-    const res = await fetch("/api/admin/brackets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tournament_id: tournamentId,
-        gold_cutoff: cutoff,
-        gold_points_per_set: goldFormat,
-        silver_points_per_set: silverFormat,
-        court_count: courtCount,
-      }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      if (res.status === 409 && confirm("Brackets already exist. Delete and regenerate?")) {
-        await fetch(`/api/admin/brackets?tournament=${tournamentId}`, { method: "DELETE" });
-        await handleGenerate();
+    try {
+      const res = await fetch("/api/admin/brackets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tournament_id: tournamentId,
+          gold_cutoff: cutoff,
+          gold_points_per_set: goldFormat,
+          silver_points_per_set: silverFormat,
+          court_count: courtCount,
+        }),
+      });
+      if (!res.ok) {
+        if (res.status === 409 && confirm("Brackets already exist. Delete and regenerate?")) {
+          await fetch(`/api/admin/brackets?tournament=${tournamentId}`, { method: "DELETE" });
+          await handleGenerate();
+          return;
+        }
+        // A gateway timeout or a crashed function comes back as HTML, not JSON.
+        // Parsing that must not be what leaves the modal stuck on "Generating…".
+        const text = await res.text();
+        let message = `Failed to generate (HTTP ${res.status})`;
+        try {
+          message = JSON.parse(text).error ?? message;
+        } catch {
+          // non-JSON body — keep the status-based message
+        }
+        setError(message);
         return;
       }
-      setError(data.error ?? "Failed to generate");
+      onGenerated();
+    } catch {
+      setError("Network error. Try again.");
+    } finally {
       setGenerating(false);
-      return;
     }
-    onGenerated();
   }
 
   if (loading) {

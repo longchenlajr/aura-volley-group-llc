@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { computePoolStandings } from "@/lib/standings";
 import { computeOverallStandings } from "@/lib/tournament-standings";
-import { generateBracket, countR1Games } from "@/lib/bracket-generation";
+import { generateBracket, splitCourts } from "@/lib/bracket-generation";
 import { matchFormatFromPool } from "@/lib/score-format";
 import { generateMatchToken, tokenExpiryForTournament } from "@/lib/tokens";
 import { getTournament } from "@/lib/tournaments";
@@ -206,27 +206,26 @@ export async function POST(req: NextRequest) {
   const goldTeams = overallStandings.filter((t) => t.overall_rank <= gold_cutoff);
   const silverTeams = overallStandings.filter((t) => t.overall_rank > gold_cutoff);
 
-  const totalCourts = court_count || pools.length;
+  // See splitCourts: every generated bracket gets a court; one pool shares its single court.
+  const { gold: goldCourts, silver: silverCourts } = splitCourts(
+    court_count || pools.length,
+    goldTeams.length,
+    silverTeams.length,
+  );
 
-  // Split courts between gold and silver brackets
-  // Odd court goes to the bracket with more R1 games
-  // (No silver bracket will actually be generated below 2 teams — give gold every court.)
-  const goldR1 = countR1Games(goldTeams.length);
-  const silverR1 = countR1Games(silverTeams.length);
-  const halfCourts = Math.floor(totalCourts / 2);
-  const extraCourt = totalCourts % 2 === 1 ? 1 : 0;
-  const goldGetsExtra = goldR1 >= silverR1;
-
-  const goldCourtCount = silverTeams.length < 2 ? totalCourts : halfCourts + (goldGetsExtra ? extraCourt : 0);
-  const silverCourtCount = silverTeams.length < 2 ? 0 : halfCourts + (goldGetsExtra ? 0 : extraCourt);
-
-  // Gold gets courts 1..goldCourtCount, silver gets the rest
-  const goldCourts = Array.from({ length: goldCourtCount }, (_, i) => i + 1);
-  const silverCourts = Array.from({ length: silverCourtCount }, (_, i) => goldCourtCount + i + 1);
-
-  // Generate brackets
-  const goldBracket = generateBracket(goldTeams, "gold", gold_points_per_set, goldCourts);
-  const silverBracket = generateBracket(silverTeams, "silver", silver_points_per_set, silverCourts, goldBracket.matches.length);
+  // Generate brackets. generateBracket throws rather than hangs on impossible
+  // input; report that the way every other failure in this route is reported.
+  let goldBracket: ReturnType<typeof generateBracket>;
+  let silverBracket: ReturnType<typeof generateBracket>;
+  try {
+    goldBracket = generateBracket(goldTeams, "gold", gold_points_per_set, goldCourts);
+    silverBracket = generateBracket(silverTeams, "silver", silver_points_per_set, silverCourts, goldBracket.matches.length);
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Failed to generate brackets" },
+      { status: 500 },
+    );
+  }
 
   // Persist gold bracket
   for (const bracket of [goldBracket, silverBracket]) {

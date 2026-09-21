@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateBracket } from "../bracket-generation";
+import { generateBracket, splitCourts } from "../bracket-generation";
 import type { OverallTeamStanding } from "../tournament-standings";
 
 function makeTeam(rank: number, pool = "A"): OverallTeamStanding {
@@ -297,5 +297,76 @@ describe("generateBracket – bye seeding guarantee (issue #10)", () => {
         expect(byId.get(m.team_a_id)).not.toBe(byId.get(m.team_b_id));
       }
     }
+  });
+});
+
+describe("splitCourts", () => {
+  // Regression for the 2026-09-20 doubles: one pool -> court_count 1. The old
+  // split gave the lone court to whichever bracket had more R1 games (silver's
+  // 2 vs gold's 1), leaving gold with no court at all, and generateBracket's R1
+  // interleave loop spun forever waiting for one.
+  it("gives both brackets the single court when there is only one", () => {
+    expect(splitCourts(1, 2, 4)).toEqual({ gold: [1], silver: [1] });
+  });
+
+  it("never hands a bracket that will be generated an empty court list", () => {
+    // gold starts at 2: the modal disables Generate below two gold teams, and
+    // generateBracket returns an empty bracket for fewer anyway.
+    for (let total = 1; total <= 4; total++) {
+      for (let gold = 2; gold <= 8; gold++) {
+        for (let silver = 0; silver <= 8; silver++) {
+          const label = `total=${total} gold=${gold} silver=${silver}`;
+          const split = splitCourts(total, gold, silver);
+          expect(split.gold.length, label).toBeGreaterThan(0);
+          if (silver >= 2) expect(split.silver.length, label).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it("keeps the existing split when there are courts to go around", () => {
+    expect(splitCourts(2, 2, 4)).toEqual({ gold: [1], silver: [2] });
+    // 3 courts: the odd court goes to the bracket with more R1 games.
+    expect(splitCourts(3, 8, 4)).toEqual({ gold: [1, 2], silver: [3] }); // gold 4 R1 games vs silver 2
+    expect(splitCourts(3, 2, 8)).toEqual({ gold: [1], silver: [2, 3] }); // gold 1 vs silver 4
+  });
+
+  it("gives gold every court when silver has fewer than two teams", () => {
+    expect(splitCourts(1, 6, 0)).toEqual({ gold: [1], silver: [] });
+    expect(splitCourts(3, 6, 1)).toEqual({ gold: [1, 2, 3], silver: [] });
+  });
+
+  it("treats a missing or zero court count as one court, never none", () => {
+    expect(splitCourts(0, 2, 4)).toEqual({ gold: [1], silver: [1] });
+  });
+});
+
+describe("generateBracket – courts", () => {
+  // Before the guard this call never returned: the R1 interleave loop waits on
+  // an empty list of active courts. It must fail loudly, not hang.
+  it("throws on an empty court list instead of looping forever", () => {
+    expect(() => generateBracket([makeTeam(1), makeTeam(2)], "gold", 15, [])).toThrow(/court/i);
+  });
+
+  it("still returns an empty bracket for fewer than two teams, even with no courts", () => {
+    expect(generateBracket([makeTeam(1)], "silver", 11, [])).toEqual({
+      bracket_type: "silver", points_per_set: 11, slots: [], matches: [],
+    });
+  });
+
+  it("orders a multi-round gold entirely before silver when they share one court", () => {
+    // A 4-team gold has two rounds (two semis, then the final). Silver's R1 must
+    // still come after gold's final, not just after gold's R1.
+    const { gold, silver } = splitCourts(1, 4, 2);
+    const g = generateBracket([1, 2, 3, 4].map((r) => makeTeam(r)), "gold", 15, gold);
+    const s = generateBracket([makeTeam(5), makeTeam(6)], "silver", 11, silver, g.matches.length);
+    expect(g.matches.length).toBe(3);
+    expect(s.matches.length).toBe(1);
+
+    const all = [...g.matches, ...s.matches];
+    expect(all.every((m) => m.court_number === 1)).toBe(true);
+    expect(all.map((m) => m.match_order)).toEqual(all.map((_, i) => i + 1));
+    expect(Math.max(...g.matches.map((m) => m.match_order)))
+      .toBeLessThan(Math.min(...s.matches.map((m) => m.match_order)));
   });
 });

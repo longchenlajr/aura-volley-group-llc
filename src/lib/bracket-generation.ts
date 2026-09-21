@@ -53,6 +53,11 @@ export function generateBracket(
   if (n < 2) {
     return { bracket_type: bracketType, points_per_set: pointsPerSet, slots: [], matches: [] };
   }
+  if (courts.length === 0) {
+    // With no court there is nowhere to place the R1 games, and the interleave
+    // loop below waits forever for an active court. Fail loudly instead.
+    throw new Error("generateBracket: a bracket with 2+ teams needs at least one court");
+  }
 
   // Sort by overall_rank so seeding is correct regardless of input array order
   const sorted = [...teams].sort((a, b) => a.overall_rank - b.overall_rank);
@@ -309,6 +314,36 @@ export function generateBracket(
     slots,
     matches,
   };
+}
+
+/**
+ * Split the available courts between the gold and silver brackets.
+ *
+ * Every bracket that will actually be generated (2+ teams) gets at least one
+ * court. With a single court — a one-pool tournament — gold and silver share
+ * it, and the caller sequences silver's matches after gold's via
+ * matchOrderOffset. With more courts the odd one goes to whichever bracket has
+ * more R1 games. Silver with fewer than two teams produces no bracket and gets
+ * no courts.
+ */
+export function splitCourts(
+  totalCourts: number,
+  goldTeamCount: number,
+  silverTeamCount: number,
+): { gold: number[]; silver: number[] } {
+  // NaN/undefined floor to 0, and 0 clamps to 1: a bracket can never get no court.
+  const total = Math.max(1, Math.floor(totalCourts) || 0);
+  const range = (from: number, count: number) => Array.from({ length: count }, (_, i) => from + i);
+
+  if (silverTeamCount < 2) return { gold: range(1, total), silver: [] };
+  if (total === 1) return { gold: [1], silver: [1] };
+
+  const half = Math.floor(total / 2);
+  const extra = total % 2;
+  const goldGetsExtra = countR1Games(goldTeamCount) >= countR1Games(silverTeamCount);
+  const goldCount = half + (goldGetsExtra ? extra : 0);
+  const silverCount = half + (goldGetsExtra ? 0 : extra);
+  return { gold: range(1, goldCount), silver: range(goldCount + 1, silverCount) };
 }
 
 /**
